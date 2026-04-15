@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaje: podatkovni tipi</title>
+<style>.hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}.hljs-comment,.hljs-quote{color:#a0a1a7;font-style:italic}.hljs-doctag,.hljs-keyword,.hljs-formula{color:#a626a4}.hljs-section,.hljs-name,.hljs-selector-tag,.hljs-deletion,.hljs-subst{color:#e45649}.hljs-literal{color:#0184bb}.hljs-string,.hljs-regexp,.hljs-addition,.hljs-attribute,.hljs-meta-string{color:#50a14f}.hljs-built_in,.hljs-class .hljs-title{color:#c18401}.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-type,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-number{color:#986801}.hljs-symbol,.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-title{color:#4078f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-link{text-decoration:underline}
+
+:root{--text:#1f2328;--muted:#57606a;--bg:#fff;--link:#0969da;--code-bg:#f6f8fa;--border:#d0d7de}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5;color:var(--text);background:var(--bg)}
+main{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h3{font-size:1.25em;margin-top:24px}
+h4{font-size:1em;margin-top:24px}
+p,ul,ol,pre,table{margin:0 0 16px 0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.2em .4em;border-radius:6px;font-size:85%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:var(--code-bg);padding:16px;border-radius:8px;overflow:auto;font-size:85%;line-height:1.45}
+pre code{background:transparent;padding:0;border-radius:0;font-size:100%;display:block;overflow-x:auto}
+pre code.hljs{padding:0;background:transparent}
+ul,ol{padding-left:2em}
+li{margin:.25em 0}
+blockquote{border-left:4px solid var(--border);padding:0 1em;color:var(--muted);margin:0 0 16px 0}
+table{border-collapse:collapse}
+th,td{border:1px solid var(--border);padding:6px 13px}
+img{max-width:100%}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.modified{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.85em;font-style:italic}
+.box,.no-overflow,.generalbox{display:block}
+/* Moodle span.filter_mathjaxloader_equation may wrap headings */
+.filter_mathjaxloader_equation,.nolink{display:block}
+</style>
+</head>
+<body>
+<main>
+<h1>Vaje: podatkovni tipi</h1>
+<div class="box py-3 generalbox center clearfix"><div class="no-overflow"><span class="filter_mathjaxloader_equation"><span class="nolink"><h1>Opisovanje protokolov in standardov s podatkovnimi tipi</h1>
+
+<p>Na teh vajah bomo v jeziku <a href="https://ocaml.org/">OCaml</a> definirali podatkovni tip za opis <a href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Server_response">odgovora strežnika HTTP</a>, ki je določen v <a href="https://tools.ietf.org/html/rfc7231">RFC 7231</a>.</p>
+
+<p>Iz ukazne vrstice poženemo interpreter z <code>ocaml</code>. Pri tem lahko podamo datoteko, ki se bo naložila ob zagonu, npr.</p>
+
+<pre><code>ocaml -init http.ml
+</code></pre>
+
+<p>Datoteko naložimo tudi kasneje z direktivo (prvi <code>#</code> je ukazni poziv, drugega pa napišemo kot del ukaza <code>#use</code>):</p>
+
+<pre><code># #use "http.ml";;
+</code></pre>
+
+<p>Za izhod iz interpreterja pritisnemo <code>ctrl+D</code> (Linux) ali <code>ctrl+Z</code> in <code>enter</code> (Windows). Za lažje interaktivno delo lahko uporabimo <code>rlwrap</code>, ki poljubnemu interaktivnemu programu doda možnost urejanja ukazne vrstice:</p>
+
+<pre><code>rlwrap ocaml
+</code></pre>
+
+<h2>Odgovor HTTP</h2>
+
+<p>Najprej si oglejmo, kako izgleda glava odgovora strežnika HTTP. V ukazni vrstici poženemo:</p>
+
+<pre><code>$ curl -I https://fri.uni-lj.si/sl
+
+HTTP/1.1 200 OK
+Server: nginx/1.6.2
+Date: Fri, 23 Mar 2018 17:43:15 GMT
+Content-Type: text/html; charset=utf-8
+Connection: keep-alive
+Vary: Accept-Encoding
+Expires: Sun, 19 Nov 1978 05:00:00 GMT
+Cache-Control: no-cache, must-revalidate
+X-Content-Type-Options: nosniff
+X-Powered-By: HHVM/3.18.1
+Content-Language: sl
+X-Frame-Options: SAMEORIGIN
+</code></pre>
+
+<p>Vidimo, da je glava sestavljena iz dveh delov: prva vrstica poda <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">različico protokola in status odgovora</a>, preostale vrstice pa določajo vrednosti <a href="https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Standard_response_fields">posameznih polj</a>.</p>
+
+<h2>Podatkovni tip <code>status</code></h2>
+
+<p>Prva vrstica v odgovoru HTTP nam pove različico protokola in status poizvedbe, npr.</p>
+
+<pre><code>HTTP/1.1 200 OK
+</code></pre>
+
+<p>Mi jo bomo predstavili s podatkovnim tipom <code>status</code>, ki je zapis z dvema poljema:</p>
+
+<pre><code>type status = { version : string; code : int } ;;
+</code></pre>
+
+<p>Novo vrednost tega tipa naredimo z:</p>
+
+<pre><code>let mystatus = { version = "HTTP/1.1"; code = 200 } ;;
+</code></pre>
+
+<p>Določeno polje iz zapisa dobimo tako:</p>
+
+<pre><code>mystatus.version ;;
+- : string = "HTTP/1.1"
+</code></pre>
+
+<p>Definirajmo še funkcijo <code>string_of_status</code>, ki za dani status vrne ustrezen niz. V OCamlu združujemo nize z operatorjem <code>^</code>:</p>
+
+<pre><code>let string_of_status s =
+  s.version ^ " " ^
+  string_of_int s.code ^ " " ^
+  (match s.code with
+   | 200 -&gt; "OK"
+   | 301 -&gt; "Moved Permanently"
+   | _ -&gt; "")
+</code></pre>
+
+<p>Primer uporabe:</p>
+
+<pre><code># string_of_status mystatus ;;
+- : string = "HTTP/1.1 200 OK"
+</code></pre>
+
+<h3>Naloga: statusna sporočila</h3>
+
+<p>Funkcijo <code>string_of_status</code> razširite z vsaj eno statusno kodo iz vsakega <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">razreda</a>.</p>
+
+<h2>Podatkovni tip <code>response</code></h2>
+
+<p>Odgovor HTTP je sestavljen iz statusa, glave, ki vsebuje poljubno število polj, in telesa. Telo je lahko niz HTML ali kaj drugega; tu ga bomo obravnavali kot niz. Tip za opis polj (zaenkrat le <code>Server</code> in <code>ContentLength</code>) bomo predstavili z vsoto</p>
+
+<pre><code>type field =
+    | Server of string
+    | ContentLength of int
+</code></pre>
+
+<p>Tip <code>response</code> je zapis z glavo, seznamom polj in telesom:</p>
+
+<pre><code>type response = {status: status; headers: field list; body: string}
+</code></pre>
+
+<p>Zdaj lahko ustvarimo preprosto sporočilo:</p>
+
+<pre><code>let r = {
+    status={version="HTTP/1.1"; code=200};
+    headers=[Server "nginx/1.6.2"; ContentLength 13];
+    body="hello world!\n"
+}
+</code></pre>
+
+<p>Glavo smo predstavili s seznamom elementov tipa <code>field</code>. Nekaj primerov uporabe seznamov v OCamlu:</p>
+
+<pre><code>(* zapišemo seznam tipa "int list" *)
+# let stevila = [1; 2; 3; 4] ;;
+val stevila : int list = [1; 2; 3; 4]
+
+(* dostopamo do glave in repa seznama *)
+# List.hd stevila ;;
+- : int = 1
+# List.tl stevila ;;
+- : int list = [2; 3; 4]
+
+(* na vsakem elementu pokličemo funkcijo string_of_int *)
+# let nizi = List.map string_of_int stevila ;;
+val nizi : string list = ["1"; "2"; "3"; "4"]
+
+(* kvadriramo vsak element seznama s pomočjo anonimne (λ) funkcije *)
+# let nizi = List.map (fun x -&gt; x*x) stevila ;;
+val nizi : int list = [1; 4; 9; 16]
+</code></pre>
+
+<h3>Naloga: izpis polja</h3>
+
+<p>Definirajte funkcijo <code>string_of_field : field -&gt; string</code>, ki za dano polje vrne ustrezen niz. Primer uporabe:</p>
+
+<pre><code># string_of_field (Server "nginx/1.6.2") ;;
+- : string = "Server: nginx/1.6.2"
+
+# string_of_field (ContentLength 12) ;;
+- : string = "Content-Length: 12"
+</code></pre>
+
+<h3>Naloga: izpis odgovora</h3>
+
+<p>Definirajte funkcijo <code>string_of_response : response -&gt; string</code>, ki za dan odgovor oblikuje in vrne ustrezen niz.</p>
+
+<pre><code># print_string (string_of_response r) ;;
+HTTP/1.1 200 OK
+Server: nginx/1.6.2
+Content-Length: 13
+
+hello world!
+</code></pre>
+
+<p>Pomagate si lahko s funkcijama <a href="https://caml.inria.fr/pub/docs/manual-ocaml/libref/String.html"><code>String.concat</code></a> in <a href="https://caml.inria.fr/pub/docs/manual-ocaml/libref/List.html"><code>List.map</code></a>.</p>
+
+<h3>Naloga: dodatna polja</h3>
+
+<p>Tip <code>field</code> razširite z naslednjimi možnostmi, pri čemer za vrednost polja zaenkrat uporabite kar niz:</p>
+
+<ul>
+<li><code>Content-Type</code></li>
+<li><code>Transfer-Encoding</code></li>
+<li><code>Date</code></li>
+<li><code>Expires</code></li>
+<li><code>Last-Modified</code></li>
+<li><code>Location</code></li>
+</ul>
+
+<p>Odpravite opozorila, ki jih pri tem začne vračati interpreter.</p>
+
+<h3>Naloga: <code>Transfer-Encoding</code></h3>
+
+<p>Popravite tip za polje <code>Transfer-Encoding</code> tako, da vrednost namesto niza predstavite z izbiro med kodiranji <code>chunked</code>, <code>compress</code>, <code>deflate</code>, <code>gzip</code>, <code>identity</code>.</p>
+
+<h3>Naloga: datumi</h3>
+
+<p>Datumi so v glavi HTTP predstavljeni v taki obliki:</p>
+
+<pre><code>Wed, 21 Mar 2018 07:28:56 GMT
+</code></pre>
+
+<p>Definirajte podatkovni tip <code>date</code> in funkcijo <code>string_of_date</code> ter ju uporabite za polja <code>Date</code>, <code>Expires</code> in <code>Last-Modified</code>.</p>
+
+<h3>Naloga: naslovi URI</h3>
+
+<p>Definirajte podatkovni tip <code>uri</code> za povezave in funkcijo <code>string_of_uri</code> ter popravite polje <code>Location</code> tako, da namesto niza uporablja ta tip. Sintaksa naslovov URI je predpisana v <a href="https://tools.ietf.org/html/rfc3986">RFC 3986</a>. Tip <code>uri</code> naj čim bolj natančno opiše <a href="https://en.wikipedia.org/wiki/URI#Syntax">te komponente</a>: nekateri deli so opcijski, ime gostitelja je lahko domena ali naslov (IPv4 ali IPv6) itd.</p>
+</span></span></div></div>
+<div class="modified">Zadnja sprememba: torek, 24. marec 2026, 13.42</div>
+</main>
+</body>
+</html>

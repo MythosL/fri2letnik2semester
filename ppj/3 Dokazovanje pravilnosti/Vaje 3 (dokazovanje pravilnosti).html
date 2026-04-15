@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaje 3 (dokazovanje pravilnosti)</title>
+<style>.hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}.hljs-comment,.hljs-quote{color:#a0a1a7;font-style:italic}.hljs-doctag,.hljs-keyword,.hljs-formula{color:#a626a4}.hljs-section,.hljs-name,.hljs-selector-tag,.hljs-deletion,.hljs-subst{color:#e45649}.hljs-literal{color:#0184bb}.hljs-string,.hljs-regexp,.hljs-addition,.hljs-attribute,.hljs-meta-string{color:#50a14f}.hljs-built_in,.hljs-class .hljs-title{color:#c18401}.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-type,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-number{color:#986801}.hljs-symbol,.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-title{color:#4078f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-link{text-decoration:underline}
+
+:root{--text:#1f2328;--muted:#57606a;--bg:#fff;--link:#0969da;--code-bg:#f6f8fa;--border:#d0d7de}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5;color:var(--text);background:var(--bg)}
+main{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h3{font-size:1.25em;margin-top:24px}
+h4{font-size:1em;margin-top:24px}
+p,ul,ol,pre,table{margin:0 0 16px 0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.2em .4em;border-radius:6px;font-size:85%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:var(--code-bg);padding:16px;border-radius:8px;overflow:auto;font-size:85%;line-height:1.45}
+pre code{background:transparent;padding:0;border-radius:0;font-size:100%;display:block;overflow-x:auto}
+pre code.hljs{padding:0;background:transparent}
+ul,ol{padding-left:2em}
+li{margin:.25em 0}
+blockquote{border-left:4px solid var(--border);padding:0 1em;color:var(--muted);margin:0 0 16px 0}
+table{border-collapse:collapse}
+th,td{border:1px solid var(--border);padding:6px 13px}
+img{max-width:100%}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.modified{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.85em;font-style:italic}
+.box,.no-overflow,.generalbox{display:block}
+/* Moodle span.filter_mathjaxloader_equation may wrap headings */
+.filter_mathjaxloader_equation,.nolink{display:block}
+</style>
+</head>
+<body>
+<main>
+<h1>Vaje 3 (dokazovanje pravilnosti)</h1>
+<div class="box py-3 generalbox center clearfix"><div class="no-overflow"><span class="filter_mathjaxloader_equation"><span class="nolink"><h2>Naloge za ogrevanje</h2>
+
+<ul>
+<li>Kako <em>deluje</em> logična implikacija $\implies$?</li>
+<li>(Komentar) Dokazujemo, da iz izjave $A$ sledi izjava $D$. Pri tem si pomagamo z vmesnimi izjavami $B$ in $C$.
+Zapisali smo $A \implies B \implies C \implies D$. V tem zapisu ne mislimo na $A \implies (B \implies (C \implies D))$ ampak na $A \implies B \wedge B \implies C \wedge C \implies D$.</li>
+<li>Dokaži, da velja: $\forall x,y\in \mathbb{Z}:\ x &lt; y \implies x \leq y$. Poišči proti-primer, ko obrat ne velja ($x \leq y \implies x &lt; y$).</li>
+<li>Dokaži, da velja: $\forall x, y\in \mathbb{Z}:\ x &lt; y \implies x + 1 \leq y$.</li>
+</ul>
+
+<h2>Dokazovanje pravilnosti</h2>
+
+<p>Pri dokazovanju pravilnosti si lahko pomagamo z naslednjimi splošnimi nasveti.</p>
+
+<ul>
+<li>Po stavku <code>x := N</code> vedno velja <code>{ x = N }</code>. Formalno to dokažemo tako: <code>{ N = N } x := N { x = N }</code>.</li>
+<li>Pravilo za prireditveni stavek je <code>{ P[x ↦ e] } x := e { P }</code>. Pri izpeljevanju najprej vse <code>x</code>-e v predpogoju izrazimo z <code>e</code>, nato pa <code>e</code>-je zamenjamo z <code>x</code>.</li>
+<li>V zančni invarianti se zančni pogoj in lokalne spremenljivke ne pojavljajo, saj mora invarianta veljati tudi po izstopu iz zanke. Ko invarianto »peljemo« čez telo zanke, se nam v njej lahko pojavijo lokalne spremenljivke. Teh se želimo znebiti, ko dosežemo konec zanke.</li>
+<li>Na koncu zanke se lahko izkaže, da je invarianta prešibka in iz nje ne moremo izpeljati končnega pogoja. V tem primeru lahko v invarianto dodamo še kak pogoj in ga ločeno peljemo čez zanko. To ne bo nikoli pokvarilo obstoječe izpeljave: če velja $A \implies C$, potem velja tudi $A \wedge B \implies C$.</li>
+</ul>
+
+<h3>Naloga 1</h3>
+
+<p>Dokažite parcialno in popolno pravilnost programa glede na dano specifikacijo.</p>
+
+<pre><code>{ x = m ∧ y = n }
+x := x + y;
+y := x - y;
+x := x - y
+{ x = n ∧ y = m }
+</code></pre>
+
+<h3>Naloga 2</h3>
+
+<p>Dokažite parcialno in popolno pravilnost programa glede na dano specifikacijo.</p>
+
+<pre><code>{ }
+if y &lt; x then
+  z := x;
+  x := y;
+  y := z
+else
+  skip
+end
+{ x ≤ y }
+</code></pre>
+
+<h3>Naloga 3</h3>
+
+<p>Sestavite program <code>c</code>, ki zadošča specifikaciji</p>
+
+<pre><code>[ n ≥ 0 ]
+c
+[ s = 1 + 2 + ... + n ]
+</code></pre>
+
+<p>in dokažite njegovo pravilnost.</p>
+
+<h3>Naloga 4</h3>
+
+<p>Dokažite parcialno in popolno pravilnost programa glede na dano specifikacijo.</p>
+
+<pre><code>{ x ≥ 0 }
+y := 0;
+z := x;
+while 1 &lt; z - y do
+  s := (y + z)/2;
+  if s * s &lt; x then
+    y := s
+  else
+    z := s
+  end
+done
+{ y² ≤ x ≤ (y+1)² }
+</code></pre>
+
+<h3>Naloga 5</h3>
+
+<p>Dokažite popolno pravilnost spodnjega programa.</p>
+
+<pre><code>[ y &gt; 0 ]
+x := 0 ;
+c := 0 ;
+while y &gt; c do
+  x := x + 1 ;
+  c := x * x * x
+end
+if y &lt; c then
+  x := 0 ;
+  y := 0
+else
+  skip
+end
+[ x = ∛y ]
+</code></pre>
+
+<h3>Naloga 6</h3>
+
+<pre><code>{ n &gt; -1, k &gt; -1 }
+if k &gt; n then
+  b := 0
+else
+  b := 1 ;
+  m := n - k ;
+  l := 0 ;
+  while l &lt; k do
+    m := m + 1 ;
+    l := l + 1 ;
+    b := (b * m) / l
+  done
+end
+{ b = (n choose k) }
+</code></pre>
+
+<h3>Naloga 7</h3>
+
+<pre><code>{ N &gt;= 0 }
+i := -1 ;
+j := -1 ;
+x := N ;
+while x &gt;= 0 do
+  i := i + 1 ; 
+  x := x - 100 ;
+done
+x := x + 100 ;
+while x &gt;= 0 do
+  j := j + 1 ; 
+  x := x - 10
+done
+x := x + 10
+{ N = 100i + 10j + x }
+</code></pre>
+
+<h1>Dodatne povezave</h1>
+
+<ul>
+<li>https://proof-tree-builder.github.io/</li>
+<li>https://hoare-logic-tutor.mirdin.com/</li>
+<li>Glej kanal <code>#dokazovanje-pravilnosti</code> na discord-u.</li>
+</ul>
+</span></span></div></div>
+<div class="modified">Zadnja sprememba: torek, 10. marec 2026, 13.48</div>
+</main>
+</body>
+</html>

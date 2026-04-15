@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaje: AVL drevesa</title>
+<style>.hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}.hljs-comment,.hljs-quote{color:#a0a1a7;font-style:italic}.hljs-doctag,.hljs-keyword,.hljs-formula{color:#a626a4}.hljs-section,.hljs-name,.hljs-selector-tag,.hljs-deletion,.hljs-subst{color:#e45649}.hljs-literal{color:#0184bb}.hljs-string,.hljs-regexp,.hljs-addition,.hljs-attribute,.hljs-meta-string{color:#50a14f}.hljs-built_in,.hljs-class .hljs-title{color:#c18401}.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-type,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-number{color:#986801}.hljs-symbol,.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-title{color:#4078f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-link{text-decoration:underline}
+
+:root{--text:#1f2328;--muted:#57606a;--bg:#fff;--link:#0969da;--code-bg:#f6f8fa;--border:#d0d7de}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5;color:var(--text);background:var(--bg)}
+main{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h3{font-size:1.25em;margin-top:24px}
+h4{font-size:1em;margin-top:24px}
+p,ul,ol,pre,table{margin:0 0 16px 0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.2em .4em;border-radius:6px;font-size:85%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:var(--code-bg);padding:16px;border-radius:8px;overflow:auto;font-size:85%;line-height:1.45}
+pre code{background:transparent;padding:0;border-radius:0;font-size:100%;display:block;overflow-x:auto}
+pre code.hljs{padding:0;background:transparent}
+ul,ol{padding-left:2em}
+li{margin:.25em 0}
+blockquote{border-left:4px solid var(--border);padding:0 1em;color:var(--muted);margin:0 0 16px 0}
+table{border-collapse:collapse}
+th,td{border:1px solid var(--border);padding:6px 13px}
+img{max-width:100%}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.modified{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.85em;font-style:italic}
+.box,.no-overflow,.generalbox{display:block}
+/* Moodle span.filter_mathjaxloader_equation may wrap headings */
+.filter_mathjaxloader_equation,.nolink{display:block}
+</style>
+</head>
+<body>
+<main>
+<h1>Vaje: AVL drevesa</h1>
+<div class="box py-3 generalbox center clearfix"><div class="no-overflow"><p>Implementirali bomo <a href="https://en.wikipedia.org/wiki/AVL_tree">AVL drevesa</a> v jeziku OCaml. AVL drevo je dvojiško iskalno drevo, v katerem se za vsako vozlišče višini levega in desnega poddrevesa razlikujeta za največ 1.</p>
+
+<h2>Podatkovni tip AVL drevo</h2>
+
+<p>V splošnem bi želeli v iskalnih drevesih hraniti poljubne podatke, ki jih lahko primerjamo po velikosti. Tu bomo nalogo poenostavili tako, da bomo v drevesih hranili le cela števila (<code>int</code>).</p>
+
+<p>AVL drevo je:</p>
+
+<ul>
+<li>bodisi prazno</li>
+<li>bodisi vozlišče, sestavljeno iz:
+
+<ul>
+<li>vsebine (števila),</li>
+<li>višine drevesa in</li>
+<li>levega ter desnega AVL poddrevesa.</li>
+</ul></li>
+</ul>
+
+<p><strong>Naloga:</strong> definirajte podatkovni tip <code>avltree</code>, ki opisuje AVL drevesa.</p>
+
+<p><strong>Naloga:</strong> definirajte AVL drevo <code>t</code>:</p>
+
+<pre><code>    5
+   / \
+  3   8
+ / \
+1   4
+</code></pre>
+
+<h2>Pametni konstruktor</h2>
+
+<p><strong>Naloga:</strong> definirajte funkcijo <code>height</code>, ki vrne višino drevesa.</p>
+
+<p><strong>Naloga:</strong> definirajte "pametna" konstruktorja <code>leaf: int -&gt; avltree</code> in <code>node: int * avltree * avltree -&gt; avltree</code>, ki sama poskrbita za višino. Prav vam bo prišla funkcija <code>max: int -&gt; int -&gt; int</code>, ki vrne večjega od dveh števil. Primer uporabe:</p>
+
+<pre><code># let six = leaf 6 ;;
+val six : avltree = Node (6, 1, Empty, Empty)
+# let seven = leaf 7 ;;
+val seven : avltree = Node (7, 1, Empty, Empty)
+# let answer = node (42, six, seven) ;;
+val answer : avltree =
+   Node (42, 2, Node (6, 1, Empty, Empty), Node (7, 1, Empty, Empty))
+</code></pre>
+
+<p><strong>Naloga:</strong> s pametnimi konstruktorji definirajte AVL drevo, enako drevesu <code>t</code> iz prejšnje naloge.</p>
+
+<h2>Drevo ⇒ seznam</h2>
+
+<p><strong>Naloga:</strong> definirajte funkcijo <code>toList: avltree -&gt; int list</code>, ki elemente drevesa vrne kot urejen seznam števil. Za združevanje seznamov ima OCaml operator <code>@</code>.</p>
+
+<h2>Iskanje</h2>
+
+<p>Algoritem, ki ugotovi, ali je dani <code>x</code> v drevesu <code>t</code>:</p>
+
+<ul>
+<li>če je <code>t</code> prazno drevo, se <code>x</code> ne pojavi;</li>
+<li>če je <code>t</code> vozlišče z vsebino <code>y</code> in poddrevesoma <code>l</code> ter <code>r</code>:
+
+<ul>
+<li>če je <code>x = y</code>, se <code>x</code> pojavi;</li>
+<li>če je <code>x &lt; y</code>, iščemo v poddrevesu <code>l</code>;</li>
+<li>če je <code>x &gt; y</code>, iščemo v poddrevesu <code>r</code>.</li>
+</ul></li>
+</ul>
+
+<p>Iskanje bomo implementirali s funkcijo <code>search</code>, ki naj deluje tako:</p>
+
+<pre><code># search 5 t ;;
+- : bool = true
+</code></pre>
+
+<p><strong>Naloga</strong> zapišite <em>tip</em> funkcije <code>search</code>, ki ugotovi, ali drevo <code>t</code> vsebuje vrednost <code>x</code>.</p>
+
+<p><strong>Naloga</strong> definirajte funkcijo <code>search</code>. Za primerjanje dveh števil uporabite funkcijo <code>cmp</code> s predavanj, ki vrne vrednost tipa <code>order</code>:</p>
+
+<pre><code>type order = Less | Equal | Greater
+
+let cmp x y =
+  match compare x y with
+  | 0 -&gt; Equal
+  | r when r &lt; 0 -&gt; Less
+  | _ -&gt; Greater
+</code></pre>
+
+<p><strong>Naloga:</strong> preizkusite, ali <code>search</code> deluje.</p>
+
+<h2>Vrtenje in uravnoteženje</h2>
+
+<p>Pri vstavljanju ali brisanju elementov se lahko AVL drevo "pokvari": višina levega in desnega poddrevesa nekega poddrevesa se razlikujeta za več kot 1. To popravimo z vrtenjem (rotacijo) drevesa okrog korena.</p>
+
+<p><strong>Naloga:</strong> definirajte funkcijo <code>imbalance: avltree -&gt; int</code>, ki vrne stopnjo neuravnoteženosti drevesa, tj. razliko med višinama levega in desnega poddrevesa.</p>
+
+<p>V AVL drevesu je lahko neuravnoteženost kateregakoli vozlišča največ 1. Bolj neuravnotežena poddrevesa lahko popravimo z vrtenjem v levo oziroma desno. Vrtenje v levo oziroma desno ponazorimo z diagramom</p>
+
+<pre><code>     x                      y
+   /   \       levo       /   \
+  +     y       ==&gt;      x     +
+ /a\   / \              / \   /c\
+ ---  +   +     &lt;==    +   +  ---
+     /b\ /c\   desno  /a\ /b\
+     --- ---          --- ---
+</code></pre>
+
+<p><strong>Naloga:</strong> definirajte funkciji <code>rotateLeft</code> in <code>rotateRight</code>, ki dano drevo zavrtita na prikazan način. Če to ni mogoče (ker je drevo npr. prazno ali list), naj funkciji vrneta nespremenjeno drevo.</p>
+
+<p>Funkciji <code>rotateLeft</code> in <code>rotateRight</code> uporabimo za uravnoteženje drevesa. Ker bomo drevo uravnotežili po vsakem vstavljanju in brisanju elementa, lahko predpostavimo, da bo neuravnoteženost drevesa kvečjemu 2. Če je neuravnoteženost enaka 0, 1 ali -1, ni treba storiti ničesar. Sicer je neuravnoteženost 2 oziroma -2. V prvem primeru imamo drevo oblike</p>
+
+<pre><code>        x
+      /   \
+     /     \
+    y       +
+   / \     / \
+  /   \   / h \
+ / h+2 \  -----
+/       \
+---------
+</code></pre>
+
+<p>Glede na višini poddreves vozlišča <code>y</code> lahko to drevo uravnotežimo z enim ali dvema vrtenjema. V prvem primeru imamo drevo oblike</p>
+
+<pre><code>         x                       y
+       /   \                   /   \
+      /     \                 /     \
+     y       +               +        x
+   /   \    /h\     ==&gt;     / \     /   \
+  +     +   ---            /h+1\   +     +
+ / \   / \   c             -----  / \   /h\
+/h+1\ /h+1\*                 a   /h+1\  ---
+----- -----                      -----   c
+  a     b (lahko ima višino h)     b
+</code></pre>
+
+<p>ki ga popravimo z enim vrtenjem v desno, kot je prikazano zgoraj.</p>
+
+<p>V drugem primeru imamo drevo oblike</p>
+
+<pre><code>        x                       x                       z
+      /   \                   /   \                   /   \
+     /     \                 /     \                 /     \
+    y       +               z       +               y       x
+  /   \    /h\    ==&gt;     /   \     /h\    ==&gt;     / \     / \
+ +     z   ---           y     +    ---           +   +   +   +
+/h\   / \   c           / \   /h\    c           /h\ /h\ /h\ /h\
+---  +   +             +   +  ---                --- --- --- ---
+ a  /h\ /h\           /h\ /h\  b''                a   b'  b'' c
+    --- ---           --- ---
+     b'  b''           a   b'
+
+(b' ali b'' lahko ima višino h-1)
+</code></pre>
+
+<p>ki ga popravimo tako, da najprej levo poddrevo (s korenom <code>y</code>) zavrtimo v levo, nato pa celotno drevo zavrtimo v desno.</p>
+
+<p>Če je neuravnoteženost drevesa enaka -2, postopamo simetrično.</p>
+
+<p><strong>Naloga:</strong> definirajte funkcijo <code>balance: avltree -&gt; avltree</code>, ki uravnoteži AVL drevo na podlagi opisanih primerov.</p>
+
+<h2>Vstavljanje</h2>
+
+<p>Nov element <code>x</code> vstavimo v AVL drevo <code>t</code> po naslednjem postopku:</p>
+
+<ul>
+<li>če je drevo prazno, vrni list z vsebino <code>x</code>;</li>
+<li>če je <code>t</code> vozlišče z vsebino <code>y</code> in poddrevesoma <code>l</code> ter <code>r</code>:
+
+<ul>
+<li>če je <code>x = y</code>, vrni <code>t</code>;</li>
+<li>če je <code>x &lt; y</code>, vstavi <code>x</code> v <code>l</code> in rezultat uravnoteži;</li>
+<li>če je <code>x &gt; y</code>, vstavi <code>x</code> v <code>r</code> in rezultat uravnoteži.</li>
+</ul></li>
+</ul>
+
+<p><strong>Naloga:</strong> definirajte funkcijo <code>add: int -&gt; avltree -&gt; avltree</code>.</p>
+
+<h2>Brisanje</h2>
+
+<p>Element <code>x</code> iz AVL drevesa izbrišemo tako, da ga zamenjamo z njegovim naslednikom iz poddrevesa v vozlišču <code>x</code>. Pri tem bomo uporabili pomožno funkcijo <code>removeSuccessor</code>, ki vrne novo drevo in naslednika, deluje pa tako:</p>
+
+<ul>
+<li>če je <code>t</code>prazno drevo, sproži izjemo;</li>
+<li>če je <code>t</code> vozlišče z vsebino <code>x</code> in poddrevesoma <code>l</code> ter <code>r</code>:
+
+<ul>
+<li>če je <code>l</code> prazno drevo, vrni <code>(r, x)</code>;</li>
+<li>sicer izbriši naslednika iz <code>l</code>, da dobiš <code>(l', y)</code>, nato pa sestavi in uravnoteži novo drevo s korenom <code>x</code> ter poddrevesoma <code>l'</code> in <code>r</code>.</li>
+</ul></li>
+</ul>
+
+<p><strong>Naloga:</strong> definirajte funkcijo <code>removeSuccessor: avltree -&gt; avltree * int</code>.</p>
+
+<p>Element <code>x</code> lahko potem izbrišemo iz AVL drevesa <code>t</code> po naslednjem postopku:</p>
+
+<ul>
+<li>če je <code>t</code> prazno drevo, vrni <code>t</code>;</li>
+<li>če je <code>t</code> vozlišče z vsebino <code>y</code> in poddrevesoma <code>l</code> in <code>r</code>:
+
+<ul>
+<li>če je <code>x &lt; y</code>, izbriši <code>x</code> iz levega poddrevesa <code>l</code> in rezultat uravnoteži;</li>
+<li>če je <code>x &gt; y</code>, izbriši <code>x</code> iz desnega poddrevesa <code>r</code> in rezultat uravnoteži;</li>
+<li>če je <code>x = y</code>:
+
+<ul>
+<li>če je desno poddrevo prazno, vrni <code>l</code>;</li>
+<li>če je levo poddrevo prazno, vrni <code>r</code>;</li>
+<li>sicer iz <code>r</code> izbriši naslednika, da dobiš <code>(r', y')</code>, nato pa sestavi in uravnoteži novo drevo s korenom <code>y'</code> ter poddrevesoma <code>l</code> in <code>r'</code>.</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<p><strong>Naloga:</strong> definirajte funkcijo <code>remove: int -&gt; avltree -&gt; avltree</code>.</p>
+
+<p><a href="https://www.cs.cornell.edu/courses/cs312/2007fa/lectures/lec14.html">Vir</a>.</p>
+</div></div>
+<div class="modified">Zadnja sprememba: torek, 31. marec 2026, 13.08</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sintaksa in aritmetični izrazi</title>
+<style>.hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}.hljs-comment,.hljs-quote{color:#a0a1a7;font-style:italic}.hljs-doctag,.hljs-keyword,.hljs-formula{color:#a626a4}.hljs-section,.hljs-name,.hljs-selector-tag,.hljs-deletion,.hljs-subst{color:#e45649}.hljs-literal{color:#0184bb}.hljs-string,.hljs-regexp,.hljs-addition,.hljs-attribute,.hljs-meta-string{color:#50a14f}.hljs-built_in,.hljs-class .hljs-title{color:#c18401}.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-type,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-number{color:#986801}.hljs-symbol,.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-title{color:#4078f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-link{text-decoration:underline}
+
+:root{--text:#1f2328;--muted:#57606a;--bg:#fff;--link:#0969da;--code-bg:#f6f8fa;--border:#d0d7de}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5;color:var(--text);background:var(--bg)}
+main{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h3{font-size:1.25em;margin-top:24px}
+h4{font-size:1em;margin-top:24px}
+p,ul,ol,pre,table{margin:0 0 16px 0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.2em .4em;border-radius:6px;font-size:85%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:var(--code-bg);padding:16px;border-radius:8px;overflow:auto;font-size:85%;line-height:1.45}
+pre code{background:transparent;padding:0;border-radius:0;font-size:100%;display:block;overflow-x:auto}
+pre code.hljs{padding:0;background:transparent}
+ul,ol{padding-left:2em}
+li{margin:.25em 0}
+blockquote{border-left:4px solid var(--border);padding:0 1em;color:var(--muted);margin:0 0 16px 0}
+table{border-collapse:collapse}
+th,td{border:1px solid var(--border);padding:6px 13px}
+img{max-width:100%}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.modified{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.85em;font-style:italic}
+.box,.no-overflow,.generalbox{display:block}
+/* Moodle span.filter_mathjaxloader_equation may wrap headings */
+.filter_mathjaxloader_equation,.nolink{display:block}
+</style>
+</head>
+<body>
+<main>
+<h1>Sintaksa in aritmetični izrazi</h1>
+<div class="box py-3 generalbox center clearfix"><div class="no-overflow"><h3>Naloga: iz konkretne v abstraktno sintakso</h3>
+
+<p>Dane izraze, zapisane v konkretni sintaksi, predstavi z abstraktno sintakso kot
+drevo. Pri tem veljajo običajna pravila za prioriteto in asociativnost
+aritmetičnih operacij.</p>
+
+<ol>
+<li><code>x + 7 * 8</code></li>
+<li><code>1 + 2 + 3 + 4</code></li>
+<li><code>a + (b + c) + d</code></li>
+<li><code>10 - 5 - x</code></li>
+<li><code>42</code></li>
+</ol>
+
+<h4>Rešitev</h4>
+
+<pre><code>  +              +           +           -      42
+ / \            / \         / \         / \
+x   *          +   4       +   d       -   x
+   / \        / \         / \         / \
+  7   8      +   3       a   +       10  5
+            / \             / \
+           1   2           b   c
+</code></pre>
+
+<h3>Naloga: iz abstraktne v konkretno sintakso</h3>
+
+<p>Izraze, predstavljene z abstraktno sintakso kot drevo, pretvori v konkretno
+sintakso. Upoštevaj običajna pravila za prioriteto in asociativnost aritmetičnih
+operacij.</p>
+
+<pre><code>   +                 *           42          -
+  / \               / \                     / \
+ 7   *             /   \                   1   2
+    / \           +     *
+   a   0         / \   / \
+                a   b c   d
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<pre><code>7 + a * 0
+(a + b) * (c * d)
+42
+1 - 2
+</code></pre>
+
+<h3>Naloga: kvadriranje</h3>
+
+<p>Dana je abstraktna sintaksa aritmetičnih izrazov:</p>
+
+<pre><code>⟨izraz⟩ ::= ⟨aditivni-izraz⟩ EOF
+
+⟨aditivni-izraz⟩ ::= ⟨multiplikativni-izraz⟩ | ⟨aditivni-izraz⟩ + ⟨multiplikativni-izraz⟩
+
+⟨multiplikativni-izraz⟩ ::= ⟨osnovni-izraz⟩ | ⟨multiplikativni-izraz⟩ * ⟨osnovni-izraz⟩
+
+⟨osnovni-izraz⟩ ::= ⟨spremenljivka⟩ | ⟨številka⟩ | ( ⟨izraz⟩ )
+
+⟨spremenljivka⟩ ::= [a-zA-z]+
+
+⟨številka⟩ ::= -? [0-9]+
+</code></pre>
+
+<p>Jezik želimo razširiti s funkcijo <code>sqr</code>, ki sprejme argument in izračuna njegov
+kvadrat. Na primer, <code>sqr(5)</code> se izračuna v <code>25</code>.</p>
+
+<p><strong>Podnaloga:</strong> Popravite abstraktno sintakso tako, da bo jezik omogočal tudi
+   izraze oblike <code>sqr(e)</code>, kjer je <code>e</code> aritmetični izraz.</p>
+
+<p>Dana je semantika velikih korakov za aritmetične izraze:</p>
+
+<pre><code>—————————-
+η | n ↪ n
+
+
+ η(x) = n
+————————––
+η | x ↪ n
+
+η | e₁ ↪ n₁  η | e₂ ↪ n₂
+————————————————————–———
+ η | e₁ + e₂ ↪ n₁ + n₂
+
+
+η | e₁ ↪ n₁  η | e₂ ↪ n₂
+————————————————————–———
+ η | e₁ - e₂ ↪ n₁ - n₂
+
+
+η | e₁ ↪ n₁  η | e₂ ↪ n₂
+————————————————————–———
+ η | e₁ * e₂ ↪ n₁ · n₂
+</code></pre>
+
+<p><strong>Podnaloga:</strong> Semantiko popravite tako, da se bo vsebovala tudi ustrezno pravilo za <code>sqr</code>.</p>
+
+<h4>Rešitev</h4>
+
+<p>Med pravili za <code>multiplikativni-izraz</code> in <code>osnovni-izraz</code> dodamo pravilo za <code>kvadratni-izraz</code>. Popraviti moramo tudi pravilo za <code>multiplikativni-izraz</code>, tako da zamenjamo sklice na <code>osnovni-izraz</code>.</p>
+
+<pre><code>⟨izraz⟩ ::= ⟨aditivni-izraz⟩ EOF
+⟨aditivni-izraz⟩ ::= ⟨multiplikativni-izraz⟩ | ⟨aditivni-izraz⟩ + ⟨multiplikativni-izraz⟩
+⟨multiplikativni-izraz⟩ ::= ⟨kvadratni-izraz⟩ | ⟨multiplikativni-izraz⟩ * ⟨kvadratni-izraz⟩
+⟨kvadratni-izraz⟩ ::= sqr ( ⟨aditivni-izraz⟩ ) | ⟨osnovni-izraz⟩
+⟨osnovni-izraz⟩ ::= ⟨spremenljivka⟩ | ⟨številka⟩ | ( ⟨izraz⟩ )
+⟨spremenljivka⟩ ::= [a-zA-z]+
+⟨številka⟩ ::= -? [0-9]+
+</code></pre>
+
+<p>Semantiko dopolnimo s pravilom za <code>kvadratni-izraz</code>:</p>
+
+<pre><code>    η | e ↪ n
+—————————————————
+ η | sqr(e) ↪ n²
+</code></pre>
+
+<h3>Naloga: bitni zamik</h3>
+
+<p>Obravnavamo aritmetične izraze iz naloge "Kvadriranje".</p>
+
+<p>Aritmetičnim izrazom dodajte operaciji <code>&gt;&gt;</code> in <code>&lt;&lt;</code>, ki delujeta tako kot v Javi. Se pravi,</p>
+
+<pre><code>a &lt;&lt; k
+</code></pre>
+
+<p>zamakne število <code>a</code> za <code>k</code> mest v levo v dvojiškem zapisu. Podobno</p>
+
+<pre><code>a &gt;&gt; k
+</code></pre>
+
+<p>zamakne število <code>a</code> za <code>k</code> mest v desno v dvojiškem zapisu.</p>
+
+<ol>
+<li><p>Razširite abstraktno sintakso aritmetičnih izrazov, da bo vsebovala <code>&gt;&gt;</code> in <code>&lt;&lt;</code>.</p></li>
+<li><p>Dopolnite semantiko velikih korakov. Premislite, kako naj se izračuna zamik, ko je <code>k</code>
+negativno število.</p></li>
+</ol>
+</div></div>
+<div class="modified">Zadnja sprememba: torek, 3. marec 2026, 22.47</div>
+</main>
+</body>
+</html>

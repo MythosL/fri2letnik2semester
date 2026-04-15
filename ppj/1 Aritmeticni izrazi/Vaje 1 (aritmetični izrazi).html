@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaje 1 (aritmetični izrazi)</title>
+<style>.hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}.hljs-comment,.hljs-quote{color:#a0a1a7;font-style:italic}.hljs-doctag,.hljs-keyword,.hljs-formula{color:#a626a4}.hljs-section,.hljs-name,.hljs-selector-tag,.hljs-deletion,.hljs-subst{color:#e45649}.hljs-literal{color:#0184bb}.hljs-string,.hljs-regexp,.hljs-addition,.hljs-attribute,.hljs-meta-string{color:#50a14f}.hljs-built_in,.hljs-class .hljs-title{color:#c18401}.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-type,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-number{color:#986801}.hljs-symbol,.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-title{color:#4078f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-link{text-decoration:underline}
+
+:root{--text:#1f2328;--muted:#57606a;--bg:#fff;--link:#0969da;--code-bg:#f6f8fa;--border:#d0d7de}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5;color:var(--text);background:var(--bg)}
+main{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h3{font-size:1.25em;margin-top:24px}
+h4{font-size:1em;margin-top:24px}
+p,ul,ol,pre,table{margin:0 0 16px 0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.2em .4em;border-radius:6px;font-size:85%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:var(--code-bg);padding:16px;border-radius:8px;overflow:auto;font-size:85%;line-height:1.45}
+pre code{background:transparent;padding:0;border-radius:0;font-size:100%;display:block;overflow-x:auto}
+pre code.hljs{padding:0;background:transparent}
+ul,ol{padding-left:2em}
+li{margin:.25em 0}
+blockquote{border-left:4px solid var(--border);padding:0 1em;color:var(--muted);margin:0 0 16px 0}
+table{border-collapse:collapse}
+th,td{border:1px solid var(--border);padding:6px 13px}
+img{max-width:100%}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.modified{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.85em;font-style:italic}
+.box,.no-overflow,.generalbox{display:block}
+/* Moodle span.filter_mathjaxloader_equation may wrap headings */
+.filter_mathjaxloader_equation,.nolink{display:block}
+</style>
+</head>
+<body>
+<main>
+<h1>Vaje 1 (aritmetični izrazi)</h1>
+<div class="box py-3 generalbox center clearfix"><div class="no-overflow"><h2>Ponovimo</h2>
+
+<p>Odgovori na spodnja vprašanja, pomagaj si s predavanji:</p>
+
+<ul>
+<li>Kaj je <em>slovnica</em> ali <em>gramatika</em>?</li>
+<li>Kaj pomeni kratica <em>BNF</em>?</li>
+<li>Kaj je <em>razčlenjevalnik</em> (angl. <em>parser</em>)?</li>
+<li>Kakšno vlogo igra <em>lexer</em> pri razčlenjevanju?</li>
+<li>Kaj je <em>abstraktno sintaktično drevo</em> (angl. <em>abstract syntax tree (AST)</em>)?</li>
+<li>Kaj je asociativnost operatorjev? Kaj pomeni, da je operator levo ali desno asociativen? Kaj pomeni, da nima asociativnosti?</li>
+<li>Kaj je <em>operacijska semantika</em>?</li>
+</ul>
+
+<h2>Razčlenjevanje nizov</h2>
+
+<p>Dana je slovnica Boolovih izrazov:</p>
+
+<pre><code class="hljs go">⟨izraz⟩ ::= ⟨disjunktivni⟩ EOF
+⟨disjunktivni⟩ ::= ⟨konjuktivni⟩ | ⟨konjuktivni⟩ ∨ ⟨disjunktivni⟩
+⟨konjuktivni⟩ ::= ⟨negirani⟩ | ⟨konjuktivni⟩ ∧ ⟨konjuktivni⟩
+⟨negirani⟩ ::= ¬ ⟨negirani⟩ | ⟨osnovni⟩
+⟨osnovni⟩ ::= ( ⟨disjunktivni⟩ ) | ⊥ | ⊤ | ⟨spremenljivka⟩
+⟨spremenljivka⟩ ::= [a-zA-Z]+
+</code></pre>
+
+<p>Da asistentu ne odpade roka (pri pisanju na tablo) bo uporabil naslednje okrajšave:</p>
+
+<pre><code class="hljs go">⟨i⟩ ::= ⟨d⟩ EOF
+⟨d⟩ ::= ⟨k⟩ | ⟨k⟩ ∨ ⟨d⟩
+⟨k⟩ ::= ⟨n⟩ | ⟨k⟩ ∧ ⟨k⟩
+⟨n⟩ ::= ¬ ⟨n⟩ | ⟨o⟩
+⟨o⟩ ::= ( ⟨i⟩ ) | ⊥ | ⊤ | ⟨s⟩
+⟨s⟩ ::= [a-zA-Z]+
+</code></pre>
+
+<p>Za vsakega od naslednji izrazov ugotovi, ali ga lahko z zgornjimi pravili razčlenimo in ali lahko to naredimo enolično:</p>
+
+<ol>
+<li><code>0 ∧ 1 ∨ 0</code></li>
+<li><code>(¬a ∧ b) ∨ (c ∧ (¬d ∨ e)) ∧ f</code></li>
+<li><code>¬a ∧ (b ∨) c ∧ (¬d ∨ e) ∧ f</code></li>
+<li><code>¬a ∧ (b ∨ ⊥) ∧ (¬d ∨ e) ∧ ⊤</code></li>
+<li><code>¬a ∧ b ∧ ⊥ ∧ (¬d ∨ e) ∧ ⊤</code></li>
+<li><code>(¬a ∧ b ∨ c ∧ d) ∧ ¬e ∨ f ∧ g ∨ h ∨ (⊤ ∧ (¬(i ∨ j) ∧ k))</code></li>
+<li><code>(¬(a ∧ b) ∨ (c ∧ d)) ∧ (¬e ∨ (f ∧ (g ∨ h))) ∨ (⊤ ∧ (¬(i ∨ j) ∧ k))</code></li>
+</ol>
+
+<h2>Aritmetični izrazi</h2>
+
+<p>Prenesi <a href="https://ucilnica.fri.uni-lj.si/mod/resource/view.php?id=23356">kalkulator za osnovne aritmetične izraze</a>. Kalkulator razume jezik, opisan z naslednjo gramatiko v notaciji BNF:</p>
+
+<pre><code class="hljs go">⟨izraz⟩ ::= ⟨aditivni⟩ EOF
+⟨aditivni⟩ ::= ⟨multiplikativni⟩ | ⟨aditivni⟩ + ⟨multiplikativni⟩
+⟨multiplikativni⟩ ::= ⟨nasprotni⟩ | ⟨multiplikativni⟩ * ⟨nasprotni⟩
+⟨nasprotni⟩ ::= - ⟨nasprotni⟩ | ⟨osnovni⟩
+⟨osnovni⟩ ::= ( ⟨aditivni⟩ ) | ⟨spremenljivka⟩ | ⟨konstanta⟩
+⟨spremenljivka⟩ ::= [a-zA-Z]+
+⟨konstanta⟩ ::= ⟨float⟩
+</code></pre>
+
+<p>Pravilo za <code>⟨float⟩</code> je enako kot zapis nenegativnih konstant tipa <code>float</code> v Javi, na primer <code>3.14</code> (brez znanstvene notacije tj. <code>1.3E-13</code>).</p>
+
+<p>V primerih uporabljamo okolje <code>[x ↦ 42, y ↦ 3.14, z ↦ 1]</code>.</p>
+
+<p><strong>Vprašanja:</strong></p>
+
+<ul>
+<li>Ali lahko iz dane gramatike razbereš asociativnost operatorjev?</li>
+<li>A lahko "pokvariš" dano gramatiko tako, da bodo operatorji "brez asociativnosti"?</li>
+<li>A lahko iz dane gramatike razbereš prioriteto operatorjev/ločil?</li>
+</ul>
+
+<h3>Izpis drevesa abstraktne sintakse</h3>
+
+<p>Po vsakem interpretiranju poleg rezultata izpiši še drevo abstraktne sintakse (AST). Primer:</p>
+
+<pre><code class="hljs yaml"><span class="hljs-attr">Izraz:</span> <span class="hljs-number">1</span> <span class="hljs-string">+</span> <span class="hljs-number">2</span> <span class="hljs-string">*</span> <span class="hljs-number">3</span> <span class="hljs-string">+</span> <span class="hljs-number">-4</span>
+<span class="hljs-attr">AST:</span> <span class="hljs-string">(+</span> <span class="hljs-string">(+</span> <span class="hljs-number">1.0</span> <span class="hljs-string">(*</span> <span class="hljs-number">2.0</span> <span class="hljs-number">3.0</span><span class="hljs-string">))</span> <span class="hljs-string">(-</span> <span class="hljs-number">4.0</span><span class="hljs-string">))</span>
+<span class="hljs-attr">Vrednost:</span> <span class="hljs-number">3.0</span>
+</code></pre>
+
+<h3>Spremembe gramatike</h3>
+
+<p>Razširi gramatiko in popravi parser tako, da bo kalkulator podpiral naslednje operacije. Dodaj tudi ustrezne razrede, izpeljane iz razreda <code>Izraz</code>.</p>
+
+<h4>Minus</h4>
+
+<p>Kalkulatorju dodaj podporo za odštevanje, torej izraze oblike <code>a - b</code>. Primeri:</p>
+
+<pre><code class="hljs yaml"><span class="hljs-attr">Izraz:</span> <span class="hljs-number">80</span> <span class="hljs-bullet">-</span> <span class="hljs-number">38</span>
+<span class="hljs-attr">Vrednost:</span> <span class="hljs-number">42.0</span>
+<span class="hljs-attr">Izraz:</span> <span class="hljs-string">x</span> <span class="hljs-bullet">-</span> <span class="hljs-string">(12</span> <span class="hljs-string">+</span> <span class="hljs-string">y)</span>
+<span class="hljs-attr">Vrednost:</span> <span class="hljs-number">26.86</span>
+<span class="hljs-attr">Izraz:</span> <span class="hljs-number">1</span> <span class="hljs-bullet">-</span> <span class="hljs-number">2</span> <span class="hljs-bullet">-</span> <span class="hljs-number">3</span>
+<span class="hljs-attr">Vrednost:</span> <span class="hljs-number">-4.0</span>
+</code></pre>
+
+<h4>Potenca</h4>
+
+<p>Kalkulatorju dodaj operator <code>^</code> za računanje potence, torej izraze oblike <code>a^b</code>. Za razliko od operatorjev <code>+</code>, <code>-</code>, <code>*</code> in <code>/</code> je potenca desno asociativna: <code>a^b^c = a^(b^c)</code>. Primeri:</p>
+
+<pre><code class="hljs yaml"><span class="hljs-attr">Izraz:</span> <span class="hljs-number">2</span><span class="hljs-string">^4</span>
+<span class="hljs-attr">Vrednost:</span> <span class="hljs-number">16.0</span>
+<span class="hljs-attr">Izraz:</span> <span class="hljs-string">(x-1)^(1+3)</span>
+<span class="hljs-attr">Vrednost:</span> <span class="hljs-number">2825761.0</span>
+<span class="hljs-attr">Izraz:</span> <span class="hljs-number">2</span><span class="hljs-string">^3^3</span>
+<span class="hljs-attr">Vrednost:</span> <span class="hljs-number">134217728.0</span>
+</code></pre>
+
+<p>Namig: implementacija aditivnih in multiplikativnih izrazov uporablja zanko, ker sta <code>+</code> in <code>*</code> levo asociativna. Potenciranje je desno asociativno in ga lahko implementiramo neposredno, brez uporabe zanke. (Kar pomeni: ne kopiraj kode na slepo!)</p>
+
+<h4>Funkcije s členostjo 1</h4>
+
+<p>Navodila bodo podana na vajah. Primeri:</p>
+
+<pre><code class="hljs lua">Izraz: <span class="hljs-number">100</span> + <span class="hljs-built_in">sin</span> x * <span class="hljs-built_in">sin</span> x + <span class="hljs-built_in">cos</span> x * <span class="hljs-built_in">cos</span> x 
+AST: (+ (+ <span class="hljs-number">100.0</span> (* (<span class="hljs-built_in">sin</span> x) (<span class="hljs-built_in">sin</span> x))) (* (<span class="hljs-built_in">cos</span> x) (<span class="hljs-built_in">cos</span> x)))
+Vrednost: <span class="hljs-number">101.0</span>
+Izraz: <span class="hljs-built_in">sin</span> (x + y) - (<span class="hljs-built_in">sin</span> x * <span class="hljs-built_in">cos</span> y + <span class="hljs-built_in">cos</span> x * <span class="hljs-built_in">sin</span> y) 
+AST: (- (<span class="hljs-built_in">sin</span> (+ x y)) (+ (* (<span class="hljs-built_in">sin</span> x) (<span class="hljs-built_in">cos</span> y)) (* (<span class="hljs-built_in">cos</span> x) (<span class="hljs-built_in">sin</span> y))))
+Vrednost: <span class="hljs-number">2.220446049250313E-16</span>
+Izraz: <span class="hljs-built_in">sin</span> x ^ <span class="hljs-number">2</span> + <span class="hljs-built_in">cos</span> x ^ <span class="hljs-number">2</span>
+AST: (+ (^ (<span class="hljs-built_in">sin</span> x) <span class="hljs-number">2.0</span>) (^ (<span class="hljs-built_in">cos</span> x) <span class="hljs-number">2.0</span>))
+Vrednost: <span class="hljs-number">1.0</span>
+</code></pre>
+
+<h3>Poenostavljanje izrazov</h3>
+
+<p>Razredu <code>Izraz</code> dodaj metodo <code>poenostavi</code>, ki izraz prepiše v enostavnejšo obliko. Metoda naj dani izraz poenostavi, kolikor se da. Pri tem uporabi spodnje transformacije, lahko pa se spomniš še kakšne.</p>
+
+<h4>Konstantni podizrazi</h4>
+
+<p>Izraz poenostavi tako, da izračunaš podizraze brez spremenljivk. Primeri:</p>
+
+<pre><code class="hljs yaml"><span class="hljs-attr">Izraz:</span> <span class="hljs-string">x</span> <span class="hljs-string">+</span> <span class="hljs-number">2</span><span class="hljs-string">*4</span>
+<span class="hljs-attr">Poenostavljeno:</span> <span class="hljs-string">(+</span> <span class="hljs-string">x</span> <span class="hljs-number">8.0</span><span class="hljs-string">)</span>
+<span class="hljs-attr">Izraz:</span> <span class="hljs-number">5</span> <span class="hljs-string">+</span> <span class="hljs-number">2</span><span class="hljs-string">*4</span>
+<span class="hljs-attr">Poenostavljeno:</span> <span class="hljs-number">13.0</span>
+<span class="hljs-attr">Izraz:</span> <span class="hljs-number">2</span> <span class="hljs-string">+</span> <span class="hljs-string">(x</span> <span class="hljs-bullet">-</span> <span class="hljs-number">1</span><span class="hljs-string">)</span>
+<span class="hljs-attr">Poenostavljeno:</span> <span class="hljs-string">(+</span> <span class="hljs-number">2.0</span> <span class="hljs-string">(-</span> <span class="hljs-string">x</span> <span class="hljs-number">1.0</span><span class="hljs-string">))</span>
+<span class="hljs-attr">Izraz:</span> <span class="hljs-string">(2</span> <span class="hljs-string">+</span> <span class="hljs-number">3</span><span class="hljs-string">)</span> <span class="hljs-string">*</span> <span class="hljs-string">(x</span> <span class="hljs-string">+</span> <span class="hljs-string">y)</span>
+<span class="hljs-attr">Poenostavljeno:</span> <span class="hljs-string">(*</span> <span class="hljs-number">5.0</span> <span class="hljs-string">(+</span> <span class="hljs-string">x</span> <span class="hljs-string">y))</span>
+</code></pre>
+
+<h4>Množenje in prištevanje 0 in 1</h4>
+
+<p>Poenostavi izraze oblike <code>0 + e</code>, <code>0 * e</code> in <code>1 * e</code> ter njihove obrnjene različice.</p>
+
+<p>Dodatno lahko poenostaviš tudi izraze oblike: <code>e ^ 0</code>, <code>0 ^ e</code>, <code>1 ^ e</code>, <code>e ^ 1</code>, <code>0 - e</code> in <code>e - 0</code>.</p>
+
+<h3>Izpis izrazov</h3>
+
+<p>Dana implementacija razreda <code>Izraz</code> izpiše izrazno drevo kot <a href="https://en.wikipedia.org/wiki/S-expression">S-expression</a>. Razredu dodaj metodo <code>izpis</code>, ki izraz izpiše v bolj običajnem infiksnem zapisu. Primer:</p>
+
+<pre><code class="hljs yaml"><span class="hljs-attr">Izraz:</span> <span class="hljs-number">2</span> <span class="hljs-string">*</span> <span class="hljs-number">42</span> <span class="hljs-bullet">-</span> <span class="hljs-string">(x</span> <span class="hljs-string">+</span> <span class="hljs-number">4</span> <span class="hljs-string">+</span> <span class="hljs-number">5</span><span class="hljs-string">)</span>
+<span class="hljs-attr">Izpis:</span> <span class="hljs-string">((2</span> <span class="hljs-string">*</span> <span class="hljs-number">42</span><span class="hljs-string">)</span> <span class="hljs-bullet">-</span> <span class="hljs-string">((x</span> <span class="hljs-string">+</span> <span class="hljs-number">4</span><span class="hljs-string">)</span> <span class="hljs-string">+</span> <span class="hljs-number">5</span><span class="hljs-string">))</span>
+</code></pre>
+
+<p>★ Metoda naj izpiše izraz brez odvečnih oklepajev. Primer:</p>
+
+<pre><code class="hljs yaml"><span class="hljs-attr">Izraz:</span> <span class="hljs-string">((2</span> <span class="hljs-string">*</span> <span class="hljs-number">42</span><span class="hljs-string">)</span> <span class="hljs-bullet">-</span> <span class="hljs-string">((x</span> <span class="hljs-string">+</span> <span class="hljs-number">4</span><span class="hljs-string">)</span> <span class="hljs-string">+</span> <span class="hljs-number">5</span><span class="hljs-string">))</span>
+<span class="hljs-attr">Izpis:</span> <span class="hljs-number">2</span> <span class="hljs-string">*</span> <span class="hljs-number">42</span> <span class="hljs-bullet">-</span> <span class="hljs-string">(x</span> <span class="hljs-string">+</span> <span class="hljs-number">4</span> <span class="hljs-string">+</span> <span class="hljs-number">5</span><span class="hljs-string">)</span>
+</code></pre>
+</div></div>
+<div class="modified">Zadnja sprememba: petek, 21. februar 2025, 16.22</div>
+</main>
+</body>
+</html>

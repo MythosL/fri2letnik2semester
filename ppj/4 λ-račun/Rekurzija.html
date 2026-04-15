@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rekurzija</title>
+<style>.hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}.hljs-comment,.hljs-quote{color:#a0a1a7;font-style:italic}.hljs-doctag,.hljs-keyword,.hljs-formula{color:#a626a4}.hljs-section,.hljs-name,.hljs-selector-tag,.hljs-deletion,.hljs-subst{color:#e45649}.hljs-literal{color:#0184bb}.hljs-string,.hljs-regexp,.hljs-addition,.hljs-attribute,.hljs-meta-string{color:#50a14f}.hljs-built_in,.hljs-class .hljs-title{color:#c18401}.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-type,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-number{color:#986801}.hljs-symbol,.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-title{color:#4078f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-link{text-decoration:underline}
+
+:root{--text:#1f2328;--muted:#57606a;--bg:#fff;--link:#0969da;--code-bg:#f6f8fa;--border:#d0d7de}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5;color:var(--text);background:var(--bg)}
+main{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h3{font-size:1.25em;margin-top:24px}
+h4{font-size:1em;margin-top:24px}
+p,ul,ol,pre,table{margin:0 0 16px 0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.2em .4em;border-radius:6px;font-size:85%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:var(--code-bg);padding:16px;border-radius:8px;overflow:auto;font-size:85%;line-height:1.45}
+pre code{background:transparent;padding:0;border-radius:0;font-size:100%;display:block;overflow-x:auto}
+pre code.hljs{padding:0;background:transparent}
+ul,ol{padding-left:2em}
+li{margin:.25em 0}
+blockquote{border-left:4px solid var(--border);padding:0 1em;color:var(--muted);margin:0 0 16px 0}
+table{border-collapse:collapse}
+th,td{border:1px solid var(--border);padding:6px 13px}
+img{max-width:100%}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.modified{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.85em;font-style:italic}
+.box,.no-overflow,.generalbox{display:block}
+/* Moodle span.filter_mathjaxloader_equation may wrap headings */
+.filter_mathjaxloader_equation,.nolink{display:block}
+</style>
+</head>
+<body>
+<main>
+<h1>Rekurzija</h1>
+<div class="box py-3 generalbox center clearfix"><div class="no-overflow"><p>Na današnjih vajah bomo spoznali povezavo med zankami in rekurzijo. Naučili se
+bomo tudi nekaj tehnik programiranja z rekurzivnimi funkcijami.</p>
+
+<h2>Iz zanke v rekurzijo</h2>
+
+<h3>Reference in zanke v Ocamlu</h3>
+
+<p>Ko v OCamlu definiramo vrednost <code>x</code> z <code>let x = e₁ in e₂</code> je <code>x</code> <em>nespremenljiva</em>
+vrednost. Če želimo spremenljivo vrednost, moramo narediti <em>referenco</em>:</p>
+
+<ul>
+<li>z <code>ref v</code> naredimo novo referenco z vrednostjo <code>v</code></li>
+<li>z <code>!r</code> ali <code>r.contents</code> dobimo trenutno vrednost reference <code>r</code></li>
+<li>z <code>r := v</code> nastavimo vrednost reference <code>r</code>.</li>
+</ul>
+
+<p>Primer:</p>
+
+<pre><code># let r = ref 5 ;;
+val r : int ref = {contents = 5}
+# !r ;;
+- : int = 5
+# !r + 10 ;;
+- : int = 15
+</code></pre>
+
+<p>Ločiti je treba med referenco <code>r</code> in njeno vrednostjo <code>!r</code>:</p>
+
+<pre><code># r + 10 ;;
+Characters 0-1:
+  r + 10 ;;
+  ^
+Error: This expression has type int ref
+       but an expression was expected of type int
+</code></pre>
+
+<p>Poskusimo, kako se nastavi vrednost reference:</p>
+
+<pre><code># r := 8 ;;
+- : unit = ()
+# !r ;;
+- : int = 8
+# !r + 10 ;;
+- : int = 18
+</code></pre>
+
+<p>OCaml ima tudi zanki <code>while</code> in <code>for</code>. Prvo zapišemo</p>
+
+<pre><code>while ⟨pogoj⟩ do
+  ⋯
+done
+</code></pre>
+
+<p>in drugo</p>
+
+<pre><code>for i = ⟨spodnja-meja⟩ to ⟨zgornja-meja⟩ do
+  ⋯
+done
+</code></pre>
+
+<p>Mi bomo večinoma uprabljali <code>while</code>, nič pa ni narobe, če v svojih rešitvah
+uporabite <code>for</code>. Tu je program ki sešteje prvih <code>42</code> lihih števil:</p>
+
+<pre><code>let vsota_lihih_42 =
+  let v = ref 0 in
+  let i = ref 0 in
+  while !i &lt; 42 do
+    v := !v + (2 * !i + 1) ;
+    i := !i + 1
+  done ;
+  !v
+</code></pre>
+
+<p>Števec <code>i</code> in vsota <code>v</code> sta referenci, ker se njuni vrednosti spreminjata. To je
+običajno, kadar uporabljamo zanke.</p>
+
+<h4>Naloga 1</h4>
+
+<p>Sestavite funkcijo <code>vsota1 : int -&gt; int</code>, ki sprejme <code>n</code> in vrne vsoto <code>1 + 2 +
+⋯ + n</code>. Uporabite reference in zanko <code>while</code>.</p>
+
+<h4>Naloga 2</h4>
+
+<p>Sestavite funkcijo <code>fibonacci1 : int -&gt; int</code>, ki sprejme <code>n</code> in vrne <code>n</code>-to
+Fibonaccijevo število <code>F(n)</code>. Nauk: Fibonaccijevo zaporedje je definirano s
+predpisom:</p>
+
+<pre><code>F(0) = 0
+F(1) = 1
+F(n) = F(n-1) + F(n-2)
+</code></pre>
+
+<p>Uporabite reference in zanko <code>while</code>.</p>
+
+<h2>Rekurzivne funkcije</h2>
+
+<p>Zanko <code>while</code> lahko sistematično pretvorimo v rekurzivno funkcijo. Še prej pa
+malce ponovimo rekurzivne funkcije.</p>
+
+<h4>Naloga 3</h4>
+
+<p>Sestavite funkcijo <code>vsota2 : int -&gt; int</code>, ki sprejme <code>n</code> in vrne vsoto <code>1 + 2 +
+⋯ + n</code>. Funkcija naj bo rekurzivna in naj ne uporablja zank in referenc.</p>
+
+<h4>Naloga 4</h4>
+
+<p>Sestavite funkcijo <code>fibonacci2 : int -&gt; int</code>, ki sprejme <code>n</code> in vrne <code>n</code>-to
+Fibonaccijevo število <code>F(n)</code>. Funkcija naj bo rekurzivna in naj ne uporablja
+zank in referenc.</p>
+
+<h2>Akumulatorji in repna rekurzija</h2>
+
+<p>Pravimo, da je rekurzivni klic funkcije <strong>repni klic</strong> ali <strong>klic na repu</strong>
+(angl. <em>tail recursive</em>), če je rezultat rekurzivnega klica hkrati tudi rezultat
+funkcije. Povedano z drugimi besedami, funkcija se pokliče rekurzivno in nato takoj
+vrne rezultat rekurzivnega klica.</p>
+
+<p>Na primer, v rekurzivni funkciji</p>
+
+<pre><code>let rec f = function
+  | 0 -&gt; 1
+  | n -&gt;
+     if n mod 2 = 0 then
+       f (n / 2)
+     else
+       3 * f (n - 1)
+</code></pre>
+
+<p>je prvi rekurzivni klic repni, ker se izvede <code>f (n / 2)</code> in nato nič drugega,
+drugi rekurzivni klic pa ni repni, ker je treba rezultat rekurzivnega klica <code>f
+(n - 1)</code> še množiti s <code>3</code>.</p>
+
+<p>Mnogi prevajalniki (vendar ne Java in Python) repne klice optimizirajo tako, da
+jih kar pretvorijo v zanko, kar je dosti bolj učinkovito. Pogosto lahko
+rekurzivno funkcijo, ki nima repnih klicev, predelamo v tako, ki ima repne
+klice. Pri tem uporabimo t.i. tehniko <em>akumulatorjev</em>, ki imajo v rekurzivni
+funkciji podobno vlogo kot pomožne spremenljivke v zanki.</p>
+
+<p>Poglejmo, kako bi pretvorili funkcijo <code>vsota_lihih1 n</code>, ki z uporabo zanke
+izračuna vsoto</p>
+
+<pre><code>1 + 3 + 5 + ⋯ + (2 n - 1)
+</code></pre>
+
+<p>v repno rekurzivno funkcijo:</p>
+
+<pre><code>let vsota_lihih1 n =
+  let v = ref 0 in
+  let i = ref 0 in
+  while !i &lt; n do
+    v := !v + (2 * !i + 1) ;
+    i := !i + 1
+  done ;
+  !v
+</code></pre>
+
+<p>Recept je naslednji: ker zanka uporablja dve spremenljivki, namreč <code>v</code> in <code>i</code>,
+bo imela rekurzivna funkcija dva argumenta <code>v</code> in <code>i</code>. Namesto, da bi
+spreminjali vrednosti <code>v</code> in <code>i</code> (česar ne moremo, saj <code>v</code> in <code>i</code> ne bosta več
+referenci), bomo naredili repni rekuzivni klic s popravljenima vrednostma <code>v</code> in
+<code>i</code>:</p>
+
+<pre><code>let vsota_lihih2 n =
+  let rec vsota v i =
+    if i &lt; n then
+      vsota (v + (2 * i + 1)) (i + 1)
+    else
+      v
+  in
+  vsota 0 0
+</code></pre>
+
+<p>Kot vidimo, funkcija <code>vsota_lihih2</code> ni rekurzvina, ampak vsebuje <em>pomožno</em>
+rekurzivno funkcijo <code>vsota</code>, ki igra vlogo zanke. Klic <code>vsota 0 0</code> nato izvede
+<code>vsota</code> z ustreznima začetnima vrednostma <code>v</code> in <code>i</code>.</p>
+
+<h4>Naloga 5</h4>
+
+<p>Po zgornjem receptu predelajte funkcijo <code>vsota1</code> v funkcijo <code>vsota3</code>, ki
+uporablja akumulatorje in repno rekurzijo. Nato primerajte delovanje funkcij
+<code>vsota1</code>, <code>vsota2</code> in <code>vsota3</code>. Ali lahko vse tri izračunajo npr. vsoto prvih
+<code>1000000</code> števil?</p>
+
+<h4>Naloga 6</h4>
+
+<p>Po zgornjem receptu predelajte funkcijo <code>fibonacci1</code> v funkcijo <code>fibonacci3</code>, ki
+uporablja akumulatorje in repno rekurzijo.</p>
+
+<h2>Splošna pretvorba zanke <code>while</code> v rekurzivno funkcijo</h2>
+
+<p>Premislimo še, ali lahko zanko <code>while</code> v splošnem prevedemo v rekurzivno
+funkcijo z akumulatorjem in repnim klicom. Obravnavajmo zanko <code>while</code> oblike
+(zapisali smo jo v namišljenem ukaznem programskem jeziku):</p>
+
+<pre><code>s := s₀
+while p(s) do
+  s := f(s)
+done ;
+return r(s)
+</code></pre>
+
+<p>Tu smo z <code>s</code> označili skupno stanje vseh spremenljivk, ki nastopajo v zanki,
+<code>s₀</code> je začetno stanje, <code>p(s)</code> je pogoj (ki je odvisen od stanja <code>s</code>), zanka
+vsakič trenutno stanje <code>s</code> nastavi na novo stanje <code>f(s)</code>, na koncu pa vrne
+rezultat <code>r(s)</code> (ki je spet odvisen od <code>s</code>). Na primer, zanko, ki izračuna
+<code>n</code>-to Fibonaccijevo število bi zapisali takole:</p>
+
+<pre><code>(a,b,i) := (0,1,0)
+while i &lt; n do
+   (a,b,i) = (b,a+b,i+1)
+done ;
+return a
+</code></pre>
+
+<p>Zgornjo zanko lahko predelamo v rekurzivno funkcijo <code>zanka</code>, ki spreme <code>s₀</code>,
+<code>p</code>, <code>f</code> in <code>r</code> ter izračuna to, kar bi sicer izračunala zanka <code>while</code>:</p>
+
+<pre><code>let zanka s0 p f r =
+  let rec loop s =
+    if p s then loop (f s) else r s
+  in
+  loop s0
+</code></pre>
+
+<p>Tip funkcije <code>zanka</code> je</p>
+
+<pre><code>α → (α → bool) → (α → α) → (α → β) → β
+</code></pre>
+
+<p>kar pomeni, da ima začetno stanje <code>s₀</code> (poljuben) tip <code>α</code>, pogoj <code>p</code> je
+funkcija, ki slika stanje v <code>bool</code>, <code>f</code> je funkcija, ki stanje predela v novo
+stanje, in <code>r</code> je funkcija, ki stanje predela v rezultat (poljubnega) tipa <code>β</code>.</p>
+
+<h4>Naloga 7</h4>
+
+<p>Sestavite funkcijo <code>vsota4</code>, ki izračuna vsoto števil <code>1 + 2 + ⋯ + n</code>, tako da
+uporabite funkcijo <code>zanka</code>. Torej, vaša rešitev mora biti oblike</p>
+
+<pre><code>let vsota4 n = zanka ⋯ ⋯ ⋯ ⋯
+</code></pre>
+
+<p>kjer <code>⋯</code> nadomestite z ustreznimi vrednostmi <code>s₀</code>, <code>p</code>, <code>f</code> in <code>r</code>.</p>
+
+<h4>Naloga 8</h4>
+
+<p>Sestavite funkcijo <code>fibonacci4</code>, ki izračuna <code>n</code>-to Fibonaccijevo, tako da
+uporabite funkcijo <code>zanka</code>. Torej, vaša rešitev mora biti oblike</p>
+
+<pre><code>let fibonacci4 n = zanka ⋯ ⋯ ⋯ ⋯
+</code></pre>
+
+<p>kjer <code>⋯</code> nadomestite z ustreznimi vrednostmi <code>s₀</code>, <code>p</code>, <code>f</code> in <code>r</code>.</p>
+
+<h4>Naloga 9</h4>
+
+<p>Sestavite rekurzivno funkcijo <code>forzanka</code>, ki izračuna to, kar izračuna spodnja koda v namišljenem ukaznem programskem jeziku. Pri tem ne uporabljajte zank ali referenc.</p>
+
+<pre><code>s := s₀
+for i = a to b do
+  s := f(i, s)
+done ;
+return r(s)
+</code></pre>
+
+<p>Enako kot prej tukaj <code>s</code> označuje skupno stanje vseh spremenljivk, ki nastopajo v zanki,
+<code>s₀</code> pa začetno stanje. Zanka za vsak <code>i</code> med vključno <code>a</code> in <code>b</code> pokliče funkcijo <code>f</code>, ki glede <code>i</code> in trenutno stanje <code>s</code> izračuna novo stanje, na koncu pa vrne rezultat <code>r(s)</code>. Na primer, zanko <code>for</code>, ki izračuna vsoto prvih <code>n</code> naravnih števil, bi zapisali takole:</p>
+
+<pre><code>v := 0
+for i = 1 to n do
+    v := v+i
+done ;
+return v
+</code></pre>
+
+<p>Funkcija <code>forzanka</code> naj prejme začetno stanje <code>s₀</code>, spodnjo in zgornjo mejo <code>a</code> oziroma <code>b</code> ter funkciji <code>f</code> in <code>r</code>. Njen tip bo torej</p>
+
+<pre><code>α → int → int → (int → α → α) → (α → β) → β
+</code></pre>
+
+<h4>Naloga 10</h4>
+
+<p>Sestavite funkcijo <code>fibonacci5</code>, ki izračuna <code>n</code>-to Fibonaccijevo, tako da
+uporabite funkcijo <code>forzanka</code>. Torej, vaša rešitev mora biti oblike</p>
+
+<pre><code>let fibonacci5 n = forzanka ⋯ ⋯ ⋯ ⋯ ⋯
+</code></pre>
+
+<p>kjer <code>⋯</code> nadomestite z ustreznimi vrednostmi <code>s₀</code>, <code>a</code>, <code>b</code>, <code>f</code> in <code>r</code>.</p>
+</div></div>
+<div class="modified">Zadnja sprememba: ponedeljek, 6. april 2026, 21.05</div>
+</main>
+</body>
+</html>

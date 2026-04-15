@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dokazovanje pravilnosti</title>
+<style>.hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}.hljs-comment,.hljs-quote{color:#a0a1a7;font-style:italic}.hljs-doctag,.hljs-keyword,.hljs-formula{color:#a626a4}.hljs-section,.hljs-name,.hljs-selector-tag,.hljs-deletion,.hljs-subst{color:#e45649}.hljs-literal{color:#0184bb}.hljs-string,.hljs-regexp,.hljs-addition,.hljs-attribute,.hljs-meta-string{color:#50a14f}.hljs-built_in,.hljs-class .hljs-title{color:#c18401}.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-type,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-number{color:#986801}.hljs-symbol,.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-title{color:#4078f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-link{text-decoration:underline}
+
+:root{--text:#1f2328;--muted:#57606a;--bg:#fff;--link:#0969da;--code-bg:#f6f8fa;--border:#d0d7de}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5;color:var(--text);background:var(--bg)}
+main{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h3{font-size:1.25em;margin-top:24px}
+h4{font-size:1em;margin-top:24px}
+p,ul,ol,pre,table{margin:0 0 16px 0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.2em .4em;border-radius:6px;font-size:85%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:var(--code-bg);padding:16px;border-radius:8px;overflow:auto;font-size:85%;line-height:1.45}
+pre code{background:transparent;padding:0;border-radius:0;font-size:100%;display:block;overflow-x:auto}
+pre code.hljs{padding:0;background:transparent}
+ul,ol{padding-left:2em}
+li{margin:.25em 0}
+blockquote{border-left:4px solid var(--border);padding:0 1em;color:var(--muted);margin:0 0 16px 0}
+table{border-collapse:collapse}
+th,td{border:1px solid var(--border);padding:6px 13px}
+img{max-width:100%}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.modified{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.85em;font-style:italic}
+.box,.no-overflow,.generalbox{display:block}
+/* Moodle span.filter_mathjaxloader_equation may wrap headings */
+.filter_mathjaxloader_equation,.nolink{display:block}
+</style>
+</head>
+<body>
+<main>
+<h1>Dokazovanje pravilnosti</h1>
+<div class="box py-3 generalbox center clearfix"><div class="no-overflow"><h3>Naloga: pravilnost I</h3>
+
+<p>Pojasni, kaj o programu <code>P</code> pove izjava</p>
+
+<pre><code>[ true ]
+P
+[ false ]
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<p>Program <code>P</code> se ustavi, po koncu izvajanja pa velja <code>false</code>. Tak program ne obstaja.</p>
+
+<h3>Naloga: pravilnost II</h3>
+
+<p>Dokaži delno pravilnost programa:</p>
+
+<pre><code>{ x &gt; 2 }
+y := x + 1
+if x &gt; y then
+    z := x*x - y*y
+else
+    z := y*y - x*x
+end
+{ 1 ≤ z }
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<pre><code>{ x &gt; 2 }
+y := x + 1
+{ x &gt; 2 ∧ y = x + 1 }
+if x &gt; y then
+    { x &gt; 2 ∧ y = x + 1 ∧ x &gt; y }
+    z := x*x - y*y
+    { z = x² - y² ∧ x &gt; 2 ∧ y = x + 1 ∧ x &gt; y }  # A
+else
+    { x &gt; 2 ∧ y = x + 1 ∧ x ≤ y }
+    z := y*y - x*x
+    { z = y² - x² ∧ x &gt; 2 ∧ y = x + 1 ∧ x ≤ y }
+    { z = (x+1)² - x² ∧ x &gt; 2 }
+    { z = x² + 2x + 1 - x² ∧ x &gt; 2 }
+    { z = 2x + 1 ∧ x &gt; 2 }
+    { z &gt; 5 ∧ x &gt; 2 }  # B
+end
+# velja: (A ⇒ 1 ≤ z) ∧ (B ⇒ 1 ≤ z), ker A ⇔ false
+{ 1 ≤ z }
+</code></pre>
+
+<h3>Naloga: pravilnost III</h3>
+
+<p>Dokaži delno pravilnost programa:</p>
+
+<pre><code>{ 0 ≤ x ∧ 0 ≤ y ∧ 0 ≤ z }
+if x &lt; y then
+  if x &lt; z then
+    m := x
+  else
+    m := z
+  end
+else
+  if y &lt;= z then
+     m := y
+  else
+     m := z
+  end
+end
+{ 0 ≤ m ≤ x }
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<pre><code>{ 0 ≤ x ∧ 0 ≤ y ∧ 0 ≤ z }
+if x &lt; y then
+  { 0 ≤ x ∧ 0 ≤ y ∧ 0 ≤ z ∧ x &lt; y }
+  if x &lt; z then
+    { 0 ≤ x ∧ 0 ≤ y ∧ 0 ≤ z ∧ x &lt; y ∧ x &lt; z }
+    m := x
+    { 0 ≤ x ∧ 0 ≤ y ∧ 0 ≤ z ∧ x &lt; y ∧ x &lt; z ∧ m = x }
+    { 0 ≤ m ≤ x }
+  else
+    { 0 ≤ x ∧ 0 ≤ y ∧ 0 ≤ z ∧ x &lt; y ∧ x ≥ z }
+    m := z
+    { 0 ≤ x ∧ 0 ≤ y ∧ 0 ≤ m ∧ x &lt; y ∧ x ≥ m }
+    { 0 ≤ m ≤ x }
+  end
+  { 0 ≤ m ≤ x }
+else
+  { 0 ≤ x ∧ 0 ≤ y ∧ 0 ≤ z ∧ x ≥ y }
+  if y &lt;= z then
+    { 0 ≤ x ∧ 0 ≤ y ∧ 0 ≤ z ∧ x ≥ y ∧ y ≤ z }
+    m := y
+    { 0 ≤ x ∧ 0 ≤ m ∧ 0 ≤ z ∧ x ≥ m ∧ m ≤ z }
+    { 0 ≤ m ≤ x }
+  else
+    { 0 ≤ x ∧ 0 ≤ y ∧ 0 ≤ z ∧ x ≥ y ∧ y &gt; z }
+    m := z
+    { 0 ≤ x ∧ 0 ≤ y ∧ 0 ≤ z ∧ x ≥ y ∧ y &gt; z ∧ m = z }
+    { 0 ≤ m ≤ x }
+  end
+  { 0 ≤ m ≤ x }
+end
+{ 0 ≤ m ≤ x }
+</code></pre>
+
+<h3>Naloga: pravilnost IV</h3>
+
+<p>Dokažite delno pravilnost programa:</p>
+
+<pre><code>{ 0 &lt; a ∧ 0 &lt; b }
+k := 0
+while not (a * k = b) do
+  k := k + 1
+done
+{ b = a * k }
+</code></pre>
+
+<p>Ali velja tudi popolna pravilnost? (Se pravi, da <code>{ ⋯ }</code> nadomestimo z <code>[ ⋯ ]</code>.) Odgovor
+utemeljite.</p>
+
+<h4>Rešitev</h4>
+
+<p>Negacija zančnega pogoja je enaka končnemu pogoju: če se zanka izteče, mora veljati končni pogoj.</p>
+
+<pre><code>{ 0 &lt; a ∧ 0 &lt; b }
+k := 0
+while not (a * k = b) do
+  k := k + 1
+done
+{ a * k = b }
+</code></pre>
+
+<p>Popolna pravilnost ne velja; program se zacikla, če <code>a</code> ne deli <code>b</code>.</p>
+
+<h3>Naloga: pravilnost V</h3>
+
+<p>Dokažite popolno pravilnost programa:</p>
+
+<pre><code>[ 0 &lt; a ∧ 0 &lt; b ]
+k := 0
+while a * k &lt; b do
+  k := k + 1
+done
+[ a * (k - 1) &lt; b ≤ a * k ]
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<p>Najprej pokažemo delno pravilnost:</p>
+
+<pre><code>{ 0 &lt; a ∧ 0 &lt; b }
+k := 0
+{ 0 &lt; a ∧ 0 &lt; b ∧ k = 0 }
+{ a * (k - 1) &lt; b }  # zančna invarianta
+while a * k &lt; b do
+  { a * (k - 1) &lt; b ∧ a * k &lt; b }
+  { a * (k + 1 - 2) &lt; b ∧ a * (k + 1 - 1) &lt; b }
+  k := k + 1
+  { a * (k - 2) &lt; b ∧ a * (k - 1) &lt; b }
+  { a * (k - 1) &lt; b }  # po tem, ko se izvede telo zanke, invarianta še zmeraj velja
+done
+{ a * (k - 1) &lt; b ∧ ¬(a * k &lt; b) }
+{ a * (k - 1) &lt; b ≤ a * k }
+</code></pre>
+
+<p>Za popolno pravilnost pokažemo, da se količina <code>d = b - k*a</code> zmanjšuje (in je navzdol omejena z zančnim pogojem):</p>
+
+<pre><code>while a * k &lt; b do
+  { 0 &lt; a ∧ d = b - k*a }
+  { 0 &lt; a ∧ d - a = b - (k+1)*a }
+  k := k + 1
+  { 0 &lt; a ∧ d - a = b - k*a }  # d - a &lt; d
+done
+</code></pre>
+</div></div>
+<div class="modified">Zadnja sprememba: torek, 24. marec 2026, 14.12</div>
+</main>
+</body>
+</html>
