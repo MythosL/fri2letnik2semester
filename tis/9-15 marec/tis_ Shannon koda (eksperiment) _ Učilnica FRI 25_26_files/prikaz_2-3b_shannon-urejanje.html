@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<!-- saved from url=(0117)https://ucilnica.fri.uni-lj.si/pluginfile.php/244343/mod_resource/content/1/prikaz_2-3b_shannon-urejanje.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 2-3b: Shannonova koda (urejanje tabele)</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:var(--sans); background:var(--bg); color:var(--text); }
+    header{ padding:28px 18px 10px; max-width:1100px; margin:0 auto; }
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    canvas{width:100%; height:320px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .val{font-family:var(--mono); font-size:12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left}
+    th{background:rgba(0,0,0,.05)}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer}
+    input[type="text"]{width:100%; border:1px solid rgba(0,0,0,.14); border-radius:8px; padding:5px 7px; font-family:var(--mono); font-size:12px; background:#fff}
+    .warn{color:#b91c1c; font-weight:700}
+    .small{font-size:11px; color:var(--muted)}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 2-3b: Shannonova koda (urejanje tabele)</h1>
+  <p class="lead">Uredi simbole in verjetnosti. Izračun uporablja <code>L<sub>i</sub> = ceil(-log<sub>2</sub> p<sub>i</sub>)</code> in <code>q<sub>i</sub></code>.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Interaktivna konstrukcija Shannonove kode</div>
+        <div class="sub">Vrste lahko dodajaš/odstranjuješ. Simboli se pred izračunom uredijo po padajoči verjetnosti.</div>
+      </div>
+      <span class="tag" id="avg">L̄ = 2.8500 bit/simbol</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Urejanje vira</label>
+          <button id="addRow">Dodaj vrstico</button>
+          <button id="removeRow">Odstrani zadnjo</button>
+          <button id="normalize">Normaliziraj p_i</button>
+          <div class="val" id="entropy">Entropija H(X) = 2.2960 bit/simbol</div>
+          <div class="val" id="sumInfo">Vsota vnesenih p_i =<tcxspan tcxhref="1000000" title="Call  1.000000 via 3CX"> 1.000000</tcxspan></div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Simbol</th><th>p<sub>i</sub> (spremenljivo)</th><th>q<sub>i</sub></th><th>L<sub>i</sub></th><th>Shannonova koda</th>
+          </tr>
+        </thead>
+        <tbody id="tb"><tr>
+        <td><input type="text" data-i="0" data-k="s" value="A"></td>
+        <td><input type="text" data-i="0" data-k="p" value="0.40"></td>
+        <td class="val">0.0000</td>
+        <td class="val">2</td>
+        <td class="val"><code>00</code></td>
+      </tr><tr>
+        <td><input type="text" data-i="1" data-k="s" value="B"></td>
+        <td><input type="text" data-i="1" data-k="p" value="0.20"></td>
+        <td class="val">0.4000</td>
+        <td class="val">3</td>
+        <td class="val"><code>011</code></td>
+      </tr><tr>
+        <td><input type="text" data-i="2" data-k="s" value="C"></td>
+        <td><input type="text" data-i="2" data-k="p" value="0.15"></td>
+        <td class="val">0.6000</td>
+        <td class="val">3</td>
+        <td class="val"><code>100</code></td>
+      </tr><tr>
+        <td><input type="text" data-i="3" data-k="s" value="D"></td>
+        <td><input type="text" data-i="3" data-k="p" value="0.10"></td>
+        <td class="val">0.7500</td>
+        <td class="val">4</td>
+        <td class="val"><code>1100</code></td>
+      </tr><tr>
+        <td><input type="text" data-i="4" data-k="s" value="E"></td>
+        <td><input type="text" data-i="4" data-k="p" value="0.08"></td>
+        <td class="val">0.8500</td>
+        <td class="val">4</td>
+        <td class="val"><code>1101</code></td>
+      </tr><tr>
+        <td><input type="text" data-i="5" data-k="s" value="F"></td>
+        <td><input type="text" data-i="5" data-k="p" value="0.07"></td>
+        <td class="val">0.9300</td>
+        <td class="val">4</td>
+        <td class="val"><code>1110</code></td>
+      </tr></tbody>
+      </table>
+      <div class="small">Opomba: vrstice z neveljavno ali ne-pozitivno verjetnostjo se pri izračunu ignorirajo.</div>
+      <div class="row">
+        <div class="ctl" style="flex:1 1 480px">
+          <label>Verjetnosti in kumulativni intervali [q_i, q_i + p_i)</label>
+          <canvas id="probCanvas" width="980" height="340"></canvas>
+        </div>
+        <div class="ctl" style="flex:1 1 480px">
+          <label>Vizualna konstrukcija Shannonove kode v drevesu</label>
+          <canvas id="treeCanvas" width="980" height="420"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const tb = document.getElementById('tb');
+  const avg = document.getElementById('avg');
+  const entropyEl = document.getElementById('entropy');
+  const sumInfo = document.getElementById('sumInfo');
+  const probCanvas = document.getElementById('probCanvas');
+  const treeCanvas = document.getElementById('treeCanvas');
+  const pctx = probCanvas.getContext('2d');
+  const tctx = treeCanvas.getContext('2d');
+  const log2 = (x) => Math.log(x)/Math.log(2);
+
+  let rows = [
+    {s:'A', p:'0.40'}, {s:'B', p:'0.20'}, {s:'C', p:'0.15'},
+    {s:'D', p:'0.10'}, {s:'E', p:'0.08'}, {s:'F', p:'0.07'}
+  ];
+
+  function fracToBits(x, bits) {
+    let v = x;
+    let out = '';
+    for (let i = 0; i < bits; i++) {
+      v *= 2;
+      if (v >= 1) { out += '1'; v -= 1; } else out += '0';
+    }
+    return out;
+  }
+
+  function nodePos(depth, idx, maxDepth, x0, y0, w, h) {
+    const y = y0 + (maxDepth === 0 ? 0 : depth * (h / maxDepth));
+    const cells = Math.pow(2, depth);
+    const x = x0 + ((idx + 0.5) / cells) * w;
+    return {x, y};
+  }
+
+  function drawProb(data) {
+    const W = probCanvas.width, Hc = probCanvas.height;
+    pctx.clearRect(0, 0, W, Hc);
+    const m = {l:56, r:20, t:22, b:28};
+    const x0 = m.l, y0 = m.t, w = W - m.l - m.r, h = Hc - m.t - m.b;
+
+    pctx.strokeStyle = 'rgba(0,0,0,.35)';
+    pctx.beginPath();
+    pctx.moveTo(x0, y0);
+    pctx.lineTo(x0, y0 + h);
+    pctx.stroke();
+    pctx.fillStyle = '#374151';
+    pctx.font = '12px ui-monospace, Menlo, monospace';
+    pctx.fillText('1', x0 - 18, y0 + 4);
+    pctx.fillText('0', x0 - 18, y0 + h + 4);
+
+    const palette = ['#2563eb','#0ea5e9','#0891b2','#1d4ed8','#3b82f6','#0284c7','#60a5fa','#38bdf8'];
+    data.forEach((d, i) => {
+      const top = y0 + (1 - (d.q + d.p)) * h;
+      const bottom = y0 + (1 - d.q) * h;
+      const bh = Math.max(1, bottom - top);
+      const colW = Math.min(90, Math.max(58, w / Math.max(1, data.length) - 8));
+      const x = x0 + 18 + i * (colW + 8);
+      const maxX = x0 + w - colW;
+      const drawX = Math.min(x, maxX);
+      pctx.fillStyle = palette[i % palette.length];
+      pctx.fillRect(drawX, top, colW, bh);
+      pctx.fillStyle = '#111827';
+      pctx.font = '12px ui-monospace, Menlo, monospace';
+      pctx.fillText(`${d.s}`, drawX + 3, top - 6);
+      pctx.fillText(`q=${d.q.toFixed(3)}`, drawX + 3, bottom + 14);
+      pctx.fillText(`q+p=${(d.q + d.p).toFixed(3)}`, drawX + 3, bottom + 28);
+      pctx.fillText(`p=${d.p.toFixed(3)}`, drawX + 3, top + 16);
+    });
+  }
+
+  function drawTree(data) {
+    const W = treeCanvas.width, Hc = treeCanvas.height;
+    tctx.clearRect(0, 0, W, Hc);
+    if (data.length === 0) return;
+
+    const maxDepth = Math.max(...data.map(d => d.L));
+    const m = {l:20, r:20, t:20, b:30};
+    const x0 = m.l, y0 = m.t, w = W - m.l - m.r, h = Hc - m.t - m.b;
+    const used = new Set(['']);
+
+    data.forEach(d => {
+      for (let i = 1; i <= d.code.length; i++) used.add(d.code.slice(0, i));
+    });
+
+    for (const p of used) {
+      if (p.length === 0) continue;
+      const par = p.slice(0, -1);
+      if (!used.has(par)) continue;
+      const d1 = par.length;
+      const d2 = p.length;
+      const i1 = par.length ? parseInt(par, 2) : 0;
+      const i2 = parseInt(p, 2);
+      const a = nodePos(d1, i1, maxDepth, x0, y0, w, h);
+      const b = nodePos(d2, i2, maxDepth, x0, y0, w, h);
+      tctx.strokeStyle = 'rgba(30,64,175,.35)';
+      tctx.lineWidth = 1.3;
+      tctx.beginPath(); tctx.moveTo(a.x, a.y); tctx.lineTo(b.x, b.y); tctx.stroke();
+    }
+
+    for (const p of used) {
+      const d = p.length;
+      const idx = d ? parseInt(p, 2) : 0;
+      const pos = nodePos(d, idx, maxDepth, x0, y0, w, h);
+      tctx.fillStyle = 'rgba(147,197,253,.52)';
+      tctx.strokeStyle = 'rgba(30,64,175,.45)';
+      tctx.beginPath(); tctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2); tctx.fill(); tctx.stroke();
+    }
+
+    data.forEach(d => {
+      const idx = parseInt(d.code, 2);
+      const leaf = nodePos(d.L, idx, maxDepth, x0, y0, w, h);
+      tctx.fillStyle = '#dc2626';
+      tctx.beginPath(); tctx.arc(leaf.x, leaf.y, 7, 0, Math.PI * 2); tctx.fill();
+      tctx.fillStyle = '#111827';
+      tctx.font = '12px ui-monospace, Menlo, monospace';
+      tctx.fillText(`${d.s}: ${d.code}`, leaf.x + 8, leaf.y - 7);
+    });
+  }
+
+  function computeData() {
+    const valid = rows
+      .map(r => ({ s: (r.s || '').trim() || '?', p: Number(r.p) }))
+      .filter(r => Number.isFinite(r.p) && r.p > 0)
+      .sort((a, b) => b.p - a.p);
+
+    const pSum = valid.reduce((a, r) => a + r.p, 0);
+    if (pSum <= 0) return { data: [], pSum: 0, H: 0, avgL: 0 };
+
+    const normalized = valid.map(r => ({ s: r.s, p: r.p / pSum }));
+    let q = 0;
+    let H = 0;
+    let avgL = 0;
+    const data = normalized.map(r => {
+      const L = Math.ceil(-log2(r.p));
+      const code = fracToBits(q, L);
+      H += -r.p * log2(r.p);
+      avgL += r.p * L;
+      const out = { s: r.s, p: r.p, q, L, code };
+      q += r.p;
+      return out;
+    });
+
+    return { data, pSum, H, avgL };
+  }
+
+  function render() {
+    const { data, pSum, H, avgL } = computeData();
+
+    tb.innerHTML = '';
+    const rowMap = new Map(rows.map((r, i) => [i, r]));
+    rows.forEach((r, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" data-i="${i}" data-k="s" value="${String(r.s ?? '').replace(/"/g, '&quot;')}"/></td>
+        <td><input type="text" data-i="${i}" data-k="p" value="${String(r.p ?? '')}"/></td>
+        <td class="val">-</td>
+        <td class="val">-</td>
+        <td class="val"><code>-</code></td>
+      `;
+      tb.appendChild(tr);
+      rowMap.set(i, tr);
+    });
+
+    const bySymbol = new Map(data.map(d => [d.s, d]));
+    rows.forEach((r, i) => {
+      const tr = rowMap.get(i);
+      const d = bySymbol.get((r.s || '').trim() || '?');
+      if (!d) return;
+      tr.children[2].textContent = d.q.toFixed(4);
+      tr.children[3].textContent = String(d.L);
+      tr.children[4].innerHTML = `<code>${d.code}</code>`;
+    });
+
+    avg.textContent = `L̄ = ${avgL.toFixed(4)} bit/simbol`;
+    entropyEl.textContent = `Entropija H(X) = ${H.toFixed(4)} bit/simbol`;
+    if (Math.abs(pSum - 1) > 1e-9) {
+      sumInfo.innerHTML = `<span class="warn">Vsota vnesenih p_i = ${pSum.toFixed(6)} (interno normalizirano na 1).</span>`;
+    } else {
+      sumInfo.textContent = `Vsota vnesenih p_i = ${pSum.toFixed(6)}`;
+    }
+
+    drawProb(data);
+    drawTree(data);
+
+    tb.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('input', (e) => {
+        const i = Number(e.target.dataset.i);
+        const k = e.target.dataset.k;
+        if (!Number.isInteger(i) || !rows[i]) return;
+        rows[i][k] = e.target.value;
+      });
+    });
+  }
+
+  document.getElementById('addRow').addEventListener('click', () => {
+    rows.push({ s: `S${rows.length + 1}`, p: '0.01' });
+    render();
+  });
+
+  document.getElementById('removeRow').addEventListener('click', () => {
+    if (rows.length > 1) rows.pop();
+    render();
+  });
+
+  document.getElementById('normalize').addEventListener('click', () => {
+    const sum = rows.reduce((acc, r) => {
+      const p = Number(r.p);
+      return acc + (Number.isFinite(p) ? p : 0);
+    }, 0);
+    if (sum === 0) return;
+    rows = rows.map(r => {
+      const p = Number(r.p);
+      if (!Number.isFinite(p)) return { ...r, p: '0' };
+      return { ...r, p: (p / sum).toFixed(6) };
+    });
+    render();
+  });
+
+  render();
+})();
+</script>
+
+
+</body></html>

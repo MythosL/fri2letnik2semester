@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<!-- saved from url=(0113)https://ucilnica.fri.uni-lj.si/pluginfile.php/244702/mod_resource/content/1/prikaz_3-5_lzw-kodiranje.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 3-5: LZW kodiranje</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:var(--sans); background:var(--bg); color:var(--text)}
+    header{padding:28px 18px 10px; max-width:1100px; margin:0 auto}
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .ctl input[type="text"]{width:100%; border:1px solid rgba(0,0,0,.14); border-radius:8px; padding:6px 8px; font-family:var(--mono); font-size:12px; background:#fff}
+    .val,.step,code{font-family:var(--mono); font-size:12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left; vertical-align:top}
+    th{background:rgba(0,0,0,.05)}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer}
+    canvas{width:100%; height:340px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .pill{display:inline-block; margin:2px 6px 2px 0; padding:4px 7px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background:#fff; font-family:var(--mono); font-size:12px}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 3-5: LZW kodiranje</h1>
+  <p class="lead">Pri LZW kodiranju vedno poiscemo najdaljsi niz, ki je ze v slovarju, izpisemo njegovo kodo, nato pa v slovar dodamo <code>najdeni_niz + naslednji_znak</code>.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Najdaljsi niz v slovarju in rast slovarja</div>
+        <div class="sub">Izberi primer ali vnesi svoj niz skupaj z zacetnim slovarjem. Stran po korakih pokaze izpisane kode in nove vnose v slovar.</div>
+      </div>
+      <span class="tag" id="tag">S = ABABABA</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Prednastavljen primer</label>
+          <button id="ex1">ABABABA</button>
+          <button id="ex2">AAAAAA</button>
+          <button id="ex3">ABCABCABC</button>
+        </div>
+        <div class="ctl" data-protonpass-form="">
+          <label>Lastni vhod in zacetni slovar</label>
+          <input id="customSource" type="text" value="ABABABA">
+          <div class="step">Vhodni niz</div>
+          <input id="customAlphabet" type="text" value="A,B" style="margin-top:8px">
+          <div class="step">Zacetni slovar, npr. <code>A,B,C</code></div>
+          <div class="step"><button id="applyCustom">Uporabi svoj primer</button></div>
+        </div>
+        <div class="ctl">
+          <label>KORAK <span class="val" id="kVal">4/4</span></label>
+          <input id="k" type="range" min="0" max="4" step="1" value="0">
+          <div class="step" id="stepText">Korak 4: izpisemo kodo 5 za niz ABA.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl">
+          <label>Aktivni izpis</label>
+          <div class="step" id="phraseText">Najdaljsi niz: ABA</div>
+          <div class="step" id="codeText">Koda: 5</div>
+        </div>
+        <div class="ctl">
+          <label>Nov vnos v slovar</label>
+          <div class="step" id="dictText">Nov vnos: -</div>
+          <div class="step" id="outputText">Izhod: 1, 2, 3, 5</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Korak</th><th>Najdaljsi niz</th><th>Koda</th><th>Nov vnos v slovar</th><th>Preostanek</th></tr>
+        </thead>
+        <tbody id="tb"><tr style="background: transparent;"><td>1</td><td><code>A</code></td><td><code>1</code></td><td><code>3: AB</code></td><td><code>BABABA</code></td></tr><tr style="background: transparent;"><td>2</td><td><code>B</code></td><td><code>2</code></td><td><code>4: BA</code></td><td><code>ABABA</code></td></tr><tr style="background: transparent;"><td>3</td><td><code>AB</code></td><td><code>3</code></td><td><code>5: ABA</code></td><td><code>ABA</code></td></tr><tr style="background: rgba(59, 130, 246, 0.08);"><td>4</td><td><code>ABA</code></td><td><code>5</code></td><td><code>-</code></td><td><code>(konec)</code></td></tr></tbody>
+      </table>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vizualizacija trenutnega najdenega niza in slovarja</label>
+          <canvas id="canvas" width="1000" height="340"></canvas>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Izhodne kode</label>
+          <div id="codes"><span class="pill">1</span><span class="pill">2</span><span class="pill">3</span><span class="pill" style="background: rgb(219, 234, 254);">5</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const examples = [
+    { key:'S = ABABABA', source:'ABABABA', initial:['A','B'], description:'Osnovni primer z dvema simboloma.' },
+    { key:'S = AAAAAA', source:'AAAAAA', initial:['A'], description:'Slovar hitro zraste iz A v AA in AAA.' },
+    { key:'S = ABCABCABC', source:'ABCABCABC', initial:['A','B','C'], description:'Primer s tremi simboli.' }
+  ];
+
+  const k = document.getElementById('k');
+  const kVal = document.getElementById('kVal');
+  const stepText = document.getElementById('stepText');
+  const phraseText = document.getElementById('phraseText');
+  const codeText = document.getElementById('codeText');
+  const dictText = document.getElementById('dictText');
+  const outputText = document.getElementById('outputText');
+  const tag = document.getElementById('tag');
+  const tb = document.getElementById('tb');
+  const codesBox = document.getElementById('codes');
+  const customSource = document.getElementById('customSource');
+  const customAlphabet = document.getElementById('customAlphabet');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  let ex = examples[0];
+  let steps = [];
+
+  function encodeLZW(source, initial) {
+    const dictionary = new Map();
+    initial.forEach((entry, idx) => dictionary.set(entry, idx + 1));
+    let nextCode = initial.length + 1;
+    let pos = 0;
+    const out = [];
+
+    while (pos < source.length) {
+      let w = source[pos];
+      let end = pos + 1;
+      while (end < source.length && dictionary.has(source.slice(pos, end + 1))) {
+        w = source.slice(pos, end + 1);
+        end += 1;
+      }
+
+      const code = dictionary.get(w);
+      const nextChar = source[end] || '';
+      let added = '';
+      let addedCode = null;
+      if (end < source.length) {
+        added = w + nextChar;
+        if (!dictionary.has(added)) {
+          addedCode = nextCode;
+          dictionary.set(added, nextCode);
+          nextCode += 1;
+        }
+      }
+
+      out.push({
+        step: out.length + 1,
+        phrase: w,
+        code,
+        added,
+        addedCode,
+        remainder: source.slice(end),
+        consumedEnd: end,
+        outputCodes: out.map(x => x.code).concat(code),
+        dictionary: Array.from(dictionary.entries()).map(([value, code]) => ({ code, value })).sort((a, b) => a.code - b.code)
+      });
+
+      pos = end;
+    }
+
+    return out;
+  }
+
+  function renderTable(active) {
+    tb.innerHTML = '';
+    steps.forEach((st, idx) => {
+      const tr = document.createElement('tr');
+      tr.style.background = idx + 1 === active ? 'rgba(59,130,246,.08)' : 'transparent';
+      tr.innerHTML = `<td>${st.step}</td><td><code>${idx + 1 <= active ? st.phrase : ''}</code></td><td><code>${idx + 1 <= active ? st.code : ''}</code></td><td><code>${idx + 1 <= active ? (st.addedCode != null ? `${st.addedCode}: ${st.added}` : '-') : ''}</code></td><td><code>${idx + 1 <= active ? st.remainder || '(konec)' : ''}</code></td>`;
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderCodes(active) {
+    codesBox.innerHTML = '';
+    steps.forEach((st, idx) => {
+      const span = document.createElement('span');
+      span.className = 'pill';
+      span.textContent = idx < active ? st.code : '...';
+      if (idx + 1 === active) span.style.background = '#dbeafe';
+      codesBox.appendChild(span);
+    });
+  }
+
+  function draw(active) {
+    const W = canvas.width;
+    ctx.clearRect(0, 0, W, canvas.height);
+    ctx.font = '12px ui-monospace, Menlo, monospace';
+
+    const step = active > 0 ? steps[active - 1] : null;
+    const source = ex.source;
+    const margin = 28;
+    const cellW = Math.min(32, Math.max(20, (W - margin * 2) / Math.max(1, source.length)));
+    const boxH = 34;
+    const y1 = 58;
+
+    ctx.fillStyle = '#111827';
+    ctx.fillText('Vhodni niz', margin, y1 - 14);
+
+    for (let i = 0; i < source.length; i++) {
+      const x = margin + i * cellW;
+      let fill = 'rgba(148,163,184,.16)';
+      if (step) {
+        if (i < step.consumedEnd - step.phrase.length) fill = 'rgba(34,197,94,.18)';
+        if (i >= step.consumedEnd - step.phrase.length && i < step.consumedEnd) fill = 'rgba(59,130,246,.22)';
+      }
+      ctx.fillStyle = fill;
+      ctx.fillRect(x, y1, cellW - 2, boxH);
+      ctx.strokeStyle = 'rgba(0,0,0,.16)';
+      ctx.strokeRect(x, y1, cellW - 2, boxH);
+      ctx.fillStyle = '#111827';
+      ctx.fillText(source[i], x + 8, y1 + 21);
+    }
+
+    if (!step) return;
+
+    ctx.fillStyle = '#111827';
+    ctx.fillText('Slovar po trenutnem koraku', margin, 148);
+    const cols = 4;
+    const cellDW = 220;
+    const cellDH = 32;
+    step.dictionary.forEach((entry, idx) => {
+      const col = idx % cols;
+      const row = Math.floor(idx / cols);
+      const x = margin + col * (cellDW + 10);
+      const y = 162 + row * (cellDH + 8);
+      const isNew = step.addedCode === entry.code;
+      ctx.fillStyle = isNew ? 'rgba(34,197,94,.22)' : 'rgba(148,163,184,.16)';
+      ctx.fillRect(x, y, cellDW, cellDH);
+      ctx.strokeStyle = 'rgba(0,0,0,.14)';
+      ctx.strokeRect(x, y, cellDW, cellDH);
+      ctx.fillStyle = '#111827';
+      ctx.fillText(`${entry.code}: ${entry.value}`, x + 10, y + 20);
+    });
+  }
+
+  function render() {
+    const active = parseInt(k.value, 10);
+    kVal.textContent = `${active}/${steps.length}`;
+    tag.textContent = ex.key;
+    if (active === 0) {
+      stepText.textContent = `${ex.description} Zacetno stanje: v slovarju so le osnovni simboli.`;
+      phraseText.textContent = 'Najdaljsi niz: (prazno)';
+      codeText.textContent = 'Koda: (prazno)';
+      dictText.textContent = `Zacetni slovar: ${ex.initial.map((x, i) => `${i + 1}:${x}`).join(', ')}`;
+      outputText.textContent = 'Izhod: (prazen)';
+    } else {
+      const st = steps[active - 1];
+      stepText.textContent = st.addedCode == null
+        ? `Korak ${active}: izpisemo kodo ${st.code} za niz ${st.phrase}.`
+        : `Korak ${active}: izpisemo ${st.code} za ${st.phrase} in dodamo ${st.addedCode}: ${st.added}.`;
+      phraseText.textContent = `Najdaljsi niz: ${st.phrase}`;
+      codeText.textContent = `Koda: ${st.code}`;
+      dictText.textContent = st.addedCode == null ? 'Nov vnos: -' : `Nov vnos: ${st.addedCode}: ${st.added}`;
+      outputText.textContent = `Izhod: ${steps.slice(0, active).map(x => x.code).join(', ')}`;
+    }
+    renderTable(active);
+    renderCodes(active);
+    draw(active);
+  }
+
+  function applyExample(source, initial, description) {
+    if (!source || !initial.length) return;
+    ex = { key:`S = ${source}`, source, initial, description };
+    customSource.value = source;
+    customAlphabet.value = initial.join(',');
+    steps = encodeLZW(source, initial);
+    k.max = String(steps.length);
+    k.value = String(steps.length);
+    render();
+  }
+
+  k.addEventListener('input', render);
+  document.getElementById('ex1').addEventListener('click', () => applyExample(examples[0].source, examples[0].initial, examples[0].description));
+  document.getElementById('ex2').addEventListener('click', () => applyExample(examples[1].source, examples[1].initial, examples[1].description));
+  document.getElementById('ex3').addEventListener('click', () => applyExample(examples[2].source, examples[2].initial, examples[2].description));
+  document.getElementById('applyCustom').addEventListener('click', () => {
+    const initial = customAlphabet.value.split(',').map(x => x.trim()).filter(Boolean);
+    applyExample(customSource.value, initial, 'Lastni primer: LZW kodiranje z uporabniskim zacetnim slovarjem.');
+  });
+  customSource.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') {
+      const initial = customAlphabet.value.split(',').map(x => x.trim()).filter(Boolean);
+      applyExample(customSource.value, initial, 'Lastni primer: LZW kodiranje z uporabniskim zacetnim slovarjem.');
+    }
+  });
+  customAlphabet.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') {
+      const initial = customAlphabet.value.split(',').map(x => x.trim()).filter(Boolean);
+      applyExample(customSource.value, initial, 'Lastni primer: LZW kodiranje z uporabniskim zacetnim slovarjem.');
+    }
+  });
+
+  applyExample(examples[0].source, examples[0].initial, examples[0].description);
+})();
+</script>
+
+
+</body></html>

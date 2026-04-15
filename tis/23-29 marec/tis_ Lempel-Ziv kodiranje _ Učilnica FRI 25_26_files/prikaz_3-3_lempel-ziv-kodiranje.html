@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<!-- saved from url=(0120)https://ucilnica.fri.uni-lj.si/pluginfile.php/244699/mod_resource/content/1/prikaz_3-3_lempel-ziv-kodiranje.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 3-3: Lempel-Ziv kodiranje</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:var(--sans); background:var(--bg); color:var(--text)}
+    header{padding:28px 18px 10px; max-width:1100px; margin:0 auto}
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .ctl input[type="text"]{width:100%; border:1px solid rgba(0,0,0,.14); border-radius:8px; padding:6px 8px; font-family:var(--mono); font-size:12px; background:#fff}
+    .val,.step,code{font-family:var(--mono); font-size:12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left; vertical-align:top}
+    th{background:rgba(0,0,0,.05)}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer}
+    canvas{width:100%; height:330px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .pill{display:inline-block; margin:2px 6px 2px 0; padding:4px 7px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background:#fff; font-family:var(--mono); font-size:12px}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 3-3: Lempel-Ziv kodiranje</h1>
+  <p class="lead">Pri LZ77 kodiranju v vsakem koraku poiscemo najdaljse ujemanje v ze prebranem delu niza. Nato izpisemo trojico <code>(odmik, dolzina, naslednji simbol)</code>.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Najdaljse ujemanje in nastanek trojic</div>
+        <div class="sub">Izberi primer ali vnesi svoj niz. Stran po korakih prikaze zgodovino, aktivno ujemanje, naslednji simbol in nastali izhod trojic.</div>
+      </div>
+      <span class="tag" id="tag">S = ABABABA</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Prednastavljen primer</label>
+          <button id="ex1">ABABABA</button>
+          <button id="ex2">AAAAAAA</button>
+          <button id="ex3">ABCABCABCABC</button>
+        </div>
+        <div class="ctl" data-protonpass-form="">
+          <label>Lastni vhodni niz</label>
+          <input id="customSource" type="text" value="ABABABA">
+          <div class="step">Vnesi niz brez locil in pritisni Enter ali gumb.</div>
+          <div class="step"><button id="applyCustom">Uporabi svoj primer</button></div>
+        </div>
+        <div class="ctl">
+          <label>KORAK <span class="val" id="kVal">4/4</span></label>
+          <input id="k" type="range" min="0" max="4" step="1" value="0">
+          <div class="step" id="stepText">Korak 4: najdaljse ujemanje je B, zato zapisemo (4, 1, A).</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl">
+          <label>Trenutna trojica</label>
+          <div class="step" id="tripleText">Trojica: (4, 1, A)</div>
+          <div class="step" id="historyText">Zgodovina: ABABA</div>
+        </div>
+        <div class="ctl">
+          <label>Zgrajen izhod</label>
+          <div class="step" id="encodedText">Izhod: (0, 0, A) (0, 0, B) (2, 2, A) (4, 1, A)</div>
+          <div class="step" id="coveredText">Pokriti del niza: ABABABA</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Korak</th><th>Polozaj</th><th>Ujemanje</th><th>Naslednji simbol</th><th>Trojica</th><th>Napredek</th></tr>
+        </thead>
+        <tbody id="tb"><tr style="background: transparent;"><td>1</td><td><code>0</code></td><td><code>-</code></td><td><code>A</code></td><td><code>(0, 0, A)</code></td><td><code>A</code></td></tr><tr style="background: transparent;"><td>2</td><td><code>1</code></td><td><code>-</code></td><td><code>B</code></td><td><code>(0, 0, B)</code></td><td><code>AB</code></td></tr><tr style="background: transparent;"><td>3</td><td><code>2</code></td><td><code>AB</code></td><td><code>A</code></td><td><code>(2, 2, A)</code></td><td><code>ABABA</code></td></tr><tr style="background: rgba(59, 130, 246, 0.08);"><td>4</td><td><code>5</code></td><td><code>B</code></td><td><code>A</code></td><td><code>(4, 1, A)</code></td><td><code>ABABABA</code></td></tr></tbody>
+      </table>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vizualizacija zgodovine, ujemanja in neobdelanega repa</label>
+          <canvas id="canvas" width="1000" height="330"></canvas>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vse trojice</label>
+          <div id="triples"><span class="pill">(0, 0, A)</span><span class="pill">(0, 0, B)</span><span class="pill">(2, 2, A)</span><span class="pill" style="background: rgb(219, 234, 254);">(4, 1, A)</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const examples = [
+    { key:'S = ABABABA', source:'ABABABA', description:'Osnovni primer z vec ponovitvami.' },
+    { key:'S = AAAAAAA', source:'AAAAAAA', description:'Tipicen primer prekrivajocega se ujemanja.' },
+    { key:'S = ABCABCABCABC', source:'ABCABCABCABC', description:'Ponavljajoci se blok ABC.' }
+  ];
+
+  const k = document.getElementById('k');
+  const kVal = document.getElementById('kVal');
+  const stepText = document.getElementById('stepText');
+  const tripleText = document.getElementById('tripleText');
+  const historyText = document.getElementById('historyText');
+  const encodedText = document.getElementById('encodedText');
+  const coveredText = document.getElementById('coveredText');
+  const tag = document.getElementById('tag');
+  const tb = document.getElementById('tb');
+  const triplesBox = document.getElementById('triples');
+  const customSource = document.getElementById('customSource');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  let ex = examples[0];
+  let steps = [];
+
+  function findBestMatch(source, pos) {
+    let bestLen = 0;
+    let bestDist = 0;
+    let bestText = '';
+    for (let start = 0; start < pos; start++) {
+      let len = 0;
+      while (pos + len < source.length - 1 && source[start + len] === source[pos + len]) {
+        len += 1;
+        if (start + len >= pos) break;
+      }
+
+      if (len > bestLen) {
+        bestLen = len;
+        bestDist = pos - start;
+        bestText = source.slice(pos, pos + len);
+      }
+    }
+    return { bestLen, bestDist, bestText };
+  }
+
+  function encodeLZ(source) {
+    const out = [];
+    let pos = 0;
+    while (pos < source.length) {
+      if (pos === source.length - 1) {
+        out.push({
+          step: out.length + 1,
+          pos,
+          history: source.slice(0, pos),
+          match:'', next:source[pos], d:0, l:0,
+          triple:`(0, 0, ${source[pos]})`,
+          covered: source.slice(0, pos + 1)
+        });
+        break;
+      }
+
+      const { bestLen, bestDist, bestText } = findBestMatch(source, pos);
+      const next = source[pos + bestLen];
+      const length = next == null ? Math.max(0, bestLen - 1) : bestLen;
+      const match = source.slice(pos, pos + length);
+      const triple = `(${length > 0 ? bestDist : 0}, ${length}, ${source[pos + length] || ''})`;
+      out.push({
+        step: out.length + 1,
+        pos,
+        history: source.slice(0, pos),
+        match,
+        next: source[pos + length] || '',
+        d: length > 0 ? bestDist : 0,
+        l: length,
+        triple,
+        covered: source.slice(0, pos + length + 1)
+      });
+      pos += length + 1;
+    }
+    return out;
+  }
+
+  function renderTable(active) {
+    tb.innerHTML = '';
+    steps.forEach((st, idx) => {
+      const tr = document.createElement('tr');
+      tr.style.background = idx + 1 === active ? 'rgba(59,130,246,.08)' : 'transparent';
+      tr.innerHTML = `<td>${st.step}</td><td><code>${st.pos}</code></td><td><code>${idx + 1 <= active ? (st.match || '-') : ''}</code></td><td><code>${idx + 1 <= active ? st.next : ''}</code></td><td><code>${idx + 1 <= active ? st.triple : ''}</code></td><td><code>${idx + 1 <= active ? st.covered : ''}</code></td>`;
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderTriples(active) {
+    triplesBox.innerHTML = '';
+    steps.forEach((st, idx) => {
+      const span = document.createElement('span');
+      span.className = 'pill';
+      span.textContent = idx < active ? st.triple : '(...)';
+      if (idx + 1 === active) span.style.background = '#dbeafe';
+      triplesBox.appendChild(span);
+    });
+  }
+
+  function draw(active) {
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.font = '12px ui-monospace, Menlo, monospace';
+
+    const step = active > 0 ? steps[active - 1] : null;
+    const source = ex.source;
+    const margin = 28;
+    const cellW = Math.min(32, Math.max(20, (W - margin * 2) / Math.max(1, source.length)));
+    const boxH = 34;
+    const y1 = 58;
+    const y2 = 156;
+
+    ctx.fillStyle = '#111827';
+    ctx.fillText('Celoten vhodni niz', margin, y1 - 14);
+    ctx.fillText('Pokriti del po aktivnem koraku', margin, y2 - 14);
+
+    function drawString(str, y, stepInfo, lower) {
+      for (let i = 0; i < str.length; i++) {
+        const x = margin + i * cellW;
+        let fill = 'rgba(148,163,184,.16)';
+        if (stepInfo) {
+          if (!lower && i < stepInfo.pos) fill = 'rgba(34,197,94,.18)';
+          if (!lower && i >= stepInfo.pos && i < stepInfo.pos + stepInfo.l) fill = 'rgba(59,130,246,.22)';
+          if (!lower && i === stepInfo.pos + stepInfo.l) fill = 'rgba(245,158,11,.24)';
+          if (lower && i < stepInfo.covered.length) fill = 'rgba(34,197,94,.18)';
+        }
+        ctx.fillStyle = fill;
+        ctx.fillRect(x, y, cellW - 2, boxH);
+        ctx.strokeStyle = 'rgba(0,0,0,.16)';
+        ctx.strokeRect(x, y, cellW - 2, boxH);
+        ctx.fillStyle = '#111827';
+        ctx.fillText(str[i], x + 8, y + 21);
+      }
+    }
+
+    drawString(source, y1, step, false);
+    drawString(source, y2, step, true);
+
+    if (step) {
+      ctx.fillStyle = '#111827';
+      ctx.fillText(`Aktivni korak: zgodovina = ${step.history || '(prazno)'}`, margin, 255);
+      ctx.fillText(`Najdeno ujemanje = ${step.match || '(ni ujemanja)'}, naslednji simbol = ${step.next}`, margin, 277);
+      ctx.fillText(`Trojica = ${step.triple}`, margin, 299);
+    }
+  }
+
+  function render() {
+    const active = parseInt(k.value, 10);
+    kVal.textContent = `${active}/${steps.length}`;
+    tag.textContent = ex.key;
+    if (active === 0) {
+      stepText.textContent = `${ex.description} Zacetno stanje: se brez izracunane trojice.`;
+      tripleText.textContent = 'Trojica: (prazno)';
+      historyText.textContent = 'Zgodovina: (prazno)';
+      encodedText.textContent = 'Izhod: (prazen)';
+      coveredText.textContent = 'Pokriti del niza: (prazno)';
+    } else {
+      const st = steps[active - 1];
+      stepText.textContent = st.l === 0
+        ? `Korak ${active}: ni uporabnega ujemanja, zato zapisemo dobesedni simbol ${st.next}.`
+        : `Korak ${active}: najdaljse ujemanje je ${st.match}, zato zapisemo ${st.triple}.`;
+      tripleText.textContent = `Trojica: ${st.triple}`;
+      historyText.textContent = `Zgodovina: ${st.history || '(prazno)'}`;
+      encodedText.textContent = `Izhod: ${steps.slice(0, active).map(x => x.triple).join(' ')}`;
+      coveredText.textContent = `Pokriti del niza: ${st.covered}`;
+    }
+    renderTable(active);
+    renderTriples(active);
+    draw(active);
+  }
+
+  function applySource(source, description) {
+    if (!source) return;
+    ex = {
+      key: `S = ${source}`,
+      source,
+      description
+    };
+    customSource.value = source;
+    steps = encodeLZ(source);
+    k.max = String(steps.length);
+    k.value = String(steps.length);
+    render();
+  }
+
+  k.addEventListener('input', render);
+  document.getElementById('ex1').addEventListener('click', () => applySource(examples[0].source, examples[0].description));
+  document.getElementById('ex2').addEventListener('click', () => applySource(examples[1].source, examples[1].description));
+  document.getElementById('ex3').addEventListener('click', () => applySource(examples[2].source, examples[2].description));
+  document.getElementById('applyCustom').addEventListener('click', () => applySource(customSource.value, 'Lastni primer: trojice nastanejo z iskanjem najdaljsega ujemanja v zgodovini.'));
+  customSource.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') applySource(customSource.value, 'Lastni primer: trojice nastanejo z iskanjem najdaljsega ujemanja v zgodovini.');
+  });
+
+  applySource(examples[0].source, examples[0].description);
+})();
+</script>
+
+
+</body></html>

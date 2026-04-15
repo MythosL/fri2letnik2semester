@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<!-- saved from url=(0115)https://ucilnica.fri.uni-lj.si/pluginfile.php/244698/mod_resource/content/1/prikaz_3-2_rle-dekodiranje.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 3-2: RLE dekodiranje</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:var(--sans); background:var(--bg); color:var(--text)}
+    header{padding:28px 18px 10px; max-width:1100px; margin:0 auto}
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .ctl input[type="text"]{width:100%; border:1px solid rgba(0,0,0,.14); border-radius:8px; padding:6px 8px; font-family:var(--mono); font-size:12px; background:#fff}
+    .val,.step,code{font-family:var(--mono); font-size:12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left; vertical-align:top}
+    th{background:rgba(0,0,0,.05)}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer}
+    canvas{width:100%; height:300px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .pill{display:inline-block; margin:2px 6px 2px 0; padding:4px 7px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background:#fff; font-family:var(--mono); font-size:12px}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 3-2: RLE dekodiranje</h1>
+  <p class="lead">RLE razdeli vhodni niz na teke enakih simbolov. Vsak tek kodiramo s parom <code>(dolzina, simbol)</code>, pri dekodiranju pa simbol ponovimo natanko toliko krat.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Kodiranje in dekodiranje po korakih</div>
+        <div class="sub">Izberi primer iz PDF-ja in spremljaj razbitje na teke, zapis RLE ter sprotno rekonstrukcijo niza.</div>
+      </div>
+      <span class="tag" id="tag">S = AAAABBBCCDAA</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Prednastavljen primer</label>
+          <button id="ex1">Dolgi teki</button>
+          <button id="ex2">Binarni niz</button>
+          <button id="ex3">Slab primer za RLE</button>
+        </div>
+        <div class="ctl" data-protonpass-form="">
+          <label>Lastni vhodni niz</label>
+          <input id="customSource" type="text" value="AAABBCCCC">
+          <div class="step">Vnesi poljuben niz in pritisni Enter ali gumb.</div>
+          <div class="step"><button id="applyCustom">Uporabi svoj primer</button></div>
+        </div>
+        <div class="ctl">
+          <label>KORAK <span class="val" id="kVal">5/5</span></label>
+          <input id="k" type="range" min="0" max="5" step="1" value="0">
+          <div class="step" id="stepText">Korak 5: tek AA zapisemo kot (2, A).</div>
+        </div>
+        <div class="ctl">
+          <label>Trenutni zapis</label>
+          <div class="step" id="encodedText">RLE zapis: (4, A)(3, B)(2, C)(1, D)(2, A)</div>
+          <div class="step" id="decodedText">Dekodirano: AAAABBBCCDAA</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Korak</th><th>Tek v vhodu</th><th>Par RLE</th><th>Dekodirani niz</th></tr>
+        </thead>
+        <tbody id="tb"><tr style="background: transparent;"><td>1</td><td><code>AAAA</code></td><td><code>(4, A)</code></td><td><code>AAAA</code></td></tr><tr style="background: transparent;"><td>2</td><td><code>BBB</code></td><td><code>(3, B)</code></td><td><code>AAAABBB</code></td></tr><tr style="background: transparent;"><td>3</td><td><code>CC</code></td><td><code>(2, C)</code></td><td><code>AAAABBBCC</code></td></tr><tr style="background: transparent;"><td>4</td><td><code>D</code></td><td><code>(1, D)</code></td><td><code>AAAABBBCCD</code></td></tr><tr style="background: rgba(59, 130, 246, 0.08);"><td>5</td><td><code>AA</code></td><td><code>(2, A)</code></td><td><code>AAAABBBCCDAA</code></td></tr></tbody>
+      </table>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vizualizacija tekov in aktivnega koraka</label>
+          <canvas id="canvas" width="1000" height="300"></canvas>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vsi pari za trenutni primer</label>
+          <div id="pairs"><span class="pill" style="background: rgb(219, 234, 254);">(4, A)</span><span class="pill" style="background: rgb(220, 252, 231);">(3, B)</span><span class="pill" style="background: rgb(254, 243, 199);">(2, C)</span><span class="pill" style="background: rgb(254, 226, 226);">(1, D)</span><span class="pill" style="background: rgb(237, 233, 254);">(2, A)</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const examples = [
+    {
+      key: 'S = AAAABBBCCDAA',
+      source: 'AAAABBBCCDAA',
+      description: 'Primer 1: dolgi teki enakih simbolov.',
+      runs: [
+        {text:'AAAA', count:4, symbol:'A'},
+        {text:'BBB', count:3, symbol:'B'},
+        {text:'CC', count:2, symbol:'C'},
+        {text:'D', count:1, symbol:'D'},
+        {text:'AA', count:2, symbol:'A'}
+      ]
+    },
+    {
+      key: 'S = 0000001111000000',
+      source: '0000001111000000',
+      description: 'Primer 2: binarni niz z zelo dolgimi ponovitvami.',
+      runs: [
+        {text:'000000', count:6, symbol:'0'},
+        {text:'1111', count:4, symbol:'1'},
+        {text:'000000', count:6, symbol:'0'}
+      ]
+    },
+    {
+      key: 'S = ABABABCD',
+      source: 'ABABABCD',
+      description: 'Primer 3: simboli se prehitro menjajo, zato RLE ni posebej ucinkovit.',
+      runs: [
+        {text:'A', count:1, symbol:'A'},
+        {text:'B', count:1, symbol:'B'},
+        {text:'A', count:1, symbol:'A'},
+        {text:'B', count:1, symbol:'B'},
+        {text:'A', count:1, symbol:'A'},
+        {text:'B', count:1, symbol:'B'},
+        {text:'C', count:1, symbol:'C'},
+        {text:'D', count:1, symbol:'D'}
+      ]
+    }
+  ];
+
+  const colors = ['#dbeafe','#dcfce7','#fef3c7','#fee2e2','#ede9fe','#cffafe','#fde68a','#fecaca'];
+  const k = document.getElementById('k');
+  const kVal = document.getElementById('kVal');
+  const stepText = document.getElementById('stepText');
+  const encodedText = document.getElementById('encodedText');
+  const decodedText = document.getElementById('decodedText');
+  const tag = document.getElementById('tag');
+  const tb = document.getElementById('tb');
+  const pairs = document.getElementById('pairs');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const customSource = document.getElementById('customSource');
+
+  let ex = examples[0];
+  let steps = [];
+
+  function runsFromSource(source) {
+    if (!source) return [];
+    const runs = [];
+    let current = source[0];
+    let count = 1;
+    for (let i = 1; i < source.length; i++) {
+      if (source[i] === current) {
+        count += 1;
+      } else {
+        runs.push({ text: current.repeat(count), count, symbol: current });
+        current = source[i];
+        count = 1;
+      }
+    }
+    runs.push({ text: current.repeat(count), count, symbol: current });
+    return runs;
+  }
+
+  function buildSteps(example) {
+    let decoded = '';
+    return example.runs.map((run, idx) => {
+      decoded += run.text;
+      return {
+        step: idx + 1,
+        run,
+        pair: `(${run.count}, ${run.symbol})`,
+        decoded
+      };
+    });
+  }
+
+  function renderTable(active) {
+    tb.innerHTML = '';
+    steps.forEach((st, idx) => {
+      const tr = document.createElement('tr');
+      tr.style.background = idx + 1 === active ? 'rgba(59,130,246,.08)' : 'transparent';
+      tr.innerHTML = `<td>${st.step}</td><td><code>${st.run.text}</code></td><td><code>${st.pair}</code></td><td><code>${idx + 1 <= active ? st.decoded : ''}</code></td>`;
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderPairs() {
+    pairs.innerHTML = '';
+    ex.runs.forEach((run, idx) => {
+      const span = document.createElement('span');
+      span.className = 'pill';
+      span.textContent = `(${run.count}, ${run.symbol})`;
+      span.style.background = colors[idx % colors.length];
+      pairs.appendChild(span);
+    });
+  }
+
+  function draw(active) {
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.font = '12px ui-monospace, Menlo, monospace';
+
+    const margin = 36;
+    const total = ex.source.length;
+    const topY = 56;
+    const barH = 36;
+    const gap = 88;
+    const barW = W - margin * 2;
+
+    function drawBar(y, title, limit) {
+      ctx.fillStyle = '#111827';
+      ctx.fillText(title, margin, y - 12);
+      let offset = 0;
+      ex.runs.forEach((run, idx) => {
+        const x = margin + (offset / total) * barW;
+        const w = (run.text.length / total) * barW;
+        const isActive = idx < limit;
+        ctx.fillStyle = isActive ? colors[idx % colors.length] : 'rgba(148,163,184,.18)';
+        ctx.fillRect(x, y, w, barH);
+        ctx.strokeStyle = idx + 1 === limit ? 'rgba(30,64,175,.70)' : 'rgba(0,0,0,.18)';
+        ctx.lineWidth = idx + 1 === limit ? 2 : 1;
+        ctx.strokeRect(x, y, w, barH);
+        ctx.fillStyle = '#111827';
+        ctx.fillText(run.text, x + 6, y + 22);
+        offset += run.text.length;
+      });
+    }
+
+    drawBar(topY, 'Vhodni teki', ex.runs.length);
+    drawBar(topY + gap, 'Dekodirani del po trenutnem koraku', active);
+
+    if (active > 0) {
+      const st = steps[active - 1];
+      ctx.fillStyle = '#111827';
+      ctx.fillText(`Aktivni par: ${st.pair}`, margin, topY + gap + barH + 32);
+      ctx.fillText(`Pomen: simbol ${st.run.symbol} ponovimo ${st.run.count}-krat.`, margin, topY + gap + barH + 50);
+    }
+  }
+
+  function render() {
+    const active = parseInt(k.value, 10);
+    kVal.textContent = `${active}/${steps.length}`;
+    tag.textContent = ex.key;
+    stepText.textContent = active === 0
+      ? `${ex.description} Zacetno stanje: se brez izpisanih parov.`
+      : `Korak ${active}: tek ${steps[active - 1].run.text} zapisemo kot ${steps[active - 1].pair}.`;
+    encodedText.textContent = active === 0
+      ? 'RLE zapis: (prazen)'
+      : `RLE zapis: ${steps.slice(0, active).map(st => st.pair).join('')}`;
+    decodedText.textContent = active === 0
+      ? 'Dekodiranje: (prazen niz)'
+      : `Dekodirano: ${steps[active - 1].decoded}`;
+    renderTable(active);
+    renderPairs();
+    draw(active);
+  }
+
+  function setExample(index) {
+    ex = examples[index];
+    customSource.value = ex.source;
+    steps = buildSteps(ex);
+    k.max = String(steps.length);
+    k.value = String(steps.length);
+    render();
+  }
+
+  function applyCustomExample() {
+    const source = customSource.value;
+    if (!source) return;
+    ex = {
+      key: `S = ${source}`,
+      source,
+      description: 'Lastni primer: teki so izracunani iz uporabniskega vhoda.',
+      runs: runsFromSource(source)
+    };
+    steps = buildSteps(ex);
+    k.max = String(steps.length);
+    k.value = String(steps.length);
+    render();
+  }
+
+  k.addEventListener('input', render);
+  document.getElementById('ex1').addEventListener('click', () => setExample(0));
+  document.getElementById('ex2').addEventListener('click', () => setExample(1));
+  document.getElementById('ex3').addEventListener('click', () => setExample(2));
+  document.getElementById('applyCustom').addEventListener('click', applyCustomExample);
+  customSource.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') applyCustomExample();
+  });
+
+  setExample(0);
+})();
+</script>
+
+
+</body></html>

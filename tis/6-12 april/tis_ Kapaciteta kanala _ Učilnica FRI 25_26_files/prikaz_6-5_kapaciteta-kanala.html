@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<!-- saved from url=(0117)https://ucilnica.fri.uni-lj.si/pluginfile.php/244881/mod_resource/content/1/prikaz_6-5_kapaciteta-kanala.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prikaz 6-5: Kapaciteta kanala</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:var(--sans); background:var(--bg); color:var(--text)}
+    header{padding:28px 18px 10px; max-width:1180px; margin:0 auto}
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1180px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .val,.step,code{font-family:var(--mono); font-size:12px}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer; margin:0 6px 6px 0}
+    .compute-btn{background:#fee2e2; border-color:#fca5a5}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left; vertical-align:top}
+    th{background:rgba(0,0,0,.05)}
+    .matrix input{width:84px; border:1px solid rgba(0,0,0,.14); border-radius:8px; padding:6px 7px; font-family:var(--mono); font-size:12px; background:#fff}
+    .matrix th,.matrix td{text-align:center}
+    .summary-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:10px; margin-top:12px}
+    .box{background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:12px}
+    .box h3{margin:0 0 8px 0; font-size:13px}
+    .pill{display:inline-block; margin:2px 6px 2px 0; padding:4px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background:#fff; font-family:var(--mono); font-size:12px}
+    .warn{color:#92400e}
+    .capacity-mark{display:inline-block; padding:3px 8px; border-radius:8px; background:#dbeafe; border:1px solid #93c5fd; font-family:var(--mono); font-size:12px}
+    .bar-chart{display:flex; flex-direction:column; gap:8px}
+    .bar-row{display:grid; grid-template-columns:48px 1fr 72px; gap:8px; align-items:center}
+    .bar-label,.bar-value{font-family:var(--mono); font-size:12px}
+    .bar-track{height:24px; border-radius:8px; background:rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.10); overflow:hidden}
+    .bar-fill{height:100%; background:linear-gradient(90deg, #93c5fd, #60a5fa)}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Prikaz 6-5: Kapaciteta kanala</h1>
+  <p class="lead">Podaj kanal s tabelo pogojnih verjetnosti <code>p(y|x)</code>, stran pa izračuna vhodno porazdelitev, ki maksimizira medsebojno informacijo. Dobimo kapaciteto <code>C</code>, optimalni <code>p(x)</code> in pripadajoči <code>p(y)</code>.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Poljuben diskretni kanal in njegova kapaciteta</div>
+        <div class="sub">Spremeni število vhodov in izhodov, uredi matriko <code>p(y|x)</code>, po potrebi vrstice normaliziraj, nato izračunaj kapaciteto. Vsaka vrstica mora imeti vsoto 1.</div>
+      </div>
+      <span class="tag" id="tag">Optimizacija p(x)</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Število vhodnih simbolov <span class="val" id="inVal">3</span></label>
+          <input id="nIn" type="range" min="2" max="6" step="1" value="3">
+        </div>
+        <div class="ctl">
+          <label>Število izhodnih simbolov <span class="val" id="outVal">3</span></label>
+          <input id="nOut" type="range" min="2" max="6" step="1" value="3">
+        </div>
+        <div class="ctl">
+          <label>Orodja za matriko</label>
+          <button id="presetNoiseless">Brezšumni</button>
+          <button id="presetBsc">BSC</button>
+          <button id="presetErasure">Erasure</button>
+          <button id="presetZ">Z-kanal</button>
+          <br>
+          <button id="uniformBtn">Uniformne vrstice</button>
+          <button id="randomBtn">Naključne vrstice</button>
+          <button id="normalizeBtn">Normaliziraj vrstice</button>
+          <button id="computeBtn" class="compute-btn">Izračunaj kapaciteto</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Matrika kanala <code>p(y|x)</code></label>
+          <div class="step" id="status">Vsaka vrstica trenutno predstavlja veljavno porazdelitev p(y|x).</div>
+          <table class="matrix">
+            <thead id="matrixHead"><tr><th></th><th><code>Y=0</code></th><th><code>Y=1</code></th><th><code>Y=2</code></th><th>Vsota vrstice</th></tr></thead>
+            <tbody id="matrixBody"><tr><th><code>X=0</code></th><td><input id="cell-0-0" type="number" min="0" max="1" step="0.001" value="0.800000"></td><td><input id="cell-0-1" type="number" min="0" max="1" step="0.001" value="0.150000"></td><td><input id="cell-0-2" type="number" min="0" max="1" step="0.001" value="0.050000"></td><td><code class="">1.000000</code></td></tr><tr><th><code>X=1</code></th><td><input id="cell-1-0" type="number" min="0" max="1" step="0.001" value="0.150000"></td><td><input id="cell-1-1" type="number" min="0" max="1" step="0.001" value="0.700000"></td><td><input id="cell-1-2" type="number" min="0" max="1" step="0.001" value="0.150000"></td><td><code class="">1.000000</code></td></tr><tr><th><code>X=2</code></th><td><input id="cell-2-0" type="number" min="0" max="1" step="0.001" value="0.050000"></td><td><input id="cell-2-1" type="number" min="0" max="1" step="0.001" value="0.200000"></td><td><input id="cell-2-2" type="number" min="0" max="1" step="0.001" value="0.750000"></td><td><code class="">1.000000</code></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="box">
+          <h3>Kapaciteta</h3>
+          <div class="step" id="capacityText">Kapaciteta kanala je <span class="capacity-mark">C =<tcxspan tcxhref="0574294" title="Call  0.574294  via 3CX"> 0.574294 </tcxspan>bit</span> na uporabo kanala.</div>
+          <div class="step" id="iterationsText">Izračun se je ustalil po 38 iteracijah.</div>
+        </div>
+        <div class="box">
+          <h3>Optimalna vhodna porazdelitev</h3>
+          <div id="pxBox" class="bar-chart"><div class="bar-row"><div class="bar-label">X0</div><div class="bar-track"><div class="bar-fill" style="width:35.503995860777124%"></div></div><div class="bar-value"><tcxspan tcxhref="0355040" title="Call 0.355040 via 3CX">0.355040</tcxspan></div></div><div class="bar-row"><div class="bar-label">X1</div><div class="bar-track"><div class="bar-fill" style="width:29.80767615575689%"></div></div><div class="bar-value"><tcxspan tcxhref="0298077" title="Call 0.298077 via 3CX">0.298077</tcxspan></div></div><div class="bar-row"><div class="bar-label">X2</div><div class="bar-track"><div class="bar-fill" style="width:34.68832798346599%"></div></div><div class="bar-value"><tcxspan tcxhref="0346883" title="Call 0.346883 via 3CX">0.346883</tcxspan></div></div></div>
+        </div>
+        <div class="box">
+          <h3>Izhodna porazdelitev pri optimumu</h3>
+          <div id="pyBox" class="bar-chart"><div class="bar-row"><div class="bar-label">Y0</div><div class="bar-track"><div class="bar-fill" style="width:34.60876451115853%"></div></div><div class="bar-value"><tcxspan tcxhref="0346088" title="Call 0.346088 via 3CX">0.346088</tcxspan></div></div><div class="bar-row"><div class="bar-label">Y1</div><div class="bar-track"><div class="bar-fill" style="width:33.12863828483959%"></div></div><div class="bar-value"><tcxspan tcxhref="0331286" title="Call 0.331286 via 3CX">0.331286</tcxspan></div></div><div class="bar-row"><div class="bar-label">Y2</div><div class="bar-track"><div class="bar-fill" style="width:32.26259720400188%"></div></div><div class="bar-value"><tcxspan tcxhref="0322626" title="Call 0.322626 via 3CX">0.322626</tcxspan></div></div></div>
+        </div>
+        <div class="box">
+          <h3>Povzetek</h3>
+          <div class="step" id="summaryText">Optimalna vhodna porazdelitev ni nujno uniformna. Kanal favorizira tiste vhodne simbole, ki se na izhodu bolje ločijo.</div>
+          <div class="step" id="formulaText"><span class="capacity-mark">C =<tcxspan tcxhref="0574294" title="Call  0.574294  via 3CX"> 0.574294 </tcxspan>bit</span>, doseženo pri prikazanem optimalnem p(x).</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl">
+          <label>Skupna porazdelitev <code>p(x,y)</code> pri optimalnem <code>p(x)</code></label>
+          <table>
+            <thead id="jointHead"><tr><th></th><th><code>Y=0</code></th><th><code>Y=1</code></th><th><code>Y=2</code></th></tr></thead>
+            <tbody id="jointBody"><tr><th><code>X=0</code></th><td><code>0.284032</code></td><td><code>0.053256</code></td><td><code>0.017752</code></td></tr><tr><th><code>X=1</code></th><td><code>0.044712</code></td><td><code>0.208654</code></td><td><code>0.044712</code></td></tr><tr><th><code>X=2</code></th><td><code>0.017344</code></td><td><code>0.069377</code></td><td><code>0.260162</code></td></tr></tbody>
+          </table>
+        </div>
+        <div class="ctl">
+          <label>Lokalni členi za <code>I(X;Y)</code></label>
+          <table>
+            <thead>
+              <tr><th>Par</th><th><code>p(x,y)</code></th><th><code>p(x)p(y)</code></th><th><code>p(x,y) log2(p(x,y)/(p(x)p(y)))</code></th></tr>
+            </thead>
+            <tbody id="miBody"><tr><td><code>(0, 0)</code></td><td><code>0.284032</code></td><td><code>0.122875</code></td><td><code>0.343356</code></td></tr><tr><td><code>(0, 1)</code></td><td><code>0.053256</code></td><td><code>0.117620</code></td><td><code>-0.060878</code></td></tr><tr><td><code>(0, 2)</code></td><td><code>0.017752</code></td><td><code>0.114545</code></td><td><code>-0.047750</code></td></tr><tr><td><code>(1, 0)</code></td><td><code>0.044712</code></td><td><code>0.103161</code></td><td><code>-0.053930</code></td></tr><tr><td><code>(1, 1)</code></td><td><code>0.208654</code></td><td><code>0.098749</code></td><td><code>0.225195</code></td></tr><tr><td><code>(1, 2)</code></td><td><code>0.044712</code></td><td><code>0.096167</code></td><td><code>-0.049402</code></td></tr><tr><td><code>(2, 0)</code></td><td><code>0.017344</code></td><td><code>0.120052</code></td><td><code>-0.048410</code></td></tr><tr><td><code>(2, 1)</code></td><td><code>0.069377</code></td><td><code>0.114918</code></td><td><code>-0.050512</code></td></tr><tr><td><code>(2, 2)</code></td><td><code>0.260162</code></td><td><code>0.111914</code></td><td><code>0.316625</code></td></tr><tr><td><strong>Skupaj</strong></td><td><code>1.000000</code></td><td><code>1.000000</code></td><td><span class="capacity-mark">C =<tcxspan tcxhref="0574294" title="Call  0.574294  via 3CX"> 0.574294 </tcxspan>bit</span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const nIn = document.getElementById('nIn');
+  const nOut = document.getElementById('nOut');
+  const inVal = document.getElementById('inVal');
+  const outVal = document.getElementById('outVal');
+  const matrixHead = document.getElementById('matrixHead');
+  const matrixBody = document.getElementById('matrixBody');
+  const jointHead = document.getElementById('jointHead');
+  const jointBody = document.getElementById('jointBody');
+  const miBody = document.getElementById('miBody');
+  const status = document.getElementById('status');
+  const capacityText = document.getElementById('capacityText');
+  const iterationsText = document.getElementById('iterationsText');
+  const summaryText = document.getElementById('summaryText');
+  const formulaText = document.getElementById('formulaText');
+  const pxBox = document.getElementById('pxBox');
+  const pyBox = document.getElementById('pyBox');
+
+  let channel = [];
+
+  function fmt(x) {
+    return x.toFixed(6);
+  }
+
+  function rowUniform(m) {
+    return Array.from({ length: m }, () => 1 / m);
+  }
+
+  function rowRandom(m) {
+    const raw = Array.from({ length: m }, () => Math.random() + 0.01);
+    const s = raw.reduce((a, b) => a + b, 0);
+    return raw.map(v => v / s);
+  }
+
+  function cloneMatrix(mat) {
+    return mat.map(row => row.slice());
+  }
+
+  function resizeChannel(newNIn, newNOut) {
+    const next = [];
+    for (let i = 0; i < newNIn; i++) {
+      if (i < channel.length) {
+        const row = channel[i].slice(0, newNOut);
+        while (row.length < newNOut) row.push(0);
+        const sum = row.reduce((a, b) => a + b, 0);
+        next.push(sum > 0 ? row.map(v => v / sum) : rowUniform(newNOut));
+      } else {
+        next.push(rowUniform(newNOut));
+      }
+    }
+    channel = next;
+  }
+
+  function normalizeRows() {
+    channel = channel.map(row => {
+      const clipped = row.map(v => Number.isFinite(v) ? Math.max(0, v) : 0);
+      const sum = clipped.reduce((a, b) => a + b, 0);
+      return sum > 0 ? clipped.map(v => v / sum) : rowUniform(clipped.length);
+    });
+  }
+
+  function setUniform() {
+    channel = Array.from({ length: parseInt(nIn.value, 10) }, () => rowUniform(parseInt(nOut.value, 10)));
+    renderMatrix();
+    computeAndRender();
+  }
+
+  function setRandom() {
+    channel = Array.from({ length: parseInt(nIn.value, 10) }, () => rowRandom(parseInt(nOut.value, 10)));
+    renderMatrix();
+    computeAndRender();
+  }
+
+  function readMatrixFromInputs() {
+    const rows = parseInt(nIn.value, 10);
+    const cols = parseInt(nOut.value, 10);
+    const next = [];
+    for (let i = 0; i < rows; i++) {
+      const row = [];
+      for (let j = 0; j < cols; j++) {
+        const input = document.getElementById(`cell-${i}-${j}`);
+        const value = parseFloat(input.value);
+        row.push(Number.isFinite(value) ? value : 0);
+      }
+      next.push(row);
+    }
+    channel = next;
+  }
+
+  function renderMatrix() {
+    inVal.textContent = String(nIn.value);
+    outVal.textContent = String(nOut.value);
+
+    matrixHead.innerHTML = `<tr><th></th>${Array.from({ length: parseInt(nOut.value, 10) }, (_, j) => `<th><code>Y=${j}</code></th>`).join('')}<th>Vsota vrstice</th></tr>`;
+    matrixBody.innerHTML = '';
+
+    channel.forEach((row, i) => {
+      const sum = row.reduce((a, b) => a + b, 0);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<th><code>X=${i}</code></th>${row.map((value, j) => `<td><input id="cell-${i}-${j}" type="number" min="0" max="1" step="0.001" value="${value.toFixed(6)}"/></td>`).join('')}<td><code class="${Math.abs(sum - 1) > 1e-6 ? 'warn' : ''}">${fmt(sum)}</code></td>`;
+      matrixBody.appendChild(tr);
+    });
+
+    for (let i = 0; i < channel.length; i++) {
+      for (let j = 0; j < channel[i].length; j++) {
+        document.getElementById(`cell-${i}-${j}`).addEventListener('change', () => {
+          readMatrixFromInputs();
+          renderMatrix();
+        });
+      }
+    }
+    updateStatus();
+  }
+
+  function updateStatus() {
+    const badRows = channel.map((row, i) => ({ i, sum: row.reduce((a, b) => a + b, 0) })).filter(row => Math.abs(row.sum - 1) > 1e-6);
+    status.textContent = badRows.length
+      ? `Pozor: vrstice ${badRows.map(row => `X=${row.i}`).join(', ')} trenutno nimajo vsote 1. Uporabi "Normaliziraj vrstice" ali popravi vnose.`
+      : 'Vsaka vrstica trenutno predstavlja veljavno porazdelitev p(y|x).';
+  }
+
+  function blahutArimoto(W, maxIter = 1000, tol = 1e-11) {
+    const n = W.length;
+    const m = W[0].length;
+    let px = Array.from({ length: n }, () => 1 / n);
+    let prev = px.slice();
+    let iterations = 0;
+
+    for (let iter = 0; iter < maxIter; iter++) {
+      iterations = iter + 1;
+      const py = Array.from({ length: m }, (_, j) => px.reduce((sum, p, i) => sum + p * W[i][j], 0));
+      const d = Array.from({ length: n }, (_, i) => {
+        let sum = 0;
+        for (let j = 0; j < m; j++) {
+          const w = W[i][j];
+          if (w > 0 && py[j] > 0) sum += w * Math.log(w / py[j]);
+        }
+        return sum;
+      });
+      const maxD = Math.max(...d);
+      const temp = d.map(v => Math.exp(v - maxD));
+      const z = temp.reduce((a, b) => a + b, 0);
+      px = temp.map(v => v / z);
+      const delta = px.reduce((sum, p, i) => sum + Math.abs(p - prev[i]), 0);
+      prev = px.slice();
+      if (delta < tol) break;
+    }
+
+    const py = Array.from({ length: m }, (_, j) => px.reduce((sum, p, i) => sum + p * W[i][j], 0));
+    const joint = [];
+    let capacity = 0;
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < m; j++) {
+        const pxy = px[i] * W[i][j];
+        const pxpy = px[i] * py[j];
+        const local = pxy > 0 && pxpy > 0 ? pxy * Math.log2(pxy / pxpy) : 0;
+        capacity += local;
+        joint.push({ x: i, y: j, pxy, pxpy, local });
+      }
+    }
+    return { px, py, joint, capacity, iterations };
+  }
+
+  function renderDistribution(box, label, values) {
+    box.innerHTML = '';
+    values.forEach((value, i) => {
+      const row = document.createElement('div');
+      row.className = 'bar-row';
+      row.innerHTML = `<div class="bar-label">${label}${i}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(0, Math.min(100, value * 100))}%"></div></div><div class="bar-value">${fmt(value)}</div>`;
+      box.appendChild(row);
+    });
+    box.className = 'bar-chart';
+  }
+
+  function renderJoint(result) {
+    jointHead.innerHTML = `<tr><th></th>${result.py.map((_, j) => `<th><code>Y=${j}</code></th>`).join('')}</tr>`;
+    jointBody.innerHTML = '';
+    for (let i = 0; i < result.px.length; i++) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<th><code>X=${i}</code></th>${result.py.map((_, j) => {
+        const row = result.joint.find(item => item.x === i && item.y === j);
+        return `<td><code>${fmt(row.pxy)}</code></td>`;
+      }).join('')}`;
+      jointBody.appendChild(tr);
+    }
+  }
+
+  function renderMiTable(result) {
+    miBody.innerHTML = '';
+    result.joint.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><code>(${row.x}, ${row.y})</code></td><td><code>${fmt(row.pxy)}</code></td><td><code>${fmt(row.pxpy)}</code></td><td><code>${fmt(row.local)}</code></td>`;
+      miBody.appendChild(tr);
+    });
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>Skupaj</strong></td><td><code>1.000000</code></td><td><code>1.000000</code></td><td><span class="capacity-mark">C = ${fmt(result.capacity)} bit</span></td>`;
+    miBody.appendChild(tr);
+  }
+
+  function computeAndRender() {
+    normalizeRows();
+    renderMatrix();
+    const result = blahutArimoto(cloneMatrix(channel));
+    capacityText.innerHTML = `Kapaciteta kanala je <span class="capacity-mark">C = ${fmt(result.capacity)} bit</span> na uporabo kanala.`;
+    iterationsText.textContent = `Izračun se je ustalil po ${result.iterations} iteracijah.`;
+    summaryText.textContent = `Optimalna vhodna porazdelitev ni nujno uniformna. Kanal favorizira tiste vhodne simbole, ki se na izhodu bolje ločijo.`;
+    formulaText.innerHTML = `<span class="capacity-mark">C = ${fmt(result.capacity)} bit</span>, doseženo pri prikazanem optimalnem p(x).`;
+    renderDistribution(pxBox, 'X', result.px);
+    renderDistribution(pyBox, 'Y', result.py);
+    renderJoint(result);
+    renderMiTable(result);
+  }
+
+  nIn.addEventListener('input', () => {
+    resizeChannel(parseInt(nIn.value, 10), parseInt(nOut.value, 10));
+    renderMatrix();
+    computeAndRender();
+  });
+
+  nOut.addEventListener('input', () => {
+    resizeChannel(parseInt(nIn.value, 10), parseInt(nOut.value, 10));
+    renderMatrix();
+    computeAndRender();
+  });
+
+  document.getElementById('uniformBtn').addEventListener('click', setUniform);
+  document.getElementById('randomBtn').addEventListener('click', setRandom);
+  document.getElementById('normalizeBtn').addEventListener('click', () => {
+    readMatrixFromInputs();
+    normalizeRows();
+    renderMatrix();
+    computeAndRender();
+  });
+  document.getElementById('computeBtn').addEventListener('click', () => {
+    readMatrixFromInputs();
+    computeAndRender();
+  });
+
+  document.getElementById('presetNoiseless').addEventListener('click', () => {
+    nIn.value = '3';
+    nOut.value = '3';
+    channel = [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1]
+    ];
+    renderMatrix();
+    computeAndRender();
+  });
+
+  document.getElementById('presetBsc').addEventListener('click', () => {
+    nIn.value = '2';
+    nOut.value = '2';
+    channel = [
+      [0.9, 0.1],
+      [0.1, 0.9]
+    ];
+    renderMatrix();
+    computeAndRender();
+  });
+
+  document.getElementById('presetErasure').addEventListener('click', () => {
+    nIn.value = '2';
+    nOut.value = '3';
+    channel = [
+      [0.75, 0.0, 0.25],
+      [0.0, 0.75, 0.25]
+    ];
+    renderMatrix();
+    computeAndRender();
+  });
+
+  document.getElementById('presetZ').addEventListener('click', () => {
+    nIn.value = '2';
+    nOut.value = '2';
+    channel = [
+      [1.0, 0.0],
+      [0.35, 0.65]
+    ];
+    renderMatrix();
+    computeAndRender();
+  });
+
+  channel = [
+    [0.80, 0.15, 0.05],
+    [0.15, 0.70, 0.15],
+    [0.05, 0.20, 0.75]
+  ];
+  renderMatrix();
+  computeAndRender();
+})();
+</script>
+
+
+</body></html>

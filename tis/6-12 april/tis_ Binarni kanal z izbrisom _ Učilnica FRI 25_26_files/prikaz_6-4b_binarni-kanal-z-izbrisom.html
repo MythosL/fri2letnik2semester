@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<!-- saved from url=(0125)https://ucilnica.fri.uni-lj.si/pluginfile.php/244879/mod_resource/content/1/prikaz_6-4b_binarni-kanal-z-izbrisom.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prikaz 6-4b: Binarni kanal z izbrisom</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:var(--sans); background:var(--bg); color:var(--text)}
+    header{padding:28px 18px 10px; max-width:1100px; margin:0 auto}
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .val,.step,code{font-family:var(--mono); font-size:12px}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer; margin:0 6px 6px 0}
+    canvas{width:100%; height:340px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left; vertical-align:top}
+    th{background:rgba(0,0,0,.05)}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Prikaz 6-4b: Binarni kanal z izbrisom</h1>
+  <p class="lead">Pri binarnem kanalu z izbrisom se simbol prenese pravilno z verjetnostjo <code>1-ε</code>, z verjetnostjo <code>ε</code> pa se spremeni v oznako izbrisa <code>⊘</code>. Izhod nikoli ne zamenja <code>0</code> v <code>1</code> ali obratno.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Pravilni prehodi in dve poti v izbris</div>
+        <div class="sub">Zgornji del prikazuje samo štiri prehode: dva ravna pravilna prenosa in dve ravni poti proti simbolu <code>⊘</code>. Vsi izračuni so pod sliko kanala.</div>
+      </div>
+      <span class="tag" id="tag">ε = 0.10</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Prednastavljen primer</label>
+          <button id="ex1">Nizek izbris</button>
+          <button id="ex2">Srednji izbris</button>
+          <button id="ex3">Velik izbris</button>
+        </div>
+        <div class="ctl">
+          <label>P(X = 0) <span class="val" id="pxVal">0.500</span></label>
+          <input id="px" type="range" min="0" max="100" step="1" value="50">
+          <div class="step">Preostanek pripada <code>P(X = 1)</code>.</div>
+        </div>
+        <div class="ctl">
+          <label>Verjetnost izbrisa ε <span class="val" id="eVal">0.100</span></label>
+          <input id="err" type="range" min="0" max="100" step="1" value="20">
+          <div class="step">Pravilna prenosa imata verjetnost <code>1-ε</code>, izbris pa <code>ε</code>.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vizualizacija kanala</label>
+          <canvas id="canvas" width="1000" height="340"></canvas>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl">
+          <label>Povzetek</label>
+          <div class="step" id="summary">Pri izbranih nastavitvah dobimo 0.900 bita medsebojne informacije med vhodom X in izhodom Y.</div>
+          <div class="step" id="formula">I(X;Y) = H(X) + H(Y) - H(X,Y) = 1.000 +<tcxspan tcxhref="13691469" title="Call  1.369 - 1.469  via 3CX"> 1.369 - 1.469 </tcxspan>= 0.900</div>
+        </div>
+        <div class="ctl">
+          <label>Entropije</label>
+          <div class="step" id="entropies">H(X) = 1.000 bit, H(Y) = 1.369 bit, H(X,Y) = 1.469 bit</div>
+          <div class="step" id="interp">Kanal večino informacije še vedno prenese pravilno.</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Par</th><th><code>p(x,y)</code></th><th><code>p(x)p(y)</code></th><th>Prispevek k <code>I(X;Y)</code></th></tr>
+        </thead>
+        <tbody id="tb"><tr><td><code>(0, 0)</code></td><td><code>0.450</code></td><td><code>0.225</code></td><td><code>0.450</code></td></tr><tr><td><code>(0, 1)</code></td><td><code>0.000</code></td><td><code>0.225</code></td><td><code>0.000</code></td></tr><tr><td><code>(0, ⊘)</code></td><td><code>0.050</code></td><td><code>0.050</code></td><td><code>0.000</code></td></tr><tr><td><code>(1, 0)</code></td><td><code>0.000</code></td><td><code>0.225</code></td><td><code>0.000</code></td></tr><tr><td><code>(1, 1)</code></td><td><code>0.450</code></td><td><code>0.225</code></td><td><code>0.450</code></td></tr><tr><td><code>(1, ⊘)</code></td><td><code>0.050</code></td><td><code>0.050</code></td><td><code>0.000</code></td></tr><tr><td><strong>Skupaj</strong></td><td><code>1.000</code></td><td><code>1.000</code></td><td><code>0.900 bit</code></td></tr></tbody>
+      </table>
+
+      <div class="row">
+        <div class="ctl">
+          <label>Prehodna matrika <code>p(y|x)</code></label>
+          <table>
+            <thead>
+              <tr><th></th><th><code>Y=0</code></th><th><code>Y=1</code></th><th><code>Y=⊘</code></th></tr>
+            </thead>
+            <tbody id="matrixBody">
+      <tr><th><code>X=0</code></th><td><code>0.900</code></td><td><code>0.000</code></td><td><code>0.100</code></td></tr>
+      <tr><th><code>X=1</code></th><td><code>0.000</code></td><td><code>0.900</code></td><td><code>0.100</code></td></tr>
+    </tbody>
+          </table>
+        </div>
+        <div class="ctl">
+          <label>Skupna porazdelitev <code>p(x,y)</code></label>
+          <table>
+            <thead>
+              <tr><th></th><th><code>Y=0</code></th><th><code>Y=1</code></th><th><code>Y=⊘</code></th></tr>
+            </thead>
+            <tbody id="jointBody">
+      <tr><th><code>X=0</code></th><td><code>0.450</code></td><td><code>0.000</code></td><td><code>0.050</code></td></tr>
+      <tr><th><code>X=1</code></th><td><code>0.000</code></td><td><code>0.450</code></td><td><code>0.050</code></td></tr>
+    </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const presets = [
+    { key:'ε = 0.10', px:0.5, err:0.10 },
+    { key:'ε = 0.35', px:0.5, err:0.35 },
+    { key:'ε = 0.70', px:0.5, err:0.70 }
+  ];
+
+  const px = document.getElementById('px');
+  const err = document.getElementById('err');
+  const pxVal = document.getElementById('pxVal');
+  const eVal = document.getElementById('eVal');
+  const summary = document.getElementById('summary');
+  const formula = document.getElementById('formula');
+  const entropies = document.getElementById('entropies');
+  const interp = document.getElementById('interp');
+  const tb = document.getElementById('tb');
+  const matrixBody = document.getElementById('matrixBody');
+  const jointBody = document.getElementById('jointBody');
+  const tag = document.getElementById('tag');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let current = presets[0];
+
+  function fmt(x) { return x.toFixed(3); }
+  function entropy(dist) { return -dist.reduce((s, p) => s + (p > 0 ? p * Math.log2(p) : 0), 0); }
+  function term(a, b) { return a > 0 && b > 0 ? a * Math.log2(a / b) : 0; }
+
+  function compute() {
+    const p0 = parseInt(px.value, 10) / 100;
+    const p1 = 1 - p0;
+    const e = parseInt(err.value, 10) / 100;
+    const matrix = [
+      [1 - e, 0, e],
+      [0, 1 - e, e]
+    ];
+    const joint = [
+      { x:'0', y:'0', pxy:p0 * (1 - e) },
+      { x:'0', y:'1', pxy:0 },
+      { x:'0', y:'⊘', pxy:p0 * e },
+      { x:'1', y:'0', pxy:0 },
+      { x:'1', y:'1', pxy:p1 * (1 - e) },
+      { x:'1', y:'⊘', pxy:p1 * e }
+    ];
+    const py = [
+      joint[0].pxy + joint[3].pxy,
+      joint[1].pxy + joint[4].pxy,
+      joint[2].pxy + joint[5].pxy
+    ];
+    joint.forEach(item => {
+      const pxv = item.x === '0' ? p0 : p1;
+      const pyv = item.y === '0' ? py[0] : item.y === '1' ? py[1] : py[2];
+      item.pxpy = pxv * pyv;
+      item.mi = term(item.pxy, item.pxpy);
+    });
+    return {
+      px:[p0, p1],
+      py,
+      matrix,
+      joint,
+      hx: entropy([p0, p1]),
+      hy: entropy(py),
+      hxy: entropy(joint.map(x => x.pxy)),
+      mi: joint.reduce((s, x) => s + x.mi, 0),
+      e
+    };
+  }
+
+  function draw(data) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const leftX = 170;
+    const midX = 830;
+    const topY = 92;
+    const botY = 238;
+    const eraseY = 165;
+
+    ctx.fillStyle = '#111827';
+    ctx.font = '13px ui-monospace, Menlo, monospace';
+    ctx.fillText('Ravni črti prikažejo pravilni prenos, dve poševni črti proti sredini pa dogodka izbrisa.', 28, 30);
+
+    const nodes = [
+      { x:leftX, y:topY, label:'X=0', p:`p=${fmt(data.px[0])}` , input:true},
+      { x:leftX, y:botY, label:'X=1', p:`p=${fmt(data.px[1])}` , input:true},
+      { x:midX, y:topY, label:'Y=0', p:`p=${fmt(data.py[0])}` },
+      { x:midX, y:eraseY, label:'Y=⊘', p:`p=${fmt(data.py[2])}` },
+      { x:midX, y:botY, label:'Y=1', p:`p=${fmt(data.py[1])}` }
+    ];
+
+    nodes.forEach(node => {
+      ctx.fillStyle = node.input ? 'rgba(59,130,246,.10)' : 'rgba(34,197,94,.10)';
+      ctx.fillRect(node.x - 58, node.y - 30, 116, 60);
+      ctx.strokeStyle = 'rgba(0,0,0,.12)';
+      ctx.strokeRect(node.x - 58, node.y - 30, 116, 60);
+      ctx.fillStyle = '#111827';
+      ctx.font = 'bold 14px ui-sans-serif, system-ui, sans-serif';
+      ctx.fillText(node.label, node.x - 24, node.y - 4);
+      ctx.font = '12px ui-monospace, Menlo, monospace';
+      ctx.fillText(node.p, node.x - 28, node.y + 16);
+    });
+
+    const lines = [
+      { from:[leftX + 58, topY], to:[midX - 58, topY], p:data.joint[0].pxy, text:`(1-ε)p0 = ${fmt(data.joint[0].pxy)}`, color:'rgba(59,130,246,.86)', tx:470, ty:82 },
+      { from:[leftX + 58, botY], to:[midX - 58, botY], p:data.joint[4].pxy, text:`(1-ε)p1 = ${fmt(data.joint[4].pxy)}`, color:'rgba(34,197,94,.86)', tx:470, ty:264 },
+      { from:[leftX + 58, topY], to:[midX - 58, eraseY], p:data.joint[2].pxy, text:`εp0 = ${fmt(data.joint[2].pxy)}`, color:'rgba(249,115,22,.86)', tx:492, ty:132 },
+      { from:[leftX + 58, botY], to:[midX - 58, eraseY], p:data.joint[5].pxy, text:`εp1 = ${fmt(data.joint[5].pxy)}`, color:'rgba(249,115,22,.86)', tx:492, ty:208 }
+    ];
+
+    lines.forEach(line => {
+      ctx.strokeStyle = line.color;
+      ctx.lineWidth = 2 + line.p * 22;
+      ctx.beginPath();
+      ctx.moveTo(line.from[0], line.from[1]);
+      ctx.lineTo(line.to[0], line.to[1]);
+      ctx.stroke();
+      ctx.fillStyle = '#111827';
+      ctx.font = '11px ui-monospace, Menlo, monospace';
+      ctx.fillText(line.text, line.tx, line.ty);
+    });
+    ctx.lineWidth = 1;
+  }
+
+  function renderTables(data) {
+    tb.innerHTML = '';
+    data.joint.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><code>(${row.x}, ${row.y})</code></td><td><code>${fmt(row.pxy)}</code></td><td><code>${fmt(row.pxpy)}</code></td><td><code>${fmt(row.mi)}</code></td>`;
+      tb.appendChild(tr);
+    });
+    const total = document.createElement('tr');
+    total.innerHTML = `<td><strong>Skupaj</strong></td><td><code>1.000</code></td><td><code>1.000</code></td><td><code>${fmt(data.mi)} bit</code></td>`;
+    tb.appendChild(total);
+
+    matrixBody.innerHTML = `
+      <tr><th><code>X=0</code></th><td><code>${fmt(data.matrix[0][0])}</code></td><td><code>${fmt(data.matrix[0][1])}</code></td><td><code>${fmt(data.matrix[0][2])}</code></td></tr>
+      <tr><th><code>X=1</code></th><td><code>${fmt(data.matrix[1][0])}</code></td><td><code>${fmt(data.matrix[1][1])}</code></td><td><code>${fmt(data.matrix[1][2])}</code></td></tr>
+    `;
+
+    jointBody.innerHTML = `
+      <tr><th><code>X=0</code></th><td><code>${fmt(data.joint[0].pxy)}</code></td><td><code>${fmt(data.joint[1].pxy)}</code></td><td><code>${fmt(data.joint[2].pxy)}</code></td></tr>
+      <tr><th><code>X=1</code></th><td><code>${fmt(data.joint[3].pxy)}</code></td><td><code>${fmt(data.joint[4].pxy)}</code></td><td><code>${fmt(data.joint[5].pxy)}</code></td></tr>
+    `;
+  }
+
+  function render() {
+    const data = compute();
+    pxVal.textContent = fmt(data.px[0]);
+    eVal.textContent = fmt(data.e);
+    tag.textContent = current.key;
+    summary.textContent = `Pri izbranih nastavitvah dobimo ${fmt(data.mi)} bita medsebojne informacije med vhodom X in izhodom Y.`;
+    formula.textContent = `I(X;Y) = H(X) + H(Y) - H(X,Y) = ${fmt(data.hx)} + ${fmt(data.hy)} - ${fmt(data.hxy)} = ${fmt(data.mi)}`;
+    entropies.textContent = `H(X) = ${fmt(data.hx)} bit, H(Y) = ${fmt(data.hy)} bit, H(X,Y) = ${fmt(data.hxy)} bit`;
+    interp.textContent = data.mi < 0.1
+      ? 'Velika verjetnost izbrisa močno zmanjša informacijo o vhodu.'
+      : data.mi < 0.6
+        ? 'Del informacije se ohrani, del pa se izgubi v simbolu izbrisa.'
+        : 'Kanal večino informacije še vedno prenese pravilno.';
+    renderTables(data);
+    draw(data);
+  }
+
+  function applyPreset(preset) {
+    current = preset;
+    px.value = String(Math.round(preset.px * 100));
+    err.value = String(Math.round(preset.err * 100));
+    render();
+  }
+
+  px.addEventListener('input', render);
+  err.addEventListener('input', render);
+  document.getElementById('ex1').addEventListener('click', () => applyPreset(presets[0]));
+  document.getElementById('ex2').addEventListener('click', () => applyPreset(presets[1]));
+  document.getElementById('ex3').addEventListener('click', () => applyPreset(presets[2]));
+
+  applyPreset(presets[0]);
+})();
+</script>
+
+
+</body></html>

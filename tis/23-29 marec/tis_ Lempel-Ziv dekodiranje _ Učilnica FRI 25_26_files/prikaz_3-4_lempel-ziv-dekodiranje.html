@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<!-- saved from url=(0122)https://ucilnica.fri.uni-lj.si/pluginfile.php/244700/mod_resource/content/1/prikaz_3-4_lempel-ziv-dekodiranje.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 3-4: Lempel-Ziv dekodiranje</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:var(--sans); background:var(--bg); color:var(--text)}
+    header{padding:28px 18px 10px; max-width:1100px; margin:0 auto}
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .ctl input[type="text"]{width:100%; border:1px solid rgba(0,0,0,.14); border-radius:8px; padding:6px 8px; font-family:var(--mono); font-size:12px; background:#fff}
+    .val,.step,code{font-family:var(--mono); font-size:12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left; vertical-align:top}
+    th{background:rgba(0,0,0,.05)}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer}
+    canvas{width:100%; height:320px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 3-4: Lempel-Ziv dekodiranje</h1>
+  <p class="lead">Pri LZ77 trojica <code>(odmik, dolzina, naslednji simbol)</code> opisuje sklic v ze dekodiran del niza. Poudarek je na tem, kako se gradi uporabna zgodovina in kako iz trojic rekonstruiramo izhod.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Trojice, zgodovina in dekodiranje</div>
+        <div class="sub">Primeri sledijo PDF-ju. Posebej opazuj, iz katerega dela zgodovine kopiramo in kako nastane nov dekodirani prefiks.</div>
+      </div>
+      <span class="tag" id="tag">S = ABABA</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Prednastavljen primer</label>
+          <button id="ex1">ABABA</button>
+          <button id="ex2">AAAAAAA</button>
+          <button id="ex3">ABCABCABCABC</button>
+        </div>
+        <div class="ctl" data-protonpass-form="">
+          <label>Lastne trojice</label>
+          <input id="customTriples" type="text" value="0,0,A | 0,0,B | 2,2,A">
+          <div class="step">Oblika: <code>d,l,c | d,l,c | ...</code></div>
+          <div class="step"><button id="applyCustom">Uporabi svoje trojice</button></div>
+        </div>
+        <div class="ctl">
+          <label>KORAK <span class="val" id="kVal">3/3</span></label>
+          <input id="k" type="range" min="0" max="3" step="1" value="0">
+          <div class="step" id="stepText">Korak 3: Poglej 2 mest nazaj, prekopiraj AB in dodaj A.</div>
+        </div>
+        <div class="ctl">
+          <label>Trenutni dekodirani niz</label>
+          <div class="step" id="decodedText">Dekodirano: ABABA</div>
+          <div class="step" id="historyText">Zgodovina pred korakom: AB</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Korak</th><th>Trojica</th><th>Kaj naredimo</th><th>Dobljeni niz</th></tr>
+        </thead>
+        <tbody id="tb"><tr style="background: transparent;"><td>1</td><td><code>(0, 0, A)</code></td><td>Ni ujemanja, neposredno zapisemo A.</td><td><code>A</code></td></tr><tr style="background: transparent;"><td>2</td><td><code>(0, 0, B)</code></td><td>Ni ujemanja, neposredno zapisemo B.</td><td><code>AB</code></td></tr><tr style="background: rgba(59, 130, 246, 0.08);"><td>3</td><td><code>(2, 2, A)</code></td><td>Poglej 2 mest nazaj, prekopiraj AB in dodaj A.</td><td><code>ABABA</code></td></tr></tbody>
+      </table>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vizualizacija zgodovine in aktivnega sklica</label>
+          <canvas id="canvas" width="1000" height="320"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const examples = [
+    {
+      key: 'S = ABABA',
+      description: 'Kratek primer dekodiranja iz PDF-ja.',
+      triples: [
+        {d:0, l:0, c:'A'},
+        {d:0, l:0, c:'B'},
+        {d:2, l:2, c:'A', copiedText:'AB'},
+      ]
+    },
+    {
+      key: 'S = AAAAAAA',
+      description: 'Prekrivajoce se kopiranje: odmik je manjsi od dolzine.',
+      triples: [
+        {d:0, l:0, c:'A'},
+        {d:1, l:1, c:'A', copiedText:'A'},
+        {d:1, l:3, c:'A', copiedText:'AAA'}
+      ]
+    },
+    {
+      key: 'S = ABCABCABCABC',
+      description: 'Daljsi sklic na ponavljajoci se blok ABC.',
+      triples: [
+        {d:0, l:0, c:'A'},
+        {d:0, l:0, c:'B'},
+        {d:0, l:0, c:'C'},
+        {d:3, l:3, c:'A', copiedText:'ABC'},
+        {d:6, l:4, c:'C', copiedText:'BCAB'}
+      ]
+    }
+  ];
+
+  const k = document.getElementById('k');
+  const kVal = document.getElementById('kVal');
+  const stepText = document.getElementById('stepText');
+  const decodedText = document.getElementById('decodedText');
+  const historyText = document.getElementById('historyText');
+  const tag = document.getElementById('tag');
+  const tb = document.getElementById('tb');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const customTriples = document.getElementById('customTriples');
+
+  let ex = examples[0];
+  let steps = [];
+
+  function decodeTriples(triples) {
+    const out = [];
+    let built = '';
+    triples.forEach((triple, idx) => {
+      const before = built;
+      let copied = triple.copiedText || '';
+      if (!copied && triple.d > 0 && triple.l > 0) {
+        let current = built;
+        for (let i = 0; i < triple.l; i++) {
+          const ch = current[current.length - triple.d] || '';
+          copied += ch;
+          current += ch;
+        }
+      }
+      built = before + copied + triple.c;
+      const action = triple.d === 0 && triple.l === 0
+        ? `Ni ujemanja, neposredno zapisemo ${triple.c}.`
+        : `Poglej ${triple.d} mest nazaj, prekopiraj ${copied || '(prazno)'} in dodaj ${triple.c}.`;
+      out.push({
+        step: idx + 1,
+        triple,
+        before,
+        copied,
+        result: built,
+        action
+      });
+    });
+    return out;
+  }
+
+  function renderTable(active) {
+    tb.innerHTML = '';
+    steps.forEach((st, idx) => {
+      const tr = document.createElement('tr');
+      tr.style.background = idx + 1 === active ? 'rgba(59,130,246,.08)' : 'transparent';
+      tr.innerHTML = `<td>${st.step}</td><td><code>(${st.triple.d}, ${st.triple.l}, ${st.triple.c})</code></td><td>${idx + 1 <= active ? st.action : ''}</td><td><code>${idx + 1 <= active ? st.result : ''}</code></td>`;
+      tb.appendChild(tr);
+    });
+  }
+
+  function draw(active) {
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.font = '12px ui-monospace, Menlo, monospace';
+
+    const margin = 30;
+    const width = W - margin * 2;
+    const y1 = 74;
+    const y2 = 184;
+    const box = 28;
+
+    ctx.fillStyle = '#111827';
+    ctx.fillText('Zgodovina pred aktivnim korakom', margin, y1 - 14);
+    ctx.fillText('Rezultat po aktivnem koraku', margin, y2 - 14);
+
+    const activeStep = active > 0 ? steps[active - 1] : null;
+    const history = activeStep ? activeStep.before : '';
+    const result = activeStep ? activeStep.result : '';
+    const cellW = Math.min(28, Math.max(20, width / Math.max(1, result.length || history.length || 1)));
+
+    function drawString(str, y, markStart, markLen, color) {
+      for (let i = 0; i < str.length; i++) {
+        const x = margin + i * cellW;
+        const marked = i >= markStart && i < markStart + markLen;
+        ctx.fillStyle = marked ? color : 'rgba(148,163,184,.18)';
+        ctx.fillRect(x, y, cellW - 2, box);
+        ctx.strokeStyle = 'rgba(0,0,0,.18)';
+        ctx.strokeRect(x, y, cellW - 2, box);
+        ctx.fillStyle = '#111827';
+        ctx.fillText(str[i], x + 8, y + 18);
+      }
+    }
+
+    if (activeStep) {
+      const refStart = activeStep.copied ? history.lastIndexOf(activeStep.copied) : -1;
+      drawString(history, y1, refStart, activeStep.triple.l, 'rgba(59,130,246,.22)');
+      drawString(result, y2, activeStep.before.length, activeStep.copied.length + 1, 'rgba(34,197,94,.22)');
+
+      ctx.fillStyle = '#111827';
+      ctx.fillText(`Aktivna trojica: (${activeStep.triple.d}, ${activeStep.triple.l}, ${activeStep.triple.c})`, margin, y2 + 54);
+      if (activeStep.triple.d < activeStep.triple.l && activeStep.triple.d > 0) {
+        ctx.fillText('Posebnost: prekrivajoce se kopiranje, ker je odmik manjsi od dolzine.', margin, y2 + 74);
+      }
+    }
+  }
+
+  function render() {
+    const active = parseInt(k.value, 10);
+    kVal.textContent = `${active}/${steps.length}`;
+    tag.textContent = ex.key;
+    if (active === 0) {
+      stepText.textContent = `${ex.description} Zacetno stanje: zgodovina je prazna.`;
+      decodedText.textContent = 'Dekodirano: (prazen niz)';
+      historyText.textContent = 'Zgodovina: (prazno)';
+    } else {
+      const st = steps[active - 1];
+      stepText.textContent = `Korak ${active}: ${st.action}`;
+      decodedText.textContent = `Dekodirano: ${st.result}`;
+      historyText.textContent = `Zgodovina pred korakom: ${st.before || '(prazno)'}`;
+    }
+    renderTable(active);
+    draw(active);
+  }
+
+  function setExample(index) {
+    ex = examples[index];
+    customTriples.value = ex.triples.map(t => `${t.d},${t.l},${t.c}`).join(' | ');
+    steps = decodeTriples(ex.triples);
+    k.max = String(steps.length);
+    k.value = String(steps.length);
+    render();
+  }
+
+  function parseTriples(text) {
+    return text.split('|').map(part => part.trim()).filter(Boolean).map(part => {
+      const bits = part.split(',').map(x => x.trim());
+      if (bits.length < 3) throw new Error('Napacna trojica');
+      const d = parseInt(bits[0], 10);
+      const l = parseInt(bits[1], 10);
+      const c = bits.slice(2).join(',');
+      if (Number.isNaN(d) || Number.isNaN(l) || !c) throw new Error('Napacna trojica');
+      return { d, l, c };
+    });
+  }
+
+  function applyCustomExample() {
+    try {
+      const triples = parseTriples(customTriples.value);
+      ex = {
+        key: `Trojice = ${customTriples.value}`,
+        description: 'Lastni primer: dekodiranje je izracunano iz uporabniskih trojic.',
+        triples
+      };
+      steps = decodeTriples(ex.triples);
+      k.max = String(steps.length);
+      k.value = String(steps.length);
+      render();
+    } catch (err) {
+      stepText.textContent = 'Vnos ni pravilen. Uporabi obliko d,l,c | d,l,c.';
+    }
+  }
+
+  k.addEventListener('input', render);
+  document.getElementById('ex1').addEventListener('click', () => setExample(0));
+  document.getElementById('ex2').addEventListener('click', () => setExample(1));
+  document.getElementById('ex3').addEventListener('click', () => setExample(2));
+  document.getElementById('applyCustom').addEventListener('click', applyCustomExample);
+  customTriples.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') applyCustomExample();
+  });
+
+  setExample(0);
+})();
+</script>
+
+
+</body></html>

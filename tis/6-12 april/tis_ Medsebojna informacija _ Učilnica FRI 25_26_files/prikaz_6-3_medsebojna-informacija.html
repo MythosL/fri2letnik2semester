@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!-- saved from url=(0122)https://ucilnica.fri.uni-lj.si/pluginfile.php/244877/mod_resource/content/1/prikaz_6-3_medsebojna-informacija.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prikaz 6-3: Medsebojna informacija</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:var(--sans); background:var(--bg); color:var(--text)}
+    header{padding:28px 18px 10px; max-width:1100px; margin:0 auto}
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .val,.step,code{font-family:var(--mono); font-size:12px}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer; margin:0 6px 6px 0}
+    canvas{width:100%; height:390px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left; vertical-align:top}
+    th{background:rgba(0,0,0,.05)}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Prikaz 6-3: Medsebojna informacija</h1>
+  <p class="lead">Medsebojna informacija <code>I(X;Y)</code> meri, koliko znanje o <code>X</code> zmanjša negotovost o <code>Y</code> in obratno. Pri neodvisnih spremenljivkah je enaka nič.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Prekrivanje med informacijama o X in Y</div>
+        <div class="sub">Primer uporablja binarni spremenljivki z uravnoteženima marginalama. Drsnik korigira povezavo med njima, platno pa prikaže Vennov prikaz in skupno tabelo verjetnosti.</div>
+      </div>
+      <span class="tag" id="tag">I(X;Y) = 0</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Prednastavljen primer</label>
+          <button id="ex1">Neodvisni</button>
+          <button id="ex2">Delno povezani</button>
+          <button id="ex3">Skoraj isti</button>
+        </div>
+        <div class="ctl">
+          <label>Stopnja povezave <span class="val" id="corrVal">0.000</span></label>
+          <input id="corr" type="range" min="0" max="100" step="1" value="0">
+          <div class="step">0 pomeni neodvisnost, 100 pomeni skoraj popolno ujemanje.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl">
+          <label>Povzetek</label>
+          <div class="step" id="summary">X in Y delita 0.000 bita informacije. Toliko negotovosti o eni spremenljivki odpade, ko poznamo drugo.</div>
+          <div class="step" id="formula">I(X;Y) = H(X) + H(Y) - H(X,Y) = 1.000 +<tcxspan tcxhref="10002000" title="Call  1.000 - 2.000  via 3CX"> 1.000 - 2.000 </tcxspan>= 0.000</div>
+        </div>
+        <div class="ctl">
+          <label>Razlaga</label>
+          <div class="step" id="interp">Spremenljivki sta praktično neodvisni.</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Par</th><th>Skupna verjetnost</th><th>Produkt marginal</th><th>Lokalni prispevek</th></tr>
+        </thead>
+        <tbody id="tb"><tr><td><code>(0,0)</code></td><td><code>0.250</code></td><td><code>0.250</code></td><td><code>0.000</code></td></tr><tr><td><code>(0,1)</code></td><td><code>0.250</code></td><td><code>0.250</code></td><td><code>0.000</code></td></tr><tr><td><code>(1,0)</code></td><td><code>0.250</code></td><td><code>0.250</code></td><td><code>0.000</code></td></tr><tr><td><code>(1,1)</code></td><td><code>0.250</code></td><td><code>0.250</code></td><td><code>0.000</code></td></tr><tr><td><strong>Skupaj</strong></td><td><code>1.000</code></td><td><code>1.000</code></td><td><code>0.000 bit</code></td></tr></tbody>
+      </table>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vizualizacija prekrivanja informacij</label>
+          <canvas id="canvas" width="1000" height="390"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const presets = [
+    { key:'I(X;Y) = 0', corr:0, description:'Poznavanje X ne pove nič o Y, ker je skupna porazdelitev produkt marginal.' },
+    { key:'Deljeno znanje', corr:0.45, description:'Del mase se skoncentrira na diagonalo, zato X in Y delita nekaj informacij.' },
+    { key:'Skoraj popolna odvisnost', corr:0.92, description:'Ko poznamo X, skoraj vemo tudi Y, zato je prekrivanje veliko.' }
+  ];
+
+  const corr = document.getElementById('corr');
+  const corrVal = document.getElementById('corrVal');
+  const summary = document.getElementById('summary');
+  const formula = document.getElementById('formula');
+  const interp = document.getElementById('interp');
+  const tb = document.getElementById('tb');
+  const tag = document.getElementById('tag');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let current = presets[0];
+
+  function entropy(p) {
+    if (p <= 0 || p >= 1) return 0;
+    return -(p * Math.log2(p) + (1 - p) * Math.log2(1 - p));
+  }
+
+  function fmt(x) {
+    return x.toFixed(3);
+  }
+
+  function distribution(c) {
+    return [
+      0.25 + c / 4,
+      0.25 - c / 4,
+      0.25 - c / 4,
+      0.25 + c / 4
+    ];
+  }
+
+  function renderTable(dist, product) {
+    const labels = ['(0,0)','(0,1)','(1,0)','(1,1)'];
+    tb.innerHTML = '';
+    let total = 0;
+    dist.forEach((p, i) => {
+      const q = product[i];
+      const term = p > 0 && q > 0 ? p * Math.log2(p / q) : 0;
+      total += term;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><code>${labels[i]}</code></td><td><code>${fmt(p)}</code></td><td><code>${fmt(q)}</code></td><td><code>${fmt(term)}</code></td>`;
+      tb.appendChild(tr);
+    });
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>Skupaj</strong></td><td><code>1.000</code></td><td><code>1.000</code></td><td><code>${fmt(total)} bit</code></td>`;
+    tb.appendChild(tr);
+    return total;
+  }
+
+  function draw(dist, hx, hy, hxy, mi) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#111827';
+    ctx.font = '13px ui-monospace, Menlo, monospace';
+    ctx.fillText('Medsebojna informacija je del entropije, ki ga kroga H(X) in H(Y) delita. Večja povezava pomeni večje prekrivanje.', 28, 30);
+
+    const cx1 = 260;
+    const cx2 = 430;
+    const cy = 190;
+    const r = 110;
+    ctx.fillStyle = 'rgba(59,130,246,.18)';
+    ctx.beginPath();
+    ctx.arc(cx1, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(59,130,246,.55)';
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(34,197,94,.18)';
+    ctx.beginPath();
+    ctx.arc(cx2, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(34,197,94,.55)';
+    ctx.stroke();
+
+    ctx.fillStyle = '#111827';
+    ctx.font = 'bold 14px ui-sans-serif, system-ui, sans-serif';
+    ctx.fillText('H(X)', 210, 92);
+    ctx.fillText('H(Y)', 454, 92);
+    ctx.font = '12px ui-monospace, Menlo, monospace';
+    ctx.fillText(`${fmt(Math.max(hx - mi, 0))} bit`, 180, 190);
+    ctx.fillText(`${fmt(mi)} bit`, 320, 190);
+    ctx.fillText(`${fmt(Math.max(hy - mi, 0))} bit`, 445, 190);
+
+    const gridX = 620;
+    const gridY = 98;
+    const cell = 110;
+    const labels = ['(0,0)','(0,1)','(1,0)','(1,1)'];
+    const colors = ['rgba(59,130,246,.82)', 'rgba(249,115,22,.82)', 'rgba(249,115,22,.82)', 'rgba(34,197,94,.82)'];
+    dist.forEach((p, i) => {
+      const row = i < 2 ? 0 : 1;
+      const col = i % 2;
+      const x = gridX + col * (cell + 12);
+      const y = gridY + row * (cell + 12);
+      ctx.fillStyle = 'rgba(148,163,184,.12)';
+      ctx.fillRect(x, y, cell, cell);
+      ctx.strokeStyle = 'rgba(0,0,0,.14)';
+      ctx.strokeRect(x, y, cell, cell);
+      const inner = cell * Math.sqrt(p / 0.5);
+      const off = (cell - inner) / 2;
+      ctx.fillStyle = colors[i];
+      ctx.fillRect(x + off, y + off, inner, inner);
+      ctx.fillStyle = '#111827';
+      ctx.fillText(labels[i], x + 10, y + 18);
+      ctx.fillText(`p=${fmt(p)}`, x + 10, y + 36);
+    });
+
+    ctx.fillStyle = 'rgba(0,0,0,.04)';
+    ctx.fillRect(620, 332, 232, 46);
+    ctx.strokeStyle = 'rgba(0,0,0,.12)';
+    ctx.strokeRect(620, 332, 232, 46);
+    ctx.fillStyle = '#111827';
+    ctx.fillText(`H(X,Y) = ${fmt(hxy)} bit`, 634, 352);
+    ctx.fillText(`I(X;Y) = ${fmt(mi)} bit`, 634, 370);
+  }
+
+  function render() {
+    const c = parseInt(corr.value, 10) / 100;
+    const dist = distribution(c);
+    const product = [0.25, 0.25, 0.25, 0.25];
+    const mi = renderTable(dist, product);
+    const hx = entropy(0.5);
+    const hy = entropy(0.5);
+    const hxy = -(dist.reduce((sum, p) => sum + (p > 0 ? p * Math.log2(p) : 0), 0));
+
+    corrVal.textContent = fmt(c);
+    tag.textContent = current.key;
+    summary.textContent = `X in Y delita ${fmt(mi)} bita informacije. Toliko negotovosti o eni spremenljivki odpade, ko poznamo drugo.`;
+    formula.textContent = `I(X;Y) = H(X) + H(Y) - H(X,Y) = ${fmt(hx)} + ${fmt(hy)} - ${fmt(hxy)} = ${fmt(mi)}`;
+    interp.textContent = mi < 0.05
+      ? 'Spremenljivki sta praktično neodvisni.'
+      : mi < 0.4
+        ? 'Povezava obstaja, a ni zelo močna.'
+        : 'Poznavanje ene spremenljivke močno zmanjša negotovost o drugi.';
+    draw(dist, hx, hy, hxy, mi);
+  }
+
+  function applyPreset(preset) {
+    current = preset;
+    corr.value = String(Math.round(preset.corr * 100));
+    render();
+  }
+
+  corr.addEventListener('input', render);
+  document.getElementById('ex1').addEventListener('click', () => applyPreset(presets[0]));
+  document.getElementById('ex2').addEventListener('click', () => applyPreset(presets[1]));
+  document.getElementById('ex3').addEventListener('click', () => applyPreset(presets[2]));
+
+  applyPreset(presets[0]);
+})();
+</script>
+
+
+</body></html>

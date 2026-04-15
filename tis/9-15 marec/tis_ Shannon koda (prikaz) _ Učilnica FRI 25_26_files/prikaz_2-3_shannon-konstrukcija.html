@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<!-- saved from url=(0120)https://ucilnica.fri.uni-lj.si/pluginfile.php/244342/mod_resource/content/1/prikaz_2-3_shannon-konstrukcija.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 2-3: Konstrukcija Shannonove kode</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:var(--sans); background:var(--bg); color:var(--text); }
+    header{ padding:28px 18px 10px; max-width:1100px; margin:0 auto; }
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    canvas{width:100%; height:320px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .val{font-family:var(--mono); font-size:12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left}
+    th{background:rgba(0,0,0,.05)}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 2-3: Konstrukcija Shannonove kode</h1>
+  <p class="lead">Za vsak simbol izračunamo <code>L<sub>i</sub> = ceil(-log<sub>2</sub> p<sub>i</sub>)</code>, nato kodo dobimo iz prvih <code>L<sub>i</sub></code> bitov binarne predstavitve kumulativne verjetnosti <code>q<sub>i</sub></code>.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Koraki konstrukcije Shannonove kode</div>
+        <div class="sub">Verjetnosti naj bodo urejene padajoče. Koda ni nujno optimalna, je pa blizu entropijski meji.</div>
+      </div>
+      <span class="tag" id="avg">L̄ = 2.8500 bit/simbol</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Prednastavljen vir</label>
+          <button id="ex1">Primer A</button>
+          <button id="ex2">Primer B</button>
+          <div class="val" id="entropy">Entropija H(X) = 2.2960 bit/simbol</div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Simbol</th><th>p<sub>i</sub></th><th>q<sub>i</sub> (kumulativno)</th><th>L<sub>i</sub></th><th>Shannonova koda</th>
+          </tr>
+        </thead>
+        <tbody id="tb"><tr><td>A</td><td>0.4000</td><td>0.0000</td><td>2</td><td><code>00</code></td></tr><tr><td>B</td><td>0.2000</td><td>0.4000</td><td>3</td><td><code>011</code></td></tr><tr><td>C</td><td>0.1500</td><td>0.6000</td><td>3</td><td><code>100</code></td></tr><tr><td>D</td><td>0.1000</td><td>0.7500</td><td>4</td><td><code>1100</code></td></tr><tr><td>E</td><td>0.0800</td><td>0.8500</td><td>4</td><td><code>1101</code></td></tr><tr><td>F</td><td>0.0700</td><td>0.9300</td><td>4</td><td><code>1110</code></td></tr></tbody>
+      </table>
+      <div class="row">
+        <div class="ctl" style="flex:1 1 480px">
+          <label>Verjetnosti in kumulativni intervali [q_i, q_i + p_i)</label>
+          <canvas id="probCanvas" width="980" height="340"></canvas>
+        </div>
+        <div class="ctl" style="flex:1 1 480px">
+          <label>Vizualna konstrukcija Shannonove kode v drevesu</label>
+          <canvas id="treeCanvas" width="980" height="420"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const tb = document.getElementById('tb');
+  const avg = document.getElementById('avg');
+  const entropyEl = document.getElementById('entropy');
+  const probCanvas = document.getElementById('probCanvas');
+  const treeCanvas = document.getElementById('treeCanvas');
+  const pctx = probCanvas.getContext('2d');
+  const tctx = treeCanvas.getContext('2d');
+  const log2 = (x) => Math.log(x)/Math.log(2);
+
+  let symbols = [
+    {s:'A',p:0.40},{s:'B',p:0.20},{s:'C',p:0.15},{s:'D',p:0.10},{s:'E',p:0.08},{s:'F',p:0.07}
+  ];
+
+  function fracToBits(x, bits) {
+    let v = x;
+    let out = '';
+    for (let i = 0; i < bits; i++) {
+      v *= 2;
+      if (v >= 1) { out += '1'; v -= 1; } else out += '0';
+    }
+    return out;
+  }
+
+  function nodePos(depth, idx, maxDepth, x0, y0, w, h) {
+    const y = y0 + (maxDepth === 0 ? 0 : depth * (h / maxDepth));
+    const cells = Math.pow(2, depth);
+    const x = x0 + ((idx + 0.5) / cells) * w;
+    return {x, y};
+  }
+
+  function drawProb(data) {
+    const W = probCanvas.width, Hc = probCanvas.height;
+    pctx.clearRect(0, 0, W, Hc);
+    const m = {l:56, r:20, t:22, b:28};
+    const x0 = m.l, y0 = m.t, w = W - m.l - m.r, h = Hc - m.t - m.b;
+
+    pctx.strokeStyle = 'rgba(0,0,0,.35)';
+    pctx.beginPath();
+    pctx.moveTo(x0, y0);
+    pctx.lineTo(x0, y0 + h);
+    pctx.stroke();
+    pctx.fillStyle = '#374151';
+    pctx.font = '12px ui-monospace, Menlo, monospace';
+    pctx.fillText('1', x0 - 18, y0 + 4);
+    pctx.fillText('0', x0 - 18, y0 + h + 4);
+
+    const palette = ['#2563eb','#0ea5e9','#0891b2','#1d4ed8','#3b82f6','#0284c7','#60a5fa','#38bdf8'];
+    data.forEach((d, i) => {
+      const top = y0 + (1 - (d.q + d.p)) * h;
+      const bottom = y0 + (1 - d.q) * h;
+      const bh = Math.max(1, bottom - top);
+      const colW = Math.min(90, Math.max(58, w / Math.max(1, data.length) - 8));
+      const x = x0 + 18 + i * (colW + 8);
+      const maxX = x0 + w - colW;
+      const drawX = Math.min(x, maxX);
+      pctx.fillStyle = palette[i % palette.length];
+      pctx.fillRect(drawX, top, colW, bh);
+      pctx.fillStyle = '#111827';
+      pctx.font = '12px ui-monospace, Menlo, monospace';
+      pctx.fillText(`${d.s}`, drawX + 3, top - 6);
+      pctx.fillText(`q=${d.q.toFixed(3)}`, drawX + 3, bottom + 14);
+      pctx.fillText(`q+p=${(d.q + d.p).toFixed(3)}`, drawX + 3, bottom + 28);
+      pctx.fillText(`p=${d.p.toFixed(3)}`, drawX + 3, top + 16);
+    });
+  }
+
+  function drawTree(data) {
+    const maxDepth = Math.max(...data.map(d => d.l));
+    const W = treeCanvas.width, Hc = treeCanvas.height;
+    tctx.clearRect(0, 0, W, Hc);
+    const m = {l:20, r:20, t:20, b:30};
+    const x0 = m.l, y0 = m.t, w = W - m.l - m.r, h = Hc - m.t - m.b;
+    const used = new Set(['']);
+
+    data.forEach(d => {
+      for (let i = 1; i <= d.code.length; i++) used.add(d.code.slice(0, i));
+    });
+
+    for (const p of used) {
+      if (p.length === 0) continue;
+      const par = p.slice(0, -1);
+      if (!used.has(par)) continue;
+      const d1 = par.length;
+      const d2 = p.length;
+      const i1 = par.length ? parseInt(par, 2) : 0;
+      const i2 = parseInt(p, 2);
+      const a = nodePos(d1, i1, maxDepth, x0, y0, w, h);
+      const b = nodePos(d2, i2, maxDepth, x0, y0, w, h);
+      tctx.strokeStyle = 'rgba(30,64,175,.35)';
+      tctx.lineWidth = 1.3;
+      tctx.beginPath(); tctx.moveTo(a.x, a.y); tctx.lineTo(b.x, b.y); tctx.stroke();
+    }
+
+    for (const p of used) {
+      const d = p.length;
+      const idx = d ? parseInt(p, 2) : 0;
+      const pos = nodePos(d, idx, maxDepth, x0, y0, w, h);
+      tctx.fillStyle = 'rgba(147,197,253,.52)';
+      tctx.strokeStyle = 'rgba(30,64,175,.45)';
+      tctx.beginPath(); tctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2); tctx.fill(); tctx.stroke();
+    }
+
+    data.forEach(d => {
+      const idx = parseInt(d.code, 2);
+      const leaf = nodePos(d.l, idx, maxDepth, x0, y0, w, h);
+      tctx.fillStyle = '#dc2626';
+      tctx.beginPath(); tctx.arc(leaf.x, leaf.y, 7, 0, Math.PI * 2); tctx.fill();
+      tctx.fillStyle = '#111827';
+      tctx.font = '12px ui-monospace, Menlo, monospace';
+      tctx.fillText(`${d.s}: ${d.code}`, leaf.x + 8, leaf.y - 7);
+    });
+  }
+
+  function render() {
+    symbols = symbols.slice().sort((a, b) => b.p - a.p);
+    let q = 0;
+    let H = 0;
+    let L = 0;
+    const data = [];
+    tb.innerHTML = '';
+    symbols.forEach(({s,p}) => {
+      const l = Math.ceil(-log2(p));
+      const code = fracToBits(q, l);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${s}</td><td>${p.toFixed(4)}</td><td>${q.toFixed(4)}</td><td>${l}</td><td><code>${code}</code></td>`;
+      tb.appendChild(tr);
+      H += -p*log2(p);
+      L += p*l;
+      data.push({s, p, q, l, code});
+      q += p;
+    });
+    avg.textContent = `L̄ = ${L.toFixed(4)} bit/simbol`;
+    entropyEl.textContent = `Entropija H(X) = ${H.toFixed(4)} bit/simbol`;
+    drawProb(data);
+    drawTree(data);
+  }
+
+  document.getElementById('ex1').addEventListener('click', () => {
+    symbols = [
+      {s:'A',p:0.40},{s:'B',p:0.20},{s:'C',p:0.15},{s:'D',p:0.10},{s:'E',p:0.08},{s:'F',p:0.07}
+    ];
+    render();
+  });
+
+  document.getElementById('ex2').addEventListener('click', () => {
+    symbols = [
+      {s:'x1',p:0.35},{s:'x2',p:0.25},{s:'x3',p:0.16},{s:'x4',p:0.10},{s:'x5',p:0.08},{s:'x6',p:0.06}
+    ];
+    render();
+  });
+
+  render();
+})();
+</script>
+
+
+</body></html>

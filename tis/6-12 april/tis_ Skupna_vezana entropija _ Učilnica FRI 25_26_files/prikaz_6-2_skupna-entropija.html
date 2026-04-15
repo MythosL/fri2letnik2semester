@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<!-- saved from url=(0116)https://ucilnica.fri.uni-lj.si/pluginfile.php/244876/mod_resource/content/1/prikaz_6-2_skupna-entropija.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prikaz 6-2: Skupna entropija</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:var(--sans); background:var(--bg); color:var(--text)}
+    header{padding:28px 18px 10px; max-width:1100px; margin:0 auto}
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:0 10px 25px rgba(0,0,0,.10); overflow:hidden}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .val,.step,code{font-family:var(--mono); font-size:12px}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer; margin:0 6px 6px 0}
+    canvas{width:100%; height:400px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left; vertical-align:top}
+    th{background:rgba(0,0,0,.05)}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Prikaz 6-2: Skupna entropija</h1>
+  <p class="lead">Skupna entropija <code>H(X,Y)</code> meri negotovost celotnega para <code>(X,Y)</code>. Več razpršitve med mogočimi pari pomeni večjo skupno entropijo.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Porazdelitev mase med štirimi pari dogodkov</div>
+        <div class="sub">Prikaz uporablja binarni spremenljivki <code>X</code> in <code>Y</code>. Drsnika spreminjata diagonalno maso in neravnovesje med pari, platno pa prikaže mrežo vseh kombinacij.</div>
+      </div>
+      <span class="tag" id="tag">H(X,Y) = 2 bita</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Prednastavljen primer</label>
+          <button id="ex1">Enakomerna mreža</button>
+          <button id="ex2">Zgoščena diagonala</button>
+          <button id="ex3">Skoraj en par</button>
+        </div>
+        <div class="ctl">
+          <label>Delež diagonalne mase <span class="val" id="diagVal">0.500</span></label>
+          <input id="diag" type="range" min="0" max="100" step="1" value="50">
+          <div class="step">To je skupni delež za polji <code>(0,0)</code> in <code>(1,1)</code>.</div>
+        </div>
+        <div class="ctl">
+          <label>Neravnovesje znotraj diagonal/off-diagonal <span class="val" id="biasVal">0.000</span></label>
+          <input id="bias" type="range" min="-40" max="40" step="1" value="0">
+          <div class="step">Pozitivna vrednost premakne maso proti <code>(0,0)</code> in <code>(0,1)</code>.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl">
+          <label>Povzetek</label>
+          <div class="step" id="summary">Negotovost celotnega para (X,Y) je 2.000 bita. To je število bitov, ki jih povprečno potrebujemo za opis enega para.</div>
+          <div class="step" id="formula">H(X,Y) = 0.500 + 0.500 + 0.500 + 0.500 = 2.000</div>
+        </div>
+        <div class="ctl">
+          <label>Marginalni porazdelitvi</label>
+          <div class="step" id="marginals">P(X=0)=0.500, P(X=1)=0.500, P(Y=0)=0.500, P(Y=1)=0.500</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Par</th><th>Verjetnost</th><th>Prispevek <code>-p log2 p</code></th></tr>
+        </thead>
+        <tbody id="tb"><tr><td><code>(0,0)</code></td><td><code>0.250</code></td><td><code>0.500</code></td></tr><tr><td><code>(0,1)</code></td><td><code>0.250</code></td><td><code>0.500</code></td></tr><tr><td><code>(1,0)</code></td><td><code>0.250</code></td><td><code>0.500</code></td></tr><tr><td><code>(1,1)</code></td><td><code>0.250</code></td><td><code>0.500</code></td></tr><tr><td><strong>Skupaj</strong></td><td><code>1.000</code></td><td><code>2.000 bit</code></td></tr></tbody>
+      </table>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vizualizacija skupne porazdelitve</label>
+          <canvas id="canvas" width="1000" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const presets = [
+    { key:'H(X,Y) = 2 bita', diag:0.5, bias:0, description:'Vsi štirje pari so enako verjetni, zato je negotovost največja.' },
+    { key:'Močna diagonala', diag:0.82, bias:0, description:'Največkrat opazimo para (0,0) in (1,1), zato je možnih stanj manj učinkovito.' },
+    { key:'Skoraj en sam par', diag:0.96, bias:0.28, description:'Večina mase je skoncentrirana v enem polju, zato je skupna entropija nizka.' }
+  ];
+
+  const diag = document.getElementById('diag');
+  const bias = document.getElementById('bias');
+  const diagVal = document.getElementById('diagVal');
+  const biasVal = document.getElementById('biasVal');
+  const summary = document.getElementById('summary');
+  const formula = document.getElementById('formula');
+  const marginals = document.getElementById('marginals');
+  const tb = document.getElementById('tb');
+  const tag = document.getElementById('tag');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let current = presets[0];
+
+  function entropyTerm(p) {
+    if (p <= 0) return 0;
+    return -p * Math.log2(p);
+  }
+
+  function fmt(x) {
+    return x.toFixed(3);
+  }
+
+  function buildDistribution(diagonalMass, shift) {
+    const off = 1 - diagonalMass;
+    const d1 = Math.max(0, Math.min(diagonalMass, diagonalMass / 2 + shift));
+    const d2 = diagonalMass - d1;
+    const o1 = Math.max(0, Math.min(off, off / 2 + shift));
+    const o2 = off - o1;
+    return [d1, o1, o2, d2];
+  }
+
+  function renderTable(dist) {
+    const labels = ['(0,0)','(0,1)','(1,0)','(1,1)'];
+    tb.innerHTML = '';
+    let total = 0;
+    dist.forEach((p, i) => {
+      const term = entropyTerm(p);
+      total += term;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><code>${labels[i]}</code></td><td><code>${fmt(p)}</code></td><td><code>${fmt(term)}</code></td>`;
+      tb.appendChild(tr);
+    });
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>Skupaj</strong></td><td><code>1.000</code></td><td><code>${fmt(total)} bit</code></td>`;
+    tb.appendChild(tr);
+    return total;
+  }
+
+  function draw(dist, hx, hy, hxy) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const x0 = 70;
+    const y0 = 72;
+    const cell = 170;
+    const gap = 14;
+    const colors = ['rgba(59,130,246,.82)', 'rgba(249,115,22,.82)', 'rgba(34,197,94,.82)', 'rgba(99,102,241,.76)'];
+    const labels = ['(0,0)','(0,1)','(1,0)','(1,1)'];
+
+    ctx.fillStyle = '#111827';
+    ctx.font = '13px ui-monospace, Menlo, monospace';
+    ctx.fillText('Vsak kvadrat predstavlja en možen par (X,Y). Večja kot je koncentracija v nekaj poljih, manjša je skupna entropija.', 28, 28);
+    ctx.font = '12px ui-sans-serif, system-ui, sans-serif';
+    ctx.fillText('Y = 0', x0 + 54, y0 - 12);
+    ctx.fillText('Y = 1', x0 + cell + gap + 54, y0 - 12);
+    ctx.fillText('X = 0', x0 - 46, y0 + 92);
+    ctx.fillText('X = 1', x0 - 46, y0 + cell + gap + 92);
+
+    dist.forEach((p, i) => {
+      const row = i < 2 ? 0 : 1;
+      const col = i % 2;
+      const x = x0 + col * (cell + gap);
+      const y = y0 + row * (cell + gap);
+      ctx.fillStyle = 'rgba(148,163,184,.12)';
+      ctx.fillRect(x, y, cell, cell);
+      ctx.strokeStyle = 'rgba(0,0,0,.14)';
+      ctx.strokeRect(x, y, cell, cell);
+
+      const inner = cell * Math.sqrt(p);
+      const off = (cell - inner) / 2;
+      ctx.fillStyle = colors[i];
+      ctx.fillRect(x + off, y + off, inner, inner);
+      ctx.fillStyle = '#111827';
+      ctx.font = '12px ui-monospace, Menlo, monospace';
+      ctx.fillText(labels[i], x + 12, y + 18);
+      ctx.fillText(`p = ${fmt(p)}`, x + 12, y + 36);
+      ctx.fillText(`-p log2 p = ${fmt(entropyTerm(p))}`, x + 12, y + 54);
+    });
+
+    ctx.fillStyle = 'rgba(0,0,0,.04)';
+    ctx.fillRect(500, 94, 400, 220);
+    ctx.strokeStyle = 'rgba(0,0,0,.12)';
+    ctx.strokeRect(500, 94, 400, 220);
+    ctx.fillStyle = '#111827';
+    ctx.font = '13px ui-sans-serif, system-ui, sans-serif';
+    ctx.fillText('Povzetek', 520, 122);
+    ctx.font = '12px ui-monospace, Menlo, monospace';
+    ctx.fillText(`H(X)   = ${fmt(hx)} bit`, 520, 160);
+    ctx.fillText(`H(Y)   = ${fmt(hy)} bit`, 520, 186);
+    ctx.fillText(`H(X,Y) = ${fmt(hxy)} bit`, 520, 212);
+    ctx.fillText(`H(X,Y) <= H(X) + H(Y)`, 520, 250);
+    ctx.fillText(`zgornja meja = ${fmt(hx + hy)} bit`, 520, 276);
+  }
+
+  function render() {
+    const diagonalMass = parseInt(diag.value, 10) / 100;
+    const shift = parseInt(bias.value, 10) / 100;
+    const dist = buildDistribution(diagonalMass, shift);
+    const hxy = renderTable(dist);
+    const px0 = dist[0] + dist[1];
+    const px1 = dist[2] + dist[3];
+    const py0 = dist[0] + dist[2];
+    const py1 = dist[1] + dist[3];
+    const hx = entropyTerm(px0) + entropyTerm(px1);
+    const hy = entropyTerm(py0) + entropyTerm(py1);
+
+    diagVal.textContent = fmt(diagonalMass);
+    biasVal.textContent = fmt(shift);
+    tag.textContent = current.key;
+    summary.textContent = `Negotovost celotnega para (X,Y) je ${fmt(hxy)} bita. To je število bitov, ki jih povprečno potrebujemo za opis enega para.`;
+    formula.textContent = `H(X,Y) = ${dist.map(p => fmt(entropyTerm(p))).join(' + ')} = ${fmt(hxy)}`;
+    marginals.textContent = `P(X=0)=${fmt(px0)}, P(X=1)=${fmt(px1)}, P(Y=0)=${fmt(py0)}, P(Y=1)=${fmt(py1)}`;
+    draw(dist, hx, hy, hxy);
+  }
+
+  function applyPreset(preset) {
+    current = preset;
+    diag.value = String(Math.round(preset.diag * 100));
+    bias.value = String(Math.round(preset.bias * 100));
+    render();
+  }
+
+  [diag, bias].forEach(el => el.addEventListener('input', render));
+  document.getElementById('ex1').addEventListener('click', () => applyPreset(presets[0]));
+  document.getElementById('ex2').addEventListener('click', () => applyPreset(presets[1]));
+  document.getElementById('ex3').addEventListener('click', () => applyPreset(presets[2]));
+
+  applyPreset(presets[0]);
+})();
+</script>
+
+
+</body></html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<!-- saved from url=(0117)https://ucilnica.fri.uni-lj.si/pluginfile.php/244344/mod_resource/content/1/prikaz_2-4_fano-konstrukcija.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 2-4: Konstrukcija Fanojeve kode</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:var(--sans); background:var(--bg); color:var(--text); }
+    header{ padding:28px 18px 10px; max-width:1100px; margin:0 auto; }
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    canvas{width:100%; height:360px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 300px; min-width:300px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .val{font-family:var(--mono); font-size:12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left}
+    th{background:rgba(0,0,0,.05)}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 2-4: Konstrukcija Fanojeve kode</h1>
+  <p class="lead">Shannon-Fano: razvrsti simbole po verjetnosti, nato jih rekurzivno deli v dve skupini s čim bolj uravnoteženima vsotama.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Rekurzivno deljenje množice simbolov</div>
+        <div class="sub">Drsnik pokaže, do katere globine delitve je postopek izveden.</div>
+      </div>
+      <span class="tag" id="tag">globina 3</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Prednastavljen vir</label>
+          <button id="ex1">Primer A</button>
+          <button id="ex2">Primer B</button>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Simbol</th><th>p_i</th><th>Fanojeva koda</th></tr>
+        </thead>
+        <tbody id="tb"><tr><td>A</td><td>0.300</td><td><code>00</code></td></tr><tr><td>B</td><td>0.220</td><td><code>01</code></td></tr><tr><td>C</td><td>0.180</td><td><code>100</code></td></tr><tr><td>D</td><td>0.120</td><td><code>101</code></td></tr><tr><td>E</td><td>0.100</td><td><code>110</code></td></tr><tr><td>F</td><td>0.080</td><td><code>111</code></td></tr></tbody>
+      </table>
+      <div class="row">
+        <div class="ctl">
+          <label>Globina razcepov <span class="val" id="dVal">3</span></label>
+          <input id="d" type="range" min="0" max="3" step="1" value="3">
+          <div class="val" id="note">Polna Fanojeva konstrukcija za ta primer.</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Drevo rekurzivnih razcepov</label>
+          <canvas id="tree" width="1000" height="520"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const exampleA = [
+    {s:'A',p:0.30},{s:'B',p:0.22},{s:'C',p:0.18},{s:'D',p:0.12},{s:'E',p:0.10},{s:'F',p:0.08}
+  ];
+  const exampleB = [
+    {s:'x1',p:0.35},{s:'x2',p:0.25},{s:'x3',p:0.16},{s:'x4',p:0.10},{s:'x5',p:0.08},{s:'x6',p:0.06}
+  ];
+  let probs = exampleA.slice();
+  const tb = document.getElementById('tb');
+  const d = document.getElementById('d');
+  const dVal = document.getElementById('dVal');
+  const note = document.getElementById('note');
+  const tag = document.getElementById('tag');
+  const tree = document.getElementById('tree');
+  const ctx = tree.getContext('2d');
+
+  function splitIndex(arr) {
+    const total = arr.reduce((a,x)=>a+x.p,0);
+    let left = 0;
+    let best = 0;
+    let bestDiff = Infinity;
+    for (let i=0;i<arr.length-1;i++) {
+      left += arr[i].p;
+      const right = total - left;
+      const diff = Math.abs(left-right);
+      if (diff < bestDiff) { bestDiff = diff; best = i; }
+    }
+    return best;
+  }
+
+  function assign(arr, prefix, depth, maxDepth, out) {
+    if (arr.length <= 1 || depth === maxDepth) {
+      arr.forEach(x => out[x.s] = prefix || '0');
+      return;
+    }
+    const i = splitIndex(arr);
+    assign(arr.slice(0, i + 1), prefix + '0', depth + 1, maxDepth, out);
+    assign(arr.slice(i + 1), prefix + '1', depth + 1, maxDepth, out);
+  }
+
+  function buildTree(items, depth, maxDepth) {
+    const node = {
+      items,
+      depth,
+      p: items.reduce((a, x) => a + x.p, 0),
+      left: null,
+      right: null,
+      x: 0,
+      y: 0
+    };
+    if (items.length <= 1 || depth >= maxDepth) return node;
+    const i = splitIndex(items);
+    node.left = buildTree(items.slice(0, i + 1), depth + 1, maxDepth);
+    node.right = buildTree(items.slice(i + 1), depth + 1, maxDepth);
+    return node;
+  }
+
+  function collectLeaves(node, acc) {
+    if (!node.left && !node.right) {
+      acc.push(node);
+      return;
+    }
+    if (node.left) collectLeaves(node.left, acc);
+    if (node.right) collectLeaves(node.right, acc);
+  }
+
+  function setPositions(root, maxDepth) {
+    const leaves = [];
+    collectLeaves(root, leaves);
+    const W = tree.width, H = tree.height;
+    const m = {l:30, r:30, t:22, b:36};
+    const x0 = m.l, y0 = m.t, w = W - m.l - m.r, h = H - m.t - m.b;
+
+    leaves.forEach((leaf, i) => {
+      leaf.x = x0 + (leaves.length === 1 ? w / 2 : i * (w / (leaves.length - 1)));
+      leaf.y = y0 + (maxDepth === 0 ? 0 : leaf.depth * (h / maxDepth));
+    });
+
+    function backfill(n) {
+      n.y = y0 + (maxDepth === 0 ? 0 : n.depth * (h / maxDepth));
+      if (!n.left && !n.right) return;
+      if (n.left) backfill(n.left);
+      if (n.right) backfill(n.right);
+      if (n.left && n.right) n.x = (n.left.x + n.right.x) / 2;
+      else if (n.left) n.x = n.left.x;
+      else if (n.right) n.x = n.right.x;
+    }
+    backfill(root);
+  }
+
+  function drawTree(root) {
+    const W = tree.width, H = tree.height;
+    ctx.clearRect(0, 0, W, H);
+    const pad = 8;
+
+    function drawEdges(n) {
+      if (!n) return;
+      if (n.left) {
+        ctx.strokeStyle = 'rgba(30,64,175,.35)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(n.left.x, n.left.y); ctx.stroke();
+        ctx.fillStyle = '#1f2937';
+        ctx.font = '14px ui-monospace, Menlo, monospace';
+        ctx.fillText('0', (n.x + n.left.x) / 2 - 6, (n.y + n.left.y) / 2 - 4);
+      }
+      if (n.right) {
+        ctx.strokeStyle = 'rgba(30,64,175,.35)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(n.right.x, n.right.y); ctx.stroke();
+        ctx.fillStyle = '#1f2937';
+        ctx.font = '14px ui-monospace, Menlo, monospace';
+        ctx.fillText('1', (n.x + n.right.x) / 2 + 2, (n.y + n.right.y) / 2 - 4);
+      }
+      drawEdges(n.left);
+      drawEdges(n.right);
+    }
+
+    function drawNodes(n) {
+      if (!n) return;
+      ctx.fillStyle = 'rgba(147,197,253,.55)';
+      ctx.strokeStyle = 'rgba(30,64,175,.45)';
+      ctx.beginPath(); ctx.arc(n.x, n.y, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      let labelText = '';
+      if (n.items.length <= 4) {
+        labelText = n.items.map(x => x.s).join(',');
+      } else {
+        labelText = `${n.items[0].s},${n.items[1].s},...,${n.items[n.items.length - 1].s}`;
+      }
+      ctx.fillStyle = '#111827';
+      ctx.font = '13px ui-monospace, Menlo, monospace';
+      const txt = `{${labelText}} p=${n.p.toFixed(3)}`;
+      const tw = ctx.measureText(txt).width;
+      let tx = n.x + 8;
+      if (tx + tw > W - pad) tx = n.x - 8 - tw;
+      if (tx < pad) tx = pad;
+      ctx.fillText(txt, tx, n.y - 7);
+
+      drawNodes(n.left);
+      drawNodes(n.right);
+    }
+
+    drawEdges(root);
+    drawNodes(root);
+  }
+
+  function render() {
+    const maxDepth = parseInt(d.value,10);
+    probs = probs.slice().sort((a, b) => b.p - a.p);
+    const out = {};
+    assign(probs, '', 0, maxDepth, out);
+    tb.innerHTML = '';
+    probs.forEach(x => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${x.s}</td><td>${x.p.toFixed(3)}</td><td><code>${out[x.s]}</code></td>`;
+      tb.appendChild(tr);
+    });
+    dVal.textContent = `${maxDepth}`;
+    note.textContent = maxDepth < 3 ? 'Koda je delno zgrajena (prikaz vmesnega koraka).' : 'Polna Fanojeva konstrukcija za ta primer.';
+    tag.textContent = `globina ${maxDepth}`;
+
+    const root = buildTree(probs, 0, maxDepth);
+    setPositions(root, Math.max(maxDepth, 1));
+    drawTree(root);
+  }
+
+  d.addEventListener('input', render);
+  document.getElementById('ex1').addEventListener('click', () => {
+    probs = exampleA.slice();
+    d.value = '3';
+    render();
+  });
+  document.getElementById('ex2').addEventListener('click', () => {
+    probs = exampleB.slice();
+    d.value = '3';
+    render();
+  });
+  render();
+})();
+</script>
+
+
+</body></html>

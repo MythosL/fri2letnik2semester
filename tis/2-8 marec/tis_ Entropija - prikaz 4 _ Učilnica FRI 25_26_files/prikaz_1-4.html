@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<!-- saved from url=(0099)https://ucilnica.fri.uni-lj.si/pluginfile.php/244205/mod_resource/content/2/prikaz_1-4.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 1-3: Entropija besedila</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:var(--sans); background:var(--bg); color:var(--text); }
+    header{ padding:28px 18px 10px; max-width:1100px; margin:0 auto; }
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    .ctl{background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl textarea{
+      width:100%; min-height:300px; resize:vertical;
+      padding:8px 10px; border-radius:12px;
+      border:1px solid rgba(0,0,0,.18); background:rgba(255,255,255,.95); color:var(--text);
+      font-family:var(--sans); line-height:1.4;
+    }
+    .kpi{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px}
+    @media (max-width:800px){.kpi{grid-template-columns:1fr}}
+    .box{padding:10px 12px; border-radius:14px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10)}
+    .lab{font-size:11px; color:var(--muted)}
+    .num{font-family:var(--mono); font-size:13px; margin-top:6px}
+    .twocol{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px}
+    @media (max-width:900px){.twocol{grid-template-columns:1fr}}
+    canvas{width:100%; height:300px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .table-wrap{
+      margin-top:12px;
+      background:rgba(0,0,0,.03);
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:14px;
+      padding:10px 12px;
+      overflow-x:auto;
+    }
+    table{
+      width:100%;
+      min-width:760px;
+      border-collapse:collapse;
+      font-size:13px;
+    }
+    th, td{
+      border:1px solid rgba(0,0,0,.16);
+      padding:8px 10px;
+      text-align:left;
+      vertical-align:top;
+    }
+    th{
+      background:rgba(0,0,0,.06);
+      font-weight:700;
+    }
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 1-4: Entropija besedila</h1>
+  <p class="lead">Entropija črk in besed iz slovenskega besedila.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Entropija besedila (črke in besede)</div>
+        <div class="sub">Črke ignorirajo presledke in ločila. Besede uporabljajo vzorce Unicode črk.</div>
+      </div>
+      <span class="tag">Entropija besedila</span>
+    </div>
+    <div class="bd">
+      <div class="ctl">
+        <label>Vhodno besedilo</label>
+        <textarea id="textInput">Nekje med Vrhniko in Trstom je včasih hodil močan človek, ki mu je bilo ime Martin Krpan. Ni bil visok po postavi, a v ramenih je bil širok in močan kakor hrast. Po ozkih poteh je nosil težke tovore in se ni bal ne burje ne dežja, ljudje pa so ga radi opazovali, kadar je mirno stopal mimo vasi.
+
+Nekega zimskega dne se je odpravil z vozom po cesarski cesti. Sneg je škripal pod nogami in vse je bilo tiho, dokler se od daleč ni zaslišalo zvončkljanje. Po poti je prihajala imenitna kočija, pred njo pa stražniki in kočijaži. Martin se ni umaknil prehitro; najprej je pogledal, kam bi lahko stopil, da ne bi poškodoval tovora.
+
+Ko je kočija prišla bliže, se je pokazalo, da v njej sedi sam cesar. Kočija je obstala, ljudje so osuplo gledali, Martin pa je z eno roko prijel kobilo in z drugo prestavil natovorjen voz, kakor bi premaknil lahek sod. Cesar je to videl in si zapomnil moža, ki je v sebi nosil neobičajno moč in mirno pamet.</textarea>
+      </div>
+      <div class="kpi">
+        <div class="box"><div class="lab">Entropija črk</div><div class="num" id="letterEntropy"><tcxspan tcxhref="4188838" title="Call 4.188838  via 3CX">4.188838 </tcxspan>bitov</div></div>
+        <div class="box"><div class="lab">Entropija besed</div><div class="num" id="wordEntropy"><tcxspan tcxhref="6460795" title="Call 6.460795  via 3CX">6.460795 </tcxspan>bitov</div></div>
+        <div class="box"><div class="lab">Število pojavitev</div><div class="num" id="countStats">735 črk, 174 besed</div></div>
+      </div>
+      <div class="twocol">
+        <canvas id="lettersCanvas" width="640" height="420"></canvas>
+        <canvas id="wordsCanvas" width="640" height="420"></canvas>
+      </div>
+      <p class="lead" style="margin-top:12px;">Tabela entropij za različne jezike.</p>
+      <div class="table-wrap">
+        <table border="1" cellpadding="6" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Jezik</th>
+              <th>Velikost abecede</th>
+              <th>Ocenjena entropija (bitov/znak)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Angleščina</td>
+              <td>26</td>
+              <td>~1.0–1.5</td>
+            </tr>
+            <tr>
+              <td>Francoščina</td>
+              <td>26</td>
+              <td>~1.0–1.4</td>
+            </tr>
+            <tr>
+              <td>Nemščina</td>
+              <td>26</td>
+              <td>~1.1–1.6</td>
+            </tr>
+            <tr>
+              <td>Španščina</td>
+              <td>27</td>
+              <td>~0.9–1.3</td>
+            </tr>
+            <tr>
+              <td>Italijanščina</td>
+              <td>21</td>
+              <td>~0.9–1.2</td>
+            </tr>
+            <tr>
+              <td>Slovenščina</td>
+              <td>25</td>
+              <td>~1.0–1.3 (ocena)</td>
+            </tr>
+            <tr>
+              <td>Ruščina</td>
+              <td>33</td>
+              <td>~1.1–1.5</td>
+            </tr>
+            <tr>
+              <td>Kitajščina (pismenke)</td>
+              <td>~5000+</td>
+              <td>~9–11</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const log2 = (x) => Math.log(x) / Math.log(2);
+  const entropy = (arr) => arr.reduce((s, p) => (p > 0 ? s - p * log2(p) : s), 0);
+
+  const textInput = document.getElementById('textInput');
+  const lettersCanvas = document.getElementById('lettersCanvas');
+  const wordsCanvas = document.getElementById('wordsCanvas');
+  const cLetters = lettersCanvas.getContext('2d');
+  const cWords = wordsCanvas.getContext('2d');
+  const letterEntropyEl = document.getElementById('letterEntropy');
+  const wordEntropyEl = document.getElementById('wordEntropy');
+  const countStatsEl = document.getElementById('countStats');
+
+  function freqMap(items) {
+    const m = new Map();
+    for (const it of items) m.set(it, (m.get(it) || 0) + 1);
+    return m;
+  }
+
+  function drawBarChart(ctx, canvas, title, entries, maxBars = 20) {
+    const W = canvas.width, Hc = canvas.height;
+    const m = { l: 52, r: 14, t: 34, b: 64 };
+    const x0 = m.l, y0 = m.t, w = W - m.l - m.r, h = Hc - m.t - m.b;
+    ctx.clearRect(0, 0, W, Hc);
+    ctx.fillStyle = '#111827';
+    ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+    ctx.fillText(title, 14, 20);
+
+    if (!entries.length) return;
+    const view = entries.slice(0, maxBars);
+    const maxC = view[0][1];
+    const bw = w / view.length;
+
+    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0, y0 + h); ctx.lineTo(x0 + w, y0 + h); ctx.stroke();
+
+    for (let i = 0; i < view.length; i++) {
+      const [lab, c] = view[i];
+      const bh = (c / maxC) * (h - 8);
+      const x = x0 + i * bw + 3;
+      const y = y0 + h - bh;
+      ctx.fillStyle = '#2563eb';
+      ctx.fillRect(x, y, Math.max(2, bw - 6), bh);
+
+      ctx.fillStyle = '#374151';
+      ctx.font = '10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+      const short = lab.length > 7 ? lab.slice(0, 7) + '…' : lab;
+      ctx.save();
+      ctx.translate(x + (bw - 6) * 0.5, y0 + h + 8);
+      ctx.rotate(-Math.PI / 4);
+      ctx.fillText(short, -10, 0);
+      ctx.restore();
+    }
+  }
+
+  function updateTextEntropy() {
+    const t = textInput.value.toLowerCase().normalize('NFC');
+
+    const letters = [];
+    for (const ch of t) if (/\p{L}/u.test(ch)) letters.push(ch);
+    const words = t.match(/[\p{L}]+/gu) || [];
+
+    const letterMap = freqMap(letters);
+    const wordMap = freqMap(words);
+
+    const letterCounts = [...letterMap.entries()].sort((a,b) => b[1]-a[1] || a[0].localeCompare(b[0]));
+    const wordCounts = [...wordMap.entries()].sort((a,b) => b[1]-a[1] || a[0].localeCompare(b[0]));
+
+    const lp = letterCounts.map(([,c]) => c / Math.max(1, letters.length));
+    const wp = wordCounts.map(([,c]) => c / Math.max(1, words.length));
+
+    letterEntropyEl.textContent = `${entropy(lp).toFixed(6)} bitov`;
+    wordEntropyEl.textContent = `${entropy(wp).toFixed(6)} bitov`;
+    countStatsEl.textContent = `${letters.length} črk, ${words.length} besed`;
+
+    drawBarChart(cLetters, lettersCanvas, 'Frekvence črk (24 najpogostejših)', letterCounts, 24);
+    drawBarChart(cWords, wordsCanvas, 'Frekvence besed (20 najpogostejših)', wordCounts, 20);
+  }
+
+  textInput.addEventListener('input', updateTextEntropy);
+  updateTextEntropy();
+})();
+</script>
+
+
+</body></html>

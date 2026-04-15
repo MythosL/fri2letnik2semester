@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<!-- saved from url=(0117)https://ucilnica.fri.uni-lj.si/pluginfile.php/244875/mod_resource/content/1/prikaz_6-1_pogojna-entropija.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prikaz 6-1: Pogojna entropija</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --blue:rgba(59,130,246,.82);
+      --green:rgba(34,197,94,.82);
+      --orange:rgba(249,115,22,.86);
+      --slate:rgba(148,163,184,.28);
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:var(--sans); background:var(--bg); color:var(--text)}
+    header{padding:28px 18px 10px; max-width:1100px; margin:0 auto}
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .val,.step,code{font-family:var(--mono); font-size:12px}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer; margin:0 6px 6px 0}
+    canvas{width:100%; height:380px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left; vertical-align:top}
+    th{background:rgba(0,0,0,.05)}
+    .pill{display:inline-block; margin:2px 6px 2px 0; padding:4px 7px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background:#fff; font-family:var(--mono); font-size:12px}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Prikaz 6-1: Pogojna entropija</h1>
+  <p class="lead">Pogojna entropija <code>H(Y|X)</code> meri, koliko negotovosti o <code>Y</code> ostane, ko je <code>X</code> že znan. Če <code>X</code> skoraj povsem napove <code>Y</code>, je vrednost majhna.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Koliko negotovosti ostane po opazovanju spremenljivke X</div>
+        <div class="sub">Drsnik spreminja verjetnost, da je <code>Y</code> enak 1 znotraj posamezne skupine <code>X</code>. Na platnu sta prikazani dve skupini, njuna lokalna entropija in uteženo povprečje.</div>
+      </div>
+      <span class="tag" id="tag">H(Y|X) nizka</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Prednastavljen primer</label>
+          <button id="ex1">Skoraj določen Y</button>
+          <button id="ex2">Srednja negotovost</button>
+          <button id="ex3">Največja negotovost</button>
+        </div>
+        <div class="ctl">
+          <label>P(X = 0) <span class="val" id="pxVal">0.500</span></label>
+          <input id="px" type="range" min="10" max="90" step="1" value="50">
+          <div class="step">Preostanek pripada <code>P(X = 1)</code>.</div>
+        </div>
+        <div class="ctl">
+          <label>P(Y = 1 | X = 0) <span class="val" id="p0Val">0.080</span></label>
+          <input id="p0" type="range" min="0" max="100" step="1" value="10">
+          <div class="step">Entropija prve skupine je <code>H(Y|X=0)</code>.</div>
+        </div>
+        <div class="ctl">
+          <label>P(Y = 1 | X = 1) <span class="val" id="p1Val">0.920</span></label>
+          <input id="p1" type="range" min="0" max="100" step="1" value="90">
+          <div class="step">Entropija druge skupine je <code>H(Y|X=1)</code>.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl">
+          <label>Povzetek</label>
+          <div class="step" id="summary">Če najprej pogledamo X, ostane povprečno 0.402 bita negotovosti o Y.</div>
+          <div class="step" id="formula">H(Y|X) = 0.500 * 0.402 + 0.500 * 0.402 = 0.402</div>
+        </div>
+        <div class="ctl">
+          <label>Interpretacija</label>
+          <div class="step" id="interp">X zmanjša negotovost, vendar Y ni povsem določen.</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Skupina</th><th>Utez</th><th>Porazdelitev Y</th><th>Lokalna entropija</th><th>Prispevek k H(Y|X)</th></tr>
+        </thead>
+        <tbody id="tb"><tr><td><code>X = 0</code></td><td><code>0.500</code></td><td><code>P(Y=0)=0.920, P(Y=1)=0.080</code></td><td><code>0.402 bit</code></td><td><code>0.201 bit</code></td></tr><tr><td><code>X = 1</code></td><td><code>0.500</code></td><td><code>P(Y=0)=0.080, P(Y=1)=0.920</code></td><td><code>0.402 bit</code></td><td><code>0.201 bit</code></td></tr><tr><td><strong>Skupaj</strong></td><td><code>1.000</code></td><td><code>uteženo povprečje</code></td><td><code>-</code></td><td><code>0.402 bit</code></td></tr></tbody>
+      </table>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vizualizacija pogojnih porazdelitev</label>
+          <canvas id="canvas" width="1000" height="380"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const presets = [
+    { key:'H(Y|X) nizka', px:0.5, p0:0.08, p1:0.92, description:'Vsaka skupina ima skoraj en sam izid, zato po poznavanju X ostane malo negotovosti.' },
+    { key:'H(Y|X) srednja', px:0.55, p0:0.25, p1:0.75, description:'Znotraj skupin je nekaj reda, vendar ne popolna določenost.' },
+    { key:'H(Y|X) visoka', px:0.5, p0:0.5, p1:0.5, description:'Poznavanje X ne zmanjša negotovosti, ker sta obe skupini popolnoma uravnoteženi.' }
+  ];
+
+  const px = document.getElementById('px');
+  const p0 = document.getElementById('p0');
+  const p1 = document.getElementById('p1');
+  const pxVal = document.getElementById('pxVal');
+  const p0Val = document.getElementById('p0Val');
+  const p1Val = document.getElementById('p1Val');
+  const summary = document.getElementById('summary');
+  const formula = document.getElementById('formula');
+  const interp = document.getElementById('interp');
+  const tb = document.getElementById('tb');
+  const tag = document.getElementById('tag');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let current = presets[0];
+
+  function H(p) {
+    if (p <= 0 || p >= 1) return 0;
+    return -(p * Math.log2(p) + (1 - p) * Math.log2(1 - p));
+  }
+
+  function fmt(x) {
+    return x.toFixed(3);
+  }
+
+  function renderTable(px0, py10, py11, h0, h1, total) {
+    const rows = [
+      { group:'X = 0', weight:px0, dist:`P(Y=0)=${fmt(1-py10)}, P(Y=1)=${fmt(py10)}`, h:h0, c:px0 * h0 },
+      { group:'X = 1', weight:1-px0, dist:`P(Y=0)=${fmt(1-py11)}, P(Y=1)=${fmt(py11)}`, h:h1, c:(1-px0) * h1 }
+    ];
+    tb.innerHTML = '';
+    rows.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><code>${row.group}</code></td><td><code>${fmt(row.weight)}</code></td><td><code>${row.dist}</code></td><td><code>${fmt(row.h)} bit</code></td><td><code>${fmt(row.c)} bit</code></td>`;
+      tb.appendChild(tr);
+    });
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>Skupaj</strong></td><td><code>1.000</code></td><td><code>uteženo povprečje</code></td><td><code>-</code></td><td><code>${fmt(total)} bit</code></td>`;
+    tb.appendChild(tr);
+  }
+
+  function drawBar(x, y, w, h, p, color, title, subtitle) {
+    ctx.fillStyle = 'rgba(148,163,184,.16)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(0,0,0,.14)';
+    ctx.strokeRect(x, y, w, h);
+    const h1 = h * p;
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y + h - h1, w, h1);
+    ctx.fillStyle = '#111827';
+    ctx.font = '12px ui-sans-serif, system-ui, sans-serif';
+    ctx.fillText(title, x, y - 12);
+    ctx.font = '12px ui-monospace, Menlo, monospace';
+    ctx.fillText(subtitle, x, y + h + 18);
+  }
+
+  function draw(px0, py10, py11, h0, h1, total) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const W = canvas.width;
+    const Hc = canvas.height;
+    ctx.fillStyle = '#111827';
+    ctx.font = '13px ui-monospace, Menlo, monospace';
+    ctx.fillText('Vsaka skupina X ima svojo porazdelitev Y. Pogojna entropija je uteženo povprečje teh lokalnih negotovosti.', 28, 32);
+
+    const left = 70;
+    const top = 90;
+    const columnW = 220;
+    const boxH = 180;
+    drawBar(left, top, columnW, boxH, py10, 'rgba(59,130,246,.82)', `Skupina X = 0, utez ${fmt(px0)}`, `Y=1 z verjetnostjo ${fmt(py10)}`);
+    drawBar(left + 300, top, columnW, boxH, py11, 'rgba(34,197,94,.82)', `Skupina X = 1, utez ${fmt(1-px0)}`, `Y=1 z verjetnostjo ${fmt(py11)}`);
+
+    ctx.strokeStyle = 'rgba(0,0,0,.16)';
+    ctx.setLineDash([6,6]);
+    ctx.beginPath();
+    ctx.moveTo(left + 110, top + boxH + 40);
+    ctx.lineTo(left + 110, Hc - 66);
+    ctx.moveTo(left + 410, top + boxH + 40);
+    ctx.lineTo(left + 410, Hc - 66);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const boxX = 700;
+    const boxY = 112;
+    const boxW = 240;
+    const boxH2 = 170;
+    ctx.fillStyle = 'rgba(249,115,22,.10)';
+    ctx.fillRect(boxX, boxY, boxW, boxH2);
+    ctx.strokeStyle = 'rgba(249,115,22,.35)';
+    ctx.strokeRect(boxX, boxY, boxW, boxH2);
+    ctx.fillStyle = '#111827';
+    ctx.font = '13px ui-sans-serif, system-ui, sans-serif';
+    ctx.fillText('Uteženo povprečje', boxX + 16, boxY + 24);
+    ctx.font = '12px ui-monospace, Menlo, monospace';
+    ctx.fillText(`H(Y|X=0) = ${fmt(h0)} bit`, boxX + 16, boxY + 58);
+    ctx.fillText(`H(Y|X=1) = ${fmt(h1)} bit`, boxX + 16, boxY + 84);
+    ctx.fillText(`P(X=0)*H0 = ${fmt(px0*h0)}`, boxX + 16, boxY + 118);
+    ctx.fillText(`P(X=1)*H1 = ${fmt((1-px0)*h1)}`, boxX + 16, boxY + 144);
+    ctx.font = 'bold 14px ui-monospace, Menlo, monospace';
+    ctx.fillText(`H(Y|X) = ${fmt(total)} bit`, boxX + 16, boxY + 166);
+  }
+
+  function render() {
+    const px0 = parseInt(px.value, 10) / 100;
+    const py10 = parseInt(p0.value, 10) / 100;
+    const py11 = parseInt(p1.value, 10) / 100;
+    const h0 = H(py10);
+    const h1 = H(py11);
+    const total = px0 * h0 + (1 - px0) * h1;
+
+    pxVal.textContent = fmt(px0);
+    p0Val.textContent = fmt(py10);
+    p1Val.textContent = fmt(py11);
+    tag.textContent = current.key;
+
+    summary.textContent = `Če najprej pogledamo X, ostane povprečno ${fmt(total)} bita negotovosti o Y.`;
+    formula.textContent = `H(Y|X) = ${fmt(px0)} * ${fmt(h0)} + ${fmt(1-px0)} * ${fmt(h1)} = ${fmt(total)}`;
+    interp.textContent = total < 0.2
+      ? 'X skoraj v celoti pojasni Y.'
+      : total < 0.8
+        ? 'X zmanjša negotovost, vendar Y ni povsem določen.'
+        : 'X o Y pove malo, saj je v skupinah še vedno veliko nereda.';
+
+    renderTable(px0, py10, py11, h0, h1, total);
+    draw(px0, py10, py11, h0, h1, total);
+  }
+
+  function applyPreset(preset) {
+    current = preset;
+    px.value = String(Math.round(preset.px * 100));
+    p0.value = String(Math.round(preset.p0 * 100));
+    p1.value = String(Math.round(preset.p1 * 100));
+    render();
+  }
+
+  [px, p0, p1].forEach(el => el.addEventListener('input', render));
+  document.getElementById('ex1').addEventListener('click', () => applyPreset(presets[0]));
+  document.getElementById('ex2').addEventListener('click', () => applyPreset(presets[1]));
+  document.getElementById('ex3').addEventListener('click', () => applyPreset(presets[2]));
+
+  applyPreset(presets[0]);
+})();
+</script>
+
+
+</body></html>

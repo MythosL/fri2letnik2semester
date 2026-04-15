@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!-- saved from url=(0099)https://ucilnica.fri.uni-lj.si/pluginfile.php/244202/mod_resource/content/1/prikaz_1-1.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 1-1: Binarna entropija</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:var(--sans); background:var(--bg); color:var(--text); }
+    header{ padding:28px 18px 10px; max-width:1100px; margin:0 auto; }
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    canvas{width:100%; height:300px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 260px; min-width:260px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .val{font-family:var(--mono); font-size:12px}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 1-1: Binarna entropija</h1>
+  <p class="lead">Entropija binarne slučajne spremenljivke kot funkcija parametra p.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Entropija binarne slučajne spremenljivke</div>
+        <div class="sub">Premikaj <code>p = P(X=1)</code>; graf prikazuje <code>H(X) = -p log2 p - (1-p) log2(1-p)</code>.</div>
+      </div>
+      <span class="tag">0 do 1 bit</span>
+    </div>
+    <div class="bd">
+      <canvas id="binCanvas" width="900" height="420"></canvas>
+      <div class="row">
+        <div class="ctl">
+          <label>p <span class="val" id="pVal">0.354</span></label>
+          <input id="pSlider" type="range" min="0" max="1" step="0.001" value="0.3">
+          <div class="val" id="hVal">H(X) = 0.937590 bitov</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const pSlider = document.getElementById('pSlider');
+  const pVal = document.getElementById('pVal');
+  const hVal = document.getElementById('hVal');
+  const binCanvas = document.getElementById('binCanvas');
+  const bctx = binCanvas.getContext('2d');
+  const log2 = (x) => Math.log(x) / Math.log(2);
+
+  function Hbin(p) {
+    if (p <= 0 || p >= 1) return 0;
+    return -p * log2(p) - (1 - p) * log2(1 - p);
+  }
+
+  function drawAxes(ctx, x, y, w, h, xLabel, yLabel) {
+    ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x, y + h);
+    ctx.lineTo(x + w, y + h);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    ctx.font = '15px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+    ctx.fillText(xLabel, x + w - 28, y + h + 18);
+    ctx.fillText(yLabel, x - 28, y + 12);
+  }
+
+  function drawBinary() {
+    const p = parseFloat(pSlider.value);
+    const H = Hbin(p);
+    pVal.textContent = p.toFixed(3);
+    hVal.textContent = `H(X) = ${H.toFixed(6)} bitov`;
+
+    const W = binCanvas.width, Hc = binCanvas.height;
+    const m = { l: 58, r: 24, t: 20, b: 44 };
+    const x0 = m.l, y0 = m.t, w = W - m.l - m.r, h = Hc - m.t - m.b;
+
+    bctx.clearRect(0, 0, W, Hc);
+    drawAxes(bctx, x0, y0, w, h, 'p', 'H');
+
+    bctx.strokeStyle = 'rgba(0,0,0,0.15)';
+    for (let i = 1; i <= 4; i++) {
+      const yy = y0 + (h * i / 4);
+      bctx.beginPath(); bctx.moveTo(x0, yy); bctx.lineTo(x0 + w, yy); bctx.stroke();
+    }
+
+    bctx.lineWidth = 2.5;
+    bctx.strokeStyle = '#2563eb';
+    bctx.beginPath();
+    for (let i = 0; i <= 400; i++) {
+      const pp = i / 400;
+      const hh = Hbin(pp);
+      const x = x0 + pp * w;
+      const y = y0 + h * (1 - hh);
+      if (i === 0) bctx.moveTo(x, y); else bctx.lineTo(x, y);
+    }
+    bctx.stroke();
+
+    const px = x0 + p * w;
+    const py = y0 + h * (1 - H);
+    bctx.fillStyle = '#dc2626';
+    bctx.beginPath(); bctx.arc(px, py, 5, 0, Math.PI * 2); bctx.fill();
+    bctx.fillStyle = '#111827';
+    bctx.font = '15px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+    bctx.fillText(`(${p.toFixed(3)}, ${H.toFixed(3)})`, px + 8, py - 8);
+  }
+
+  pSlider.addEventListener('input', drawBinary);
+  drawBinary();
+})();
+</script>
+
+
+</body></html>

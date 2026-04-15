@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<!-- saved from url=(0099)https://ucilnica.fri.uni-lj.si/pluginfile.php/244203/mod_resource/content/1/prikaz_1-2.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 1-2: Entropija na simpleksu</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:var(--sans); background:var(--bg); color:var(--text); }
+    header{ padding:28px 18px 10px; max-width:1100px; margin:0 auto; }
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    .twocol{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    @media (max-width:900px){.twocol{grid-template-columns:1fr}}
+    canvas{width:100%; height:300px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 260px; min-width:260px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .val{font-family:var(--mono); font-size:12px}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 1-2: Entropija s tremi stanji</h1>
+  <p class="lead">Entropija na 3-izidnem trikotnikom z vrtljivo premico.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Entropija s tremi stanji</div>
+        <div class="sub">Klikni znotraj ali zunaj trikotnika..</div>
+      </div>
+      <span class="tag">H(p1,p2,p3)</span>
+    </div>
+    <div class="bd">
+      <div class="twocol">
+        <canvas id="simplexCanvas" width="640" height="420"></canvas>
+        <canvas id="lineEntropyCanvas" width="640" height="420"></canvas>
+      </div>
+      <div class="row">
+        <div class="ctl">
+          <label>Kot premice (stopinje) <span class="val" id="angleVal">35.00°</span></label>
+          <input id="angleSlider" type="range" min="0" max="179.99" step="0.01" value="35">
+          <div class="val" id="simplexStats">p=(0.340, 0.330, 0.330)  H=1.58482 bitov</div>
+        </div>
+        <div class="ctl">
+          <label>Polozaj tocke na premici/robu <span class="val" id="posVal">0.598</span></label>
+          <input id="posSlider" type="range" min="0" max="1" step="0.001" value="0.5">
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const log2 = (x) => Math.log(x) / Math.log(2);
+  const entropy = (arr) => arr.reduce((s, p) => (p > 0 ? s - p * log2(p) : s), 0);
+
+  const simplexCanvas = document.getElementById('simplexCanvas');
+  const lineEntropyCanvas = document.getElementById('lineEntropyCanvas');
+  const sctx = simplexCanvas.getContext('2d');
+  const lctx = lineEntropyCanvas.getContext('2d');
+  const angleSlider = document.getElementById('angleSlider');
+  const angleVal = document.getElementById('angleVal');
+  const simplexStats = document.getElementById('simplexStats');
+  const posSlider = document.getElementById('posSlider');
+  const posVal = document.getElementById('posVal');
+
+  const A = { x: 120, y: 350 }, B = { x: 520, y: 350 }, C = { x: 320, y: 60 };
+  let selected = { p1: 0.34, p2: 0.33, p3: 0.33 };
+  let outsideClick = null;
+  let projectedPoint = null;
+  let lockedEdge = null;
+
+  function drawAxes(ctx, x, y, w, h, xLabel, yLabel) {
+    ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x, y + h);
+    ctx.lineTo(x + w, y + h);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    ctx.font = '12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+    ctx.fillText(xLabel, x + w - 80, y + h + 18);
+    ctx.fillText(yLabel, x - 28, y + 12);
+  }
+
+  function baryToXY(p) {
+    return {
+      x: p.p1 * A.x + p.p2 * B.x + p.p3 * C.x,
+      y: p.p1 * A.y + p.p2 * B.y + p.p3 * C.y
+    };
+  }
+
+  function xyToBary(x, y) {
+    const det = (B.y - C.y) * (A.x - C.x) + (C.x - B.x) * (A.y - C.y);
+    const p1 = ((B.y - C.y) * (x - C.x) + (C.x - B.x) * (y - C.y)) / det;
+    const p2 = ((C.y - A.y) * (x - C.x) + (A.x - C.x) * (y - C.y)) / det;
+    const p3 = 1 - p1 - p2;
+    return { p1, p2, p3 };
+  }
+
+  function insideSimplex(p) {
+    const eps = 1e-6;
+    return p.p1 >= -eps && p.p2 >= -eps && p.p3 >= -eps;
+  }
+
+  function projectToSimplex(p) {
+    const arr = [p.p1, p.p2, p.p3].map(v => Math.max(0, v));
+    const s = arr[0] + arr[1] + arr[2] || 1;
+    return { p1: arr[0] / s, p2: arr[1] / s, p3: arr[2] / s };
+  }
+
+  function entropy3(p) { return entropy([p.p1, p.p2, p.p3]); }
+
+  function closestPointOnSegment(p, u, v) {
+    const ux = v.x - u.x, uy = v.y - u.y;
+    const len2 = ux * ux + uy * uy;
+    if (len2 <= 1e-12) return { x: u.x, y: u.y };
+    const tRaw = ((p.x - u.x) * ux + (p.y - u.y) * uy) / len2;
+    const t = Math.max(0, Math.min(1, tRaw));
+    return { x: u.x + t * ux, y: u.y + t * uy };
+  }
+
+  function dist2(p, q) {
+    const dx = p.x - q.x, dy = p.y - q.y;
+    return dx * dx + dy * dy;
+  }
+
+  function projectOutsideToNearestEdge(x, y) {
+    const p = { x, y };
+    const cands = [
+      { point: closestPointOnSegment(p, A, B), u: A, v: B, edgeId: 'AB' },
+      { point: closestPointOnSegment(p, B, C), u: B, v: C, edgeId: 'BC' },
+      { point: closestPointOnSegment(p, C, A), u: C, v: A, edgeId: 'CA' }
+    ];
+    let best = cands[0];
+    let bestD2 = dist2(p, best.point);
+    for (let i = 1; i < cands.length; i++) {
+      const d2 = dist2(p, cands[i].point);
+      if (d2 < bestD2) {
+        bestD2 = d2;
+        best = cands[i];
+      }
+    }
+    return best;
+  }
+
+  function angleFromEdge(u, v) {
+    const dx = v.x - u.x;
+    const dy = v.y - u.y;
+    let deg = Math.atan2(-dy, dx) * 180 / Math.PI;
+    deg = ((deg % 180) + 180) % 180;
+    return deg;
+  }
+
+  function boundaryT(origin, dir, sign) {
+    let last = 0;
+    let t = 1 * sign;
+    let iter = 0;
+    while (iter < 30) {
+      const pt = { x: origin.x + t * dir.x, y: origin.y + t * dir.y };
+      if (!insideSimplex(xyToBary(pt.x, pt.y))) break;
+      last = t;
+      t *= 1.8;
+      iter++;
+    }
+    let lo = last, hi = t;
+    for (let i = 0; i < 40; i++) {
+      const mid = 0.5 * (lo + hi);
+      const pt = { x: origin.x + mid * dir.x, y: origin.y + mid * dir.y };
+      if (insideSimplex(xyToBary(pt.x, pt.y))) lo = mid; else hi = mid;
+    }
+    return lo;
+  }
+
+  function parameterOnSegment(p, a, b) {
+    const dx = b.x - a.x, dy = b.y - a.y;
+    const len2 = dx * dx + dy * dy;
+    if (len2 <= 1e-12) return 0;
+    const u = ((p.x - a.x) * dx + (p.y - a.y) * dy) / len2;
+    return Math.max(0, Math.min(1, u));
+  }
+
+  function currentSegment(angleDeg) {
+    const P = baryToXY(selected);
+    if (lockedEdge) {
+      return {
+        P,
+        Pmin: { x: lockedEdge.u.x, y: lockedEdge.u.y },
+        Pmax: { x: lockedEdge.v.x, y: lockedEdge.v.y },
+        dir: null,
+        tMin: 0,
+        tMax: 1
+      };
+    }
+    const a = angleDeg * Math.PI / 180;
+    const dir = { x: Math.cos(a), y: -Math.sin(a) };
+    const tMin = boundaryT(P, dir, -1);
+    const tMax = boundaryT(P, dir, +1);
+    return {
+      P,
+      Pmin: { x: P.x + tMin * dir.x, y: P.y + tMin * dir.y },
+      Pmax: { x: P.x + tMax * dir.x, y: P.y + tMax * dir.y },
+      dir,
+      tMin,
+      tMax
+    };
+  }
+
+  function drawLineEntropy(samples, selectedU) {
+    const W = lineEntropyCanvas.width, Hc = lineEntropyCanvas.height;
+    const m = { l: 56, r: 22, t: 20, b: 44 };
+    const x0 = m.l, y0 = m.t, w = W - m.l - m.r, h = Hc - m.t - m.b;
+    lctx.clearRect(0, 0, W, Hc);
+    drawAxes(lctx, x0, y0, w, h, 'parameter premice', 'H');
+
+    lctx.strokeStyle = 'rgba(0,0,0,0.15)';
+    for (let i = 1; i <= 4; i++) {
+      const yy = y0 + (h * i / 4);
+      lctx.beginPath(); lctx.moveTo(x0, yy); lctx.lineTo(x0 + w, yy); lctx.stroke();
+    }
+
+    lctx.strokeStyle = '#16a34a';
+    lctx.lineWidth = 2.2;
+    lctx.beginPath();
+    samples.forEach((s, i) => {
+      const x = x0 + s.u * w;
+      const y = y0 + h * (1 - s.H / log2(3));
+      if (i === 0) lctx.moveTo(x, y); else lctx.lineTo(x, y);
+    });
+    lctx.stroke();
+
+    let center = samples[0];
+    let best = Math.abs(samples[0].u - selectedU);
+    for (let i = 1; i < samples.length; i++) {
+      const d = Math.abs(samples[i].u - selectedU);
+      if (d < best) {
+        best = d;
+        center = samples[i];
+      }
+    }
+    const cx = x0 + center.u * w;
+    const cy = y0 + h * (1 - center.H / log2(3));
+    lctx.fillStyle = '#dc2626';
+    lctx.beginPath(); lctx.arc(cx, cy, 5, 0, Math.PI * 2); lctx.fill();
+    lctx.fillStyle = '#111827';
+    lctx.font = '12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+    lctx.fillText(`H=${center.H.toFixed(4)} bitov`, cx + 8, cy - 8);
+  }
+
+  function drawSimplex() {
+    const angleDeg = parseFloat(angleSlider.value);
+    angleVal.textContent = `${angleDeg.toFixed(2)}°`;
+
+    const W = simplexCanvas.width, Hc = simplexCanvas.height;
+    sctx.clearRect(0, 0, W, Hc);
+
+    sctx.lineWidth = 1;
+    sctx.strokeStyle = 'rgba(0,0,0,0.30)';
+    sctx.beginPath();
+    sctx.moveTo(A.x, A.y); sctx.lineTo(B.x, B.y); sctx.lineTo(C.x, C.y); sctx.closePath();
+    sctx.stroke();
+
+    sctx.fillStyle = '#111827';
+    sctx.font = '13px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+    sctx.fillText('p1', A.x - 18, A.y + 16);
+    sctx.fillText('p2', B.x + 8, B.y + 16);
+    sctx.fillText('p3', C.x - 8, C.y - 10);
+
+    if (outsideClick && projectedPoint) {
+      sctx.strokeStyle = 'rgba(55,65,81,0.6)';
+      sctx.setLineDash([6, 4]);
+      sctx.lineWidth = 1.6;
+      sctx.beginPath();
+      sctx.moveTo(outsideClick.x, outsideClick.y);
+      sctx.lineTo(projectedPoint.x, projectedPoint.y);
+      sctx.stroke();
+      sctx.setLineDash([]);
+      sctx.fillStyle = 'rgba(55,65,81,0.75)';
+      sctx.beginPath();
+      sctx.arc(outsideClick.x, outsideClick.y, 4, 0, Math.PI * 2);
+      sctx.fill();
+    }
+
+    const seg = currentSegment(angleDeg);
+    const P = seg.P;
+    const Pmin = seg.Pmin;
+    const Pmax = seg.Pmax;
+    const dir = seg.dir;
+    const tMin = seg.tMin;
+    const tMax = seg.tMax;
+
+    sctx.strokeStyle = '#0284c7';
+    sctx.lineWidth = 2.2;
+    sctx.beginPath(); sctx.moveTo(Pmin.x, Pmin.y); sctx.lineTo(Pmax.x, Pmax.y); sctx.stroke();
+
+    sctx.fillStyle = '#dc2626';
+    sctx.beginPath(); sctx.arc(P.x, P.y, 6, 0, Math.PI * 2); sctx.fill();
+
+    const H0 = entropy3(selected);
+    simplexStats.textContent = `p=(${selected.p1.toFixed(3)}, ${selected.p2.toFixed(3)}, ${selected.p3.toFixed(3)})  H=${H0.toFixed(5)} bitov`;
+    const uNow = parameterOnSegment(P, Pmin, Pmax);
+    posSlider.value = uNow.toFixed(3);
+    posVal.textContent = uNow.toFixed(3);
+
+    const N = 200;
+    const samples = [];
+    for (let i = 0; i <= N; i++) {
+      const u = i / N;
+      let x, y;
+      if (lockedEdge) {
+        x = Pmin.x + u * (Pmax.x - Pmin.x);
+        y = Pmin.y + u * (Pmax.y - Pmin.y);
+      } else {
+        const t = tMin + u * (tMax - tMin);
+        x = P.x + t * dir.x;
+        y = P.y + t * dir.y;
+      }
+      const b = projectToSimplex(xyToBary(x, y));
+      samples.push({ u, H: entropy3(b) });
+    }
+
+    drawLineEntropy(samples, uNow);
+  }
+
+  simplexCanvas.addEventListener('click', (e) => {
+    const rect = simplexCanvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) * (simplexCanvas.width / rect.width);
+    const y = (e.clientY - rect.top) * (simplexCanvas.height / rect.height);
+    const b = xyToBary(x, y);
+    if (insideSimplex(b)) {
+      selected = projectToSimplex(b);
+      outsideClick = null;
+      projectedPoint = null;
+      lockedEdge = null;
+    } else {
+      outsideClick = { x, y };
+      const proj = projectOutsideToNearestEdge(x, y);
+      projectedPoint = proj.point;
+      selected = projectToSimplex(xyToBary(projectedPoint.x, projectedPoint.y));
+      lockedEdge = { u: proj.u, v: proj.v, edgeId: proj.edgeId };
+      angleSlider.value = String(angleFromEdge(proj.u, proj.v));
+    }
+    drawSimplex();
+  });
+
+  angleSlider.addEventListener('input', () => {
+    lockedEdge = null;
+    drawSimplex();
+  });
+  posSlider.addEventListener('input', () => {
+    const angleDeg = parseFloat(angleSlider.value);
+    const seg = currentSegment(angleDeg);
+    const u = parseFloat(posSlider.value);
+    const x = seg.Pmin.x + u * (seg.Pmax.x - seg.Pmin.x);
+    const y = seg.Pmin.y + u * (seg.Pmax.y - seg.Pmin.y);
+    selected = projectToSimplex(xyToBary(x, y));
+    drawSimplex();
+  });
+  drawSimplex();
+})();
+</script>
+
+
+</body></html>

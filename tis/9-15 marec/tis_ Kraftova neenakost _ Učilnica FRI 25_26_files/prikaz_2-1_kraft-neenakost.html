@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<!-- saved from url=(0115)https://ucilnica.fri.uni-lj.si/pluginfile.php/244339/mod_resource/content/1/prikaz_2-1_kraft-neenakost.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 2-1: Kraftova neenakost</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:var(--sans); background:var(--bg); color:var(--text); }
+    header{ padding:28px 18px 10px; max-width:1100px; margin:0 auto; }
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    canvas{width:100%; height:300px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 220px; min-width:220px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .ctl select{width:100%; border:1px solid rgba(0,0,0,.14); border-radius:8px; padding:6px 8px; background:#fff; color:var(--text)}
+    .val{font-family:var(--mono); font-size:12px}
+    .ok{color:#047857; font-weight:700}
+    .bad{color:#b91c1c; font-weight:700}
+    .blue{color:#1d4ed8; font-weight:700}
+    .green{color:#047857; font-weight:700}
+    .red{color:#b91c1c; font-weight:700}
+    .legend{display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin-top:8px}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 2-1: Kraftova neenakost</h1>
+  <p class="lead">Za predponske kode mora veljati <code>Σ 2<sup>-L<sub>i</sub></sup> ≤ 1</code>. Spreminjaj dolžine kodnih besed in spremljaj vsoto.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Interaktivni preizkus Kraftove neenakosti</div>
+        <div class="sub">Vsak stolpec predstavlja člen <code>2<sup>-L<sub>i</sub></sup></code>. Ko je vsota večja od 1, tak predponski kodni sistem ne more obstajati.</div>
+      </div>
+      <span class="tag" id="statusTag">sum &gt; 1</span>
+    </div>
+    <div class="bd">
+      <canvas id="kraftCanvas" width="900" height="420"></canvas>
+      <div class="row" id="sliders"><div class="ctl">
+      <label>L1 = <span class="val" id="v0">1</span></label>
+      <input id="s0" type="range" min="1" max="8" step="1" value="1">
+      <div class="val" id="t0">2^{-L1} = 0.50000</div>
+    </div><div class="ctl">
+      <label>L2 = <span class="val" id="v1">2</span></label>
+      <input id="s1" type="range" min="1" max="8" step="1" value="2">
+      <div class="val" id="t1">2^{-L2} = 0.25000</div>
+    </div><div class="ctl">
+      <label>L3 = <span class="val" id="v2">3</span></label>
+      <input id="s2" type="range" min="1" max="8" step="1" value="3">
+      <div class="val" id="t2">2^{-L3} = 0.12500</div>
+    </div><div class="ctl">
+      <label>L4 = <span class="val" id="v3">3</span></label>
+      <input id="s3" type="range" min="1" max="8" step="1" value="3">
+      <div class="val" id="t3">2^{-L4} = 0.12500</div>
+    </div><div class="ctl">
+      <label>L5 = <span class="val" id="v4">4</span></label>
+      <input id="s4" type="range" min="1" max="8" step="1" value="4">
+      <div class="val" id="t4">2^{-L5} = 0.06250</div>
+    </div><div class="ctl">
+      <label>L6 = <span class="val" id="v5">4</span></label>
+      <input id="s5" type="range" min="1" max="8" step="1" value="4">
+      <div class="val" id="t5">2^{-L6} = 0.06250</div>
+    </div></div>
+      <div class="row">
+        <div class="ctl">
+          <label>Vsota in pogoj</label>
+          <div class="val" id="sumVal">Vsota:<tcxspan tcxhref="1125000" title="Call  1.125000 via 3CX"> 1.125000</tcxspan></div>
+          <div class="val" id="ineqVal"><span class="bad">Pogoj ne velja:<tcxspan tcxhref="1125000" title="Call  1.125000  via 3CX"> 1.125000 </tcxspan>&gt; 1</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="card" style="margin-top:14px">
+    <div class="hd">
+      <div>
+        <div class="title">Konstrukcija kodnega drevesa iz izbranih dolžin</div>
+        <div class="sub">Kode se dodelijo po nivojih (L1, L2, ...). Če je na nivoju premalo mest, več simbolov deli isti vrh.</div>
+      </div>
+      <span class="tag" id="treeStatusTag" style="border-color: rgb(185, 28, 28); color: rgb(185, 28, 28);">non-unique</span>
+    </div>
+    <div class="bd">
+      <canvas id="treeCanvas" width="900" height="420"></canvas>
+      <div class="legend">
+        <span class="blue">Modro: dobra instantna (predponska) koda</span>
+        <span class="green">Zeleno: ne-instantna, a enolično dekodljiva</span>
+        <span class="red">Rdeče: ne-enolično dekodljiva</span>
+      </div>
+      <div class="row">
+        <div class="ctl">
+          <label>Tip kode</label>
+          <div class="val red" id="treeType">Ne-enolično dekodljiva koda</div>
+          <div class="val" id="treeRule"><span class="red">Rdeče: Σ2<sup>-L<sub>i</sub></sup> &gt; 1, zato enolično dekodljiva koda ni možna.</span></div>
+        </div>
+        <div class="ctl">
+          <label>Način gradnje</label>
+          <select id="buildMode">
+            <option value="strict">Strict lengths</option>
+            <option value="prefer">Prefer non-instantaneous UD</option>
+          </select>
+          <div class="val" id="modeNote">Strogo: ohrani izbrane dolžine L_i.</div>
+        </div>
+        <div class="ctl">
+          <label>Dodeljene kodne besede</label>
+          <div class="val" id="assignments">S1: 0 (L=1, dejansko=1)<br>S2: 00 (L=2, dejansko=2)<br>S3: 000 (L=3, dejansko=3)<br>S4: 001 (L=3, dejansko=3)<br>S5: 0000 (L=4, dejansko=4)<br>S6: 0001 (L=4, dejansko=4)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const lengths = [1,2,3,3,4,4];
+  const sliders = document.getElementById('sliders');
+  const sumVal = document.getElementById('sumVal');
+  const ineqVal = document.getElementById('ineqVal');
+  const statusTag = document.getElementById('statusTag');
+  const canvas = document.getElementById('kraftCanvas');
+  const ctx = canvas.getContext('2d');
+  const treeCanvas = document.getElementById('treeCanvas');
+  const tctx = treeCanvas.getContext('2d');
+  const treeType = document.getElementById('treeType');
+  const treeRule = document.getElementById('treeRule');
+  const treeStatusTag = document.getElementById('treeStatusTag');
+  const assignments = document.getElementById('assignments');
+  const buildMode = document.getElementById('buildMode');
+  const modeNote = document.getElementById('modeNote');
+
+  lengths.forEach((l, i) => {
+    const ctl = document.createElement('div');
+    ctl.className = 'ctl';
+    ctl.innerHTML = `
+      <label>L${i+1} = <span class="val" id="v${i}">${l}</span></label>
+      <input id="s${i}" type="range" min="1" max="8" step="1" value="${l}"/>
+      <div class="val" id="t${i}"></div>
+    `;
+    sliders.appendChild(ctl);
+  });
+
+  function draw() {
+    let sum = 0;
+    const terms = lengths.map((_, i) => {
+      const v = parseInt(document.getElementById(`s${i}`).value, 10);
+      lengths[i] = v;
+      const term = Math.pow(2, -v);
+      sum += term;
+      document.getElementById(`v${i}`).textContent = v;
+      document.getElementById(`t${i}`).textContent = `2^{-L${i+1}} = ${term.toFixed(5)}`;
+      return term;
+    });
+
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    const m = {l:58, r:20, t:22, b:45};
+    const x0 = m.l, y0 = m.t, w = W - m.l - m.r, h = H - m.t - m.b;
+
+    ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x0, y0 + h);
+    ctx.lineTo(x0 + w, y0 + h);
+    ctx.stroke();
+
+    for (let i = 1; i <= 4; i++) {
+      const yy = y0 + h * (1 - i/4);
+      ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+      ctx.beginPath(); ctx.moveTo(x0, yy); ctx.lineTo(x0 + w, yy); ctx.stroke();
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.font = '12px ui-monospace, Menlo, monospace';
+      ctx.fillText((i/4).toFixed(2), x0 - 38, yy + 4);
+    }
+
+    const bw = w / terms.length * 0.7;
+    terms.forEach((t, i) => {
+      const cx = x0 + (i + 0.5) * (w / terms.length);
+      const bh = Math.min(h, h * t);
+      const x = cx - bw/2;
+      const y = y0 + h - bh;
+      ctx.fillStyle = 'rgba(37,99,235,0.85)';
+      ctx.fillRect(x, y, bw, bh);
+      ctx.fillStyle = '#111827';
+      ctx.font = '12px ui-monospace, Menlo, monospace';
+      ctx.fillText(`L${i+1}`, x + bw/2 - 8, y0 + h + 18);
+    });
+
+    const ySum = y0 + h * (1 - Math.min(sum,1));
+    ctx.strokeStyle = sum <= 1 ? '#047857' : '#b91c1c';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(x0, ySum);
+    ctx.lineTo(x0 + w, ySum);
+    ctx.stroke();
+
+    sumVal.textContent = `Vsota: ${sum.toFixed(6)}`;
+    ineqVal.innerHTML = sum <= 1
+      ? `<span class="ok">Pogoj velja: ${sum.toFixed(6)} <= 1</span>`
+      : `<span class="bad">Pogoj ne velja: ${sum.toFixed(6)} > 1</span>`;
+    statusTag.textContent = sum <= 1 ? 'sum <= 1' : 'sum > 1';
+    drawTree();
+  }
+
+  function kraftSum(ls) {
+    return ls.reduce((acc, L) => acc + Math.pow(2, -L), 0);
+  }
+
+  function assignGreedyInstantaneous(ls) {
+    const items = ls.map((L, i) => ({ symbol: `S${i+1}`, L, idx: i }));
+    const sorted = items.slice().sort((a, b) => a.L - b.L || a.idx - b.idx);
+    if (sorted.length === 0) return { ok: true, assignments: [] };
+
+    let code = 0;
+    let prevL = sorted[0].L;
+    const out = [];
+
+    for (let i = 0; i < sorted.length; i++) {
+      const it = sorted[i];
+      if (i === 0) {
+        code = 0;
+      } else {
+        code += 1;
+      }
+      if (it.L > prevL) code <<= (it.L - prevL);
+      if (code >= Math.pow(2, it.L)) return { ok: false, assignments: [] };
+      out.push({ symbol: it.symbol, L: it.L, code: code.toString(2).padStart(it.L, '0'), idx: it.idx });
+      prevL = it.L;
+    }
+
+    out.sort((a, b) => a.idx - b.idx);
+    return { ok: true, assignments: out.map(({ symbol, L, code: c }) => ({ symbol, L, code: c })) };
+  }
+
+  function assignGreedyFallback(ls) {
+    const counters = {};
+    return ls.map((L, i) => {
+      const total = Math.pow(2, L);
+      const idx = (counters[L] || 0) % total;
+      counters[L] = (counters[L] || 0) + 1;
+      return { symbol: `S${i+1}`, L, code: idx.toString(2).padStart(L, '0') };
+    });
+  }
+
+  function assignOnePrefixUD(ls) {
+    const items = ls.map((L, i) => ({ symbol: `S${i+1}`, L, idx: i }));
+    const byLen = items.slice().sort((a, b) => a.L - b.L || a.idx - b.idx);
+
+    for (let a = 0; a < byLen.length; a++) {
+      const anchor = byLen[a];
+      const k = anchor.L;
+      const rest = byLen.filter((_, i) => i !== a);
+      if (rest.some(x => x.L <= k)) continue;
+
+      const suffixLens = rest.map(x => x.L - k);
+      const suffixKraft = suffixLens.reduce((acc, L) => acc + Math.pow(2, -L), 0);
+      if (suffixKraft > 1 + 1e-12) continue;
+
+      const suffixBuild = assignGreedyInstantaneous(suffixLens);
+      if (!suffixBuild.ok) continue;
+
+      const prefix = '1'.padEnd(k, '0');
+      const assignments = [{ symbol: anchor.symbol, L: anchor.L, code: prefix, idx: anchor.idx }];
+      for (let i = 0; i < rest.length; i++) {
+        assignments.push({
+          symbol: rest[i].symbol,
+          L: rest[i].L,
+          code: prefix + suffixBuild.assignments[i].code,
+          idx: rest[i].idx
+        });
+      }
+      assignments.sort((x, y) => x.idx - y.idx);
+      return { ok: true, assignments: assignments.map(({ symbol, L, code }) => ({ symbol, L, code })) };
+    }
+
+    return { ok: false, assignments: [] };
+  }
+
+  function assignOnePrefixUDRelaxed(ls) {
+    if (ls.length < 2) return { ok: false, assignments: [], delta: 0 };
+    const items = ls.map((L, i) => ({ symbol: `S${i+1}`, L, idx: i }));
+    items.sort((a, b) => a.L - b.L || a.idx - b.idx);
+    const anchor = items[0];
+    const rest = items.slice(1);
+    const prefix = '1';
+    const baseSuffixLens = rest.map(x => Math.max(1, x.L - prefix.length));
+
+    let delta = 0;
+    let sum = baseSuffixLens.reduce((acc, L) => acc + Math.pow(2, -L), 0);
+    while (sum > 1 + 1e-12 && delta < 24) {
+      delta += 1;
+      sum = baseSuffixLens.reduce((acc, L) => acc + Math.pow(2, -(L + delta)), 0);
+    }
+    if (sum > 1 + 1e-12) return { ok: false, assignments: [], delta: 0 };
+
+    const suffixLens = baseSuffixLens.map(L => L + delta);
+    const suffixBuild = assignGreedyInstantaneous(suffixLens);
+    if (!suffixBuild.ok) return { ok: false, assignments: [], delta: 0 };
+
+    const out = [{
+      symbol: anchor.symbol,
+      L: anchor.L,
+      actualL: prefix.length,
+      code: prefix,
+      idx: anchor.idx
+    }];
+
+    for (let i = 0; i < rest.length; i++) {
+      out.push({
+        symbol: rest[i].symbol,
+        L: rest[i].L,
+        actualL: prefix.length + suffixBuild.assignments[i].L,
+        code: prefix + suffixBuild.assignments[i].code,
+        idx: rest[i].idx
+      });
+    }
+    out.sort((a, b) => a.idx - b.idx);
+    return {
+      ok: true,
+      delta,
+      assignments: out.map(({ symbol, L, actualL, code }) => ({ symbol, L, actualL, code }))
+    };
+  }
+
+  function isPrefixFree(codes) {
+    for (let i = 0; i < codes.length; i++) {
+      for (let j = 0; j < codes.length; j++) {
+        if (i === j) continue;
+        if (codes[j].startsWith(codes[i])) return false;
+      }
+    }
+    return true;
+  }
+
+  function isUniquelyDecodable(codes) {
+    const uniq = new Set(codes);
+    if (uniq.size !== codes.length) return false;
+
+    function nextSet(prev) {
+      const out = new Set();
+      for (const u of prev) {
+        for (const c of uniq) {
+          if (u === c) return { bad: true, set: out };
+          if (c.startsWith(u) && c.length > u.length) out.add(c.slice(u.length));
+          if (u.startsWith(c) && u.length > c.length) out.add(u.slice(c.length));
+        }
+      }
+      return { bad: false, set: out };
+    }
+
+    const u1 = new Set();
+    for (const x of uniq) {
+      for (const y of uniq) {
+        if (x === y) continue;
+        if (y.startsWith(x)) u1.add(y.slice(x.length));
+      }
+    }
+    if (u1.has('')) return false;
+
+    let current = u1;
+    const seen = new Set([Array.from(current).sort().join('|')]);
+    for (let iter = 0; iter < 64; iter++) {
+      const { bad, set: nxt } = nextSet(current);
+      if (bad || nxt.has('')) return false;
+      const key = Array.from(nxt).sort().join('|');
+      if (seen.has(key)) return true;
+      seen.add(key);
+      current = nxt;
+    }
+    return true;
+  }
+
+  function nodePos(depth, idx, maxDepth, x0, y0, w, h) {
+    const y = y0 + (maxDepth === 0 ? 0 : depth * (h / maxDepth));
+    const cells = Math.pow(2, depth);
+    const x = x0 + ((idx + 0.5) / cells) * w;
+    return { x, y };
+  }
+
+  function drawTree() {
+    const ksum = kraftSum(lengths);
+    const mode = buildMode.value;
+    let asg;
+    let builtInstant = false;
+    let builtNonInstantUD = false;
+    let relaxedDelta = 0;
+
+    if (ksum <= 1 + 1e-12) {
+      const greedy = assignGreedyInstantaneous(lengths);
+      if (greedy.ok) {
+        asg = greedy.assignments;
+        builtInstant = true;
+      } else {
+        if (mode === 'prefer') {
+          const relaxed = assignOnePrefixUDRelaxed(lengths);
+          if (relaxed.ok) {
+            asg = relaxed.assignments;
+            builtNonInstantUD = true;
+            relaxedDelta = relaxed.delta;
+          } else {
+            const onePrefix = assignOnePrefixUD(lengths);
+            if (onePrefix.ok) {
+              asg = onePrefix.assignments;
+              builtNonInstantUD = true;
+            } else {
+              asg = assignGreedyFallback(lengths);
+            }
+          }
+        } else {
+          const onePrefix = assignOnePrefixUD(lengths);
+          if (onePrefix.ok) {
+            asg = onePrefix.assignments;
+            builtNonInstantUD = true;
+          } else {
+            asg = assignGreedyFallback(lengths);
+          }
+        }
+      }
+    } else {
+      if (mode === 'prefer') {
+        const relaxed = assignOnePrefixUDRelaxed(lengths);
+        if (relaxed.ok) {
+          asg = relaxed.assignments;
+          builtNonInstantUD = true;
+          relaxedDelta = relaxed.delta;
+        } else {
+          const onePrefix = assignOnePrefixUD(lengths);
+          if (onePrefix.ok) {
+            asg = onePrefix.assignments;
+            builtNonInstantUD = true;
+          } else {
+            asg = assignGreedyFallback(lengths);
+          }
+        }
+      } else {
+        const onePrefix = assignOnePrefixUD(lengths);
+        if (onePrefix.ok) {
+          asg = onePrefix.assignments;
+          builtNonInstantUD = true;
+        } else {
+          asg = assignGreedyFallback(lengths);
+        }
+      }
+    }
+
+    const codeList = asg.map(a => a.code);
+    const prefixFree = isPrefixFree(codeList);
+    const uniquelyDecodable = isUniquelyDecodable(codeList);
+    let kind = '';
+    let color = '#1d4ed8';
+    if (builtInstant && uniquelyDecodable && prefixFree) {
+      kind = 'Instantna (predponska) koda';
+      color = '#1d4ed8';
+      treeRule.innerHTML = '<span class="blue">Modro: takojšnje dekodiranje po simbolih.</span>';
+      treeStatusTag.textContent = 'instantaneous';
+    } else if (builtNonInstantUD && uniquelyDecodable) {
+      kind = 'Ne-instantna, enolično dekodljiva koda (1-prefiks konstrukcija)';
+      color = '#047857';
+      treeRule.innerHTML = '<span class="green">Zeleno: uporabljena je 1-prefiks konstrukcija brez dvoumnosti dekodiranja.</span>';
+      treeStatusTag.textContent = 'non-instantaneous';
+    } else if (uniquelyDecodable) {
+      kind = 'Ne-instantna, enolično dekodljiva koda';
+      color = '#047857';
+      treeRule.innerHTML = '<span class="green">Zeleno: ni predponska, a je še vedno enolično dekodljiva.</span>';
+      treeStatusTag.textContent = 'non-instantaneous';
+    } else {
+      kind = 'Ne-enolično dekodljiva koda';
+      color = '#b91c1c';
+      treeRule.innerHTML = ksum > 1
+        ? '<span class="red">Rdeče: &Sigma;2<sup>-L<sub>i</sub></sup> > 1, zato enolično dekodljiva koda ni možna.</span>'
+        : '<span class="red">Rdeče: vsaj eno sporočilo ima več razcepov.</span>';
+      treeStatusTag.textContent = 'non-unique';
+    }
+    treeType.textContent = kind;
+    treeType.className = `val ${color === '#1d4ed8' ? 'blue' : (color === '#047857' ? 'green' : 'red')}`;
+    treeStatusTag.style.borderColor = color;
+    treeStatusTag.style.color = color;
+    modeNote.textContent = mode === 'strict'
+      ? 'Strogo: ohrani izbrane dolžine L_i.'
+      : 'Prefer: če je treba, minimalno podaljša dolžine za enolično dekodljivost.';
+    if (mode === 'prefer' && builtNonInstantUD) {
+      treeRule.innerHTML += ` <span class="green">(relaksacija +${relaxedDelta} v sufiksu)</span>`;
+    }
+
+    const grouped = {};
+    asg.forEach(a => {
+      if (!grouped[a.code]) grouped[a.code] = [];
+      grouped[a.code].push(a.symbol);
+    });
+    assignments.innerHTML = asg.map(a => {
+      const actual = a.actualL != null ? a.actualL : a.code.length;
+      return `${a.symbol}: ${a.code} (L=${a.L}, dejansko=${actual})`;
+    }).join('<br/>');
+
+    const W = treeCanvas.width, H = treeCanvas.height;
+    const m = { l: 20, r: 20, t: 20, b: 24 };
+    const x0 = m.l, y0 = m.t, w = W - m.l - m.r, h = H - m.t - m.b;
+    tctx.clearRect(0, 0, W, H);
+
+    const maxDepth = Math.max(...asg.map(a => a.code.length));
+    const used = new Set(['']);
+    asg.forEach(a => {
+      for (let i = 1; i <= a.code.length; i++) used.add(a.code.slice(0, i));
+    });
+
+    for (const p of used) {
+      if (p.length === 0) continue;
+      const parent = p.slice(0, -1);
+      if (!used.has(parent)) continue;
+      const d1 = parent.length;
+      const d2 = p.length;
+      const i1 = parent.length ? parseInt(parent, 2) : 0;
+      const i2 = parseInt(p, 2);
+      const a = nodePos(d1, i1, maxDepth, x0, y0, w, h);
+      const b = nodePos(d2, i2, maxDepth, x0, y0, w, h);
+      tctx.strokeStyle = 'rgba(0,0,0,.24)';
+      tctx.lineWidth = 1.3;
+      tctx.beginPath(); tctx.moveTo(a.x, a.y); tctx.lineTo(b.x, b.y); tctx.stroke();
+    }
+
+    for (const p of used) {
+      const d = p.length;
+      const idx = d ? parseInt(p, 2) : 0;
+      const pos = nodePos(d, idx, maxDepth, x0, y0, w, h);
+      const here = grouped[p] || [];
+      if (here.length > 0) {
+        tctx.fillStyle = here.length > 1 ? '#b91c1c' : color;
+        tctx.beginPath(); tctx.arc(pos.x, pos.y, 7, 0, Math.PI * 2); tctx.fill();
+        tctx.fillStyle = '#111827';
+        tctx.font = '12px ui-monospace, Menlo, monospace';
+        tctx.fillText(`${p || 'ε'}: ${here.join(',')}`, pos.x + 9, pos.y - 8);
+      } else {
+        tctx.fillStyle = '#ffffff';
+        tctx.strokeStyle = 'rgba(0,0,0,.34)';
+        tctx.beginPath(); tctx.arc(pos.x, pos.y, 4.5, 0, Math.PI * 2); tctx.fill(); tctx.stroke();
+      }
+    }
+  }
+
+  for (let i = 0; i < lengths.length; i++) {
+    document.getElementById(`s${i}`).addEventListener('input', draw);
+  }
+  buildMode.addEventListener('change', draw);
+  draw();
+})();
+</script>
+
+
+</body></html>

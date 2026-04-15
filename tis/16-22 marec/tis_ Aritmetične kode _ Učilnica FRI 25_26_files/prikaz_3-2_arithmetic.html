@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!-- saved from url=(0110)https://ucilnica.fri.uni-lj.si/pluginfile.php/244517/mod_resource/content/1/prikaz_3-2_arithmetic.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 3-2: Aritmetično kodiranje</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:var(--sans); background:var(--bg); color:var(--text); }
+    header{ padding:28px 18px 10px; max-width:1100px; margin:0 auto; }
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    canvas{width:100%; height:360px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .val{font-family:var(--mono); font-size:12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left}
+    th{background:rgba(0,0,0,.05)}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer}
+    input[type="text"]{width:100%; border:1px solid rgba(0,0,0,.14); border-radius:8px; padding:5px 7px; font-family:var(--mono); font-size:12px; background:#fff}
+    .step{font-family:var(--mono); font-size:12px; margin-top:8px}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 3-2: Aritmetično kodiranje</h1>
+  <p class="lead">Aritmetično kodiranje predstavlja zaporedje simbolov kot interval [L,H) v enotskem segmentu, kjer se interval na vsakem koraku zoži glede na verjetnosti simbolov.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Interaktivna vizualizacija aritmetičnega kodiranja</div>
+        <div class="sub">Vnesi vir in sporočilo ter opazuj, kako se interval spreminja s vsakim simbolom.</div>
+      </div>
+      <span class="tag" id="tag">sporočilo: ABAC</span>
+    </div>
+    <div class="bd">
+      <div class="row" data-protonpass-form="">
+        <div class="ctl">
+          <label>Prednastavljen vir</label>
+          <button id="ex1">Primer A</button>
+          <button id="ex2">Primer B</button>
+        </div>
+        <div class="ctl">
+          <label>Vhodno sporočilo</label>
+          <input id="message" type="text" value="ABAC">
+          <div class="step" id="msgHint">Uporabi simbole iz tabele. 👇 Pritisni Enter za posodobitev.</div>
+        </div>
+        <div class="ctl">
+          <label>KORAK <span class="val" id="kVal">0/4</span></label>
+          <input id="k" type="range" min="0" max="4" step="1" value="0">
+          <div class="step" id="stepText">Začetno stanje: interval [0,1).</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Simbol</th><th>p_i</th><th>interval [low,high)</th></tr>
+        </thead>
+        <tbody id="tb"><tr><td><code>A</code></td><td><code>0.300</code></td><td><code>[0, 0.3)</code></td></tr><tr><td><code>B</code></td><td><code>0.250</code></td><td><code>[0.3, 0.55)</code></td></tr><tr><td><code>C</code></td><td><code>0.180</code></td><td><code>[0.55, 0.73)</code></td></tr><tr><td><code>D</code></td><td><code>0.120</code></td><td><code>[0.73, 0.85)</code></td></tr><tr><td><code>E</code></td><td><code>0.090</code></td><td><code>[0.85, 0.94)</code></td></tr><tr><td><code>F</code></td><td><code>0.060</code></td><td><code>[0.94, 1)</code></td></tr></tbody>
+      </table>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vizualizacija intervalov</label>
+          <canvas id="canvas" width="1000" height="360"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const exampleA = { msg: 'ABAC', symbols: [
+    {s:'A',p:0.30},{s:'B',p:0.25},{s:'C',p:0.18},{s:'D',p:0.12},{s:'E',p:0.09},{s:'F',p:0.06}
+  ] };
+
+  const exampleB = { msg: 'x1x2x3', symbols: [
+    {s:'x1',p:0.35},{s:'x2',p:0.22},{s:'x3',p:0.18},{s:'x4',p:0.11},{s:'x5',p:0.08},{s:'x6',p:0.06}
+  ] };
+
+  const tb = document.getElementById('tb');
+  const k = document.getElementById('k');
+  const kVal = document.getElementById('kVal');
+  const stepText = document.getElementById('stepText');
+  const tag = document.getElementById('tag');
+  const msgInput = document.getElementById('message');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  let model = null;
+  let message = '';
+  let steps = [];
+
+  function buildModel(symbols) {
+    const total = symbols.reduce((sum, x) => sum + x.p, 0);
+    let cum = 0;
+    return symbols.map(x => {
+      const low = cum;
+      const high = cum + x.p / total;
+      cum = high;
+      return { ...x, low, high };
+    });
+  }
+
+  function buildSteps(msg, model) {
+    const steps = [];
+    let L = 0, H = 1;
+    steps.push({ i: 0, symbol: null, L, H, range: H - L });
+
+    for (let idx = 0; idx < msg.length; idx++) {
+      const sym = msg[idx];
+      const entry = model.find(e => e.s === sym);
+      if (!entry) break;
+
+      const r = H - L;
+      const newL = L + r * entry.low;
+      const newH = L + r * entry.high;
+      L = newL;
+      H = newH;
+      steps.push({ i: idx + 1, symbol: sym, L, H, range: H - L });
+    }
+    return steps;
+  }
+
+  function formatNum(v) {
+    return v.toFixed(6).replace(/\.?(0+)$/, '');
+  }
+
+  function updateTables() {
+    tb.innerHTML = '';
+    model.forEach(x => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><code>${x.s}</code></td><td><code>${x.p.toFixed(3)}</code></td><td><code>[${formatNum(x.low)}, ${formatNum(x.high)})</code></td>`;
+      tb.appendChild(tr);
+    });
+  }
+
+  function draw(stepIndex) {
+    const W = canvas.width;
+    const H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.font = '12px ui-monospace, Menlo, monospace';
+
+    const margin = 40;
+    const barY = 60;
+    const barH = 24;
+    const labelY = barY - 12;
+    const barX = margin;
+    const barW = W - 2 * margin;
+
+    // Draw base scale
+    ctx.strokeStyle = 'rgba(0,0,0,.15)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(barX, barY, barW, barH);
+    ctx.fillStyle = 'rgba(100,116,139,.1)';
+    ctx.fillRect(barX, barY, barW, barH);
+
+    // Draw symbol subintervals
+    model.forEach(sym => {
+      const x0 = barX + sym.low * barW;
+      const x1 = barX + sym.high * barW;
+      ctx.fillStyle = 'rgba(59,130,246,.18)';
+      ctx.fillRect(x0, barY, x1 - x0, barH);
+      ctx.strokeStyle = 'rgba(59,130,246,.3)';
+      ctx.strokeRect(x0, barY, x1 - x0, barH);
+      ctx.fillStyle = 'rgba(15,23,42,.8)';
+      ctx.fillText(sym.s, x0 + 4, labelY);
+    });
+
+    // Draw current interval
+    const st = steps[stepIndex];
+    const Lx = barX + st.L * barW;
+    const Hx = barX + st.H * barW;
+    ctx.fillStyle = 'rgba(220,38,38,.25)';
+    ctx.fillRect(Lx, barY, Math.max(2, Hx - Lx), barH);
+    ctx.strokeStyle = 'rgba(220,38,38,.6)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(Lx, barY, Math.max(2, Hx - Lx), barH);
+
+    ctx.fillStyle = 'rgba(15,23,42,.9)';
+    ctx.fillText(`Korak ${st.i}: interval = [${formatNum(st.L)}, ${formatNum(st.H)})`, margin, barY + barH + 28);
+    if (st.symbol) {
+      ctx.fillText(`Simbol: ${st.symbol}  širina = ${formatNum(st.range)}` , margin, barY + barH + 46);
+    }
+  }
+
+  function refresh() {
+    const msg = msgInput.value.trim();
+    message = msg;
+    steps = buildSteps(message, model);
+    k.max = Math.max(0, steps.length - 1);
+    k.value = Math.min(k.value, k.max);
+    kVal.textContent = `${k.value}/${k.max}`;
+
+    const current = steps[k.value];
+    stepText.textContent = current.symbol
+      ? `Po ${current.i} simbolih: L=${formatNum(current.L)}, H=${formatNum(current.H)}, širina=${formatNum(current.range)}`
+      : `Začetno stanje: interval [0,1).`;
+
+    tag.textContent = message ? `sporočilo: ${message}` : 'prazno sporočilo';
+
+    updateTables();
+    draw(parseInt(k.value, 10));
+  }
+
+  function setExample(ex) {
+    model = buildModel(ex.symbols);
+    msgInput.value = ex.msg;
+    refresh();
+  }
+
+  document.getElementById('ex1').addEventListener('click', () => setExample(exampleA));
+  document.getElementById('ex2').addEventListener('click', () => setExample(exampleB));
+
+  msgInput.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') { refresh(); }
+  });
+
+  k.addEventListener('input', () => {
+    kVal.textContent = `${k.value}/${k.max}`;
+    draw(parseInt(k.value, 10));
+    const st = steps[parseInt(k.value, 10)];
+    stepText.textContent = st.symbol
+      ? `Po ${st.i} simbolih: L=${formatNum(st.L)}, H=${formatNum(st.H)}, širina=${formatNum(st.range)}`
+      : `Začetno stanje: interval [0,1).`;
+  });
+
+  setExample(exampleA);
+})();
+</script>
+
+
+</body></html>

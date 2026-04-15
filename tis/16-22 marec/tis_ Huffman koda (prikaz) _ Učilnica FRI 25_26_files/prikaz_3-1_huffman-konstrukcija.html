@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<!-- saved from url=(0120)https://ucilnica.fri.uni-lj.si/pluginfile.php/244513/mod_resource/content/1/prikaz_3-1_huffman-konstrukcija.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 3-1: Konstrukcija Huffmanove kode</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:var(--sans); background:var(--bg); color:var(--text); }
+    header{ padding:28px 18px 10px; max-width:1100px; margin:0 auto; }
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    canvas{width:100%; height:360px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 300px; min-width:300px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .val{font-family:var(--mono); font-size:12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left}
+    th{background:rgba(0,0,0,.05)}
+    .step{font-family:var(--mono); font-size:12px; margin-top:8px}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 3-1: Konstrukcija Huffmanove kode</h1>
+  <p class="lead">Vedno združimo dva najmanj verjetna simbola. Drevo se gradi po korakih; na koncu preberemo kode z 0/1 po vejah.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Koraki Huffmanovega združevanja</div>
+        <div class="sub">Drsnik prikazuje naraščajočo gradnjo od listov do korena.</div>
+      </div>
+      <span class="tag" id="tag">korak 5</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Prednastavljen vir</label>
+          <button id="ex1">Primer A</button>
+          <button id="ex2">Primer B</button>
+        </div>
+        <div class="ctl">
+          <label>KORAK <span class="val" id="kVal">5 / 5</span></label>
+          <input id="k" type="range" min="0" max="5" step="1" value="5">
+          <div class="step" id="stepText">Združi N8:0.430 in N9:0.570 -&gt; 1.000</div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Simbol</th><th>p_i</th><th>Huffmanova koda</th></tr>
+        </thead>
+        <tbody id="tb"><tr><td>A</td><td>0.300</td><td><code>11</code></td></tr><tr><td>B</td><td>0.250</td><td><code>01</code></td></tr><tr><td>C</td><td>0.180</td><td><code>00</code></td></tr><tr><td>D</td><td>0.120</td><td><code>100</code></td></tr><tr><td>E</td><td>0.090</td><td><code>1011</code></td></tr><tr><td>F</td><td>0.060</td><td><code>1010</code></td></tr></tbody>
+      </table>
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vizualna konstrukcija Huffmanovega drevesa</label>
+          <canvas id="tree" width="1000" height="520"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const exampleA = [
+    {s:'A',p:0.30},{s:'B',p:0.25},{s:'C',p:0.18},{s:'D',p:0.12},{s:'E',p:0.09},{s:'F',p:0.06}
+  ];
+  const exampleB = [
+    {s:'x1',p:0.35},{s:'x2',p:0.22},{s:'x3',p:0.18},{s:'x4',p:0.11},{s:'x5',p:0.08},{s:'x6',p:0.06}
+  ];
+
+  const tb = document.getElementById('tb');
+  const k = document.getElementById('k');
+  const kVal = document.getElementById('kVal');
+  const stepText = document.getElementById('stepText');
+  const tag = document.getElementById('tag');
+  const tree = document.getElementById('tree');
+  const ctx = tree.getContext('2d');
+
+  let base = exampleA.slice();
+  let model = null;
+
+  function buildModel(items) {
+    let id = 0;
+    let mergeStep = 0;
+    const steps = ['Začetno stanje: posamezni simboli.'];
+    let forest = items.map(x => ({ id:id++, s:x.s, p:x.p, left:null, right:null, mergeStep:0, isLeaf:true }));
+
+    while (forest.length > 1) {
+      forest.sort((a, b) => a.p - b.p || a.id - b.id);
+      const a = forest.shift();
+      const b = forest.shift();
+      mergeStep += 1;
+      const parent = {
+        id:id++, s:null, p:a.p + b.p, left:a, right:b, mergeStep, isLeaf:false
+      };
+      steps.push(`Združi ${a.isLeaf ? a.s : 'N'+a.id}:${a.p.toFixed(3)} in ${b.isLeaf ? b.s : 'N'+b.id}:${b.p.toFixed(3)} -> ${parent.p.toFixed(3)}`);
+      forest.push(parent);
+    }
+
+    const root = forest[0];
+    const codes = {};
+    function dfs(n, pref) {
+      if (!n.left && !n.right) { codes[n.s] = pref || '0'; return; }
+      dfs(n.left, pref + '0');
+      dfs(n.right, pref + '1');
+    }
+    dfs(root, '');
+
+    return { root, steps, maxStep: mergeStep, codes };
+  }
+
+  function collectLeaves(n, out) {
+    if (!n.left && !n.right) { out.push(n); return; }
+    if (n.left) collectLeaves(n.left, out);
+    if (n.right) collectLeaves(n.right, out);
+  }
+
+  function setPositions(root) {
+    const leaves = [];
+    collectLeaves(root, leaves);
+    const W = tree.width, H = tree.height;
+    const m = {l:30, r:30, t:22, b:36};
+    const x0 = m.l, y0 = m.t, w = W - m.l - m.r, h = H - m.t - m.b;
+
+    const maxDepth = (() => {
+      function depth(n) { return (!n.left && !n.right) ? 0 : 1 + Math.max(depth(n.left), depth(n.right)); }
+      return Math.max(1, depth(root));
+    })();
+
+    leaves.forEach((leaf, i) => {
+      leaf.x = x0 + (leaves.length === 1 ? w / 2 : i * (w / (leaves.length - 1)));
+    });
+
+    function place(n, d) {
+      n.y = y0 + d * (h / maxDepth);
+      if (!n.left && !n.right) return;
+      if (n.left) place(n.left, d + 1);
+      if (n.right) place(n.right, d + 1);
+      n.x = (n.left.x + n.right.x) / 2;
+    }
+    place(root, 0);
+  }
+
+  function drawTree(root, step) {
+    const W = tree.width, H = tree.height;
+    const pad = 8;
+    ctx.clearRect(0, 0, W, H);
+
+    function isActive(n) {
+      return n.isLeaf || n.mergeStep <= step;
+    }
+
+    function drawEdges(n) {
+      if (!n || !n.left || !n.right) return;
+      [ [n.left, '0'], [n.right, '1'] ].forEach(([ch, bit]) => {
+        const active = isActive(n) && isActive(ch);
+        ctx.strokeStyle = active ? 'rgba(30,64,175,.58)' : 'rgba(30,64,175,.18)';
+        ctx.lineWidth = active ? 1.8 : 1.1;
+        ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(ch.x, ch.y); ctx.stroke();
+
+        ctx.fillStyle = active ? '#1f2937' : '#94a3b8';
+        ctx.font = '14px ui-monospace, Menlo, monospace';
+        ctx.fillText(bit, (n.x + ch.x) / 2 + (bit === '0' ? -6 : 2), (n.y + ch.y) / 2 - 4);
+      });
+      drawEdges(n.left);
+      drawEdges(n.right);
+    }
+
+    function drawNodes(n) {
+      if (!n) return;
+      const active = isActive(n);
+      ctx.fillStyle = active ? 'rgba(147,197,253,.65)' : 'rgba(147,197,253,.25)';
+      ctx.strokeStyle = active ? 'rgba(30,64,175,.55)' : 'rgba(30,64,175,.25)';
+      ctx.beginPath(); ctx.arc(n.x, n.y, n.isLeaf ? 6 : 5.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = active ? '#111827' : '#94a3b8';
+      ctx.font = '13px ui-monospace, Menlo, monospace';
+      const txt = n.isLeaf ? `${n.s} p=${n.p.toFixed(3)}${step === model.maxStep ? ` c=${model.codes[n.s]}` : ''}` : `p=${n.p.toFixed(3)}`;
+      const tw = ctx.measureText(txt).width;
+      let tx = n.x + 8;
+      if (tx + tw > W - pad) tx = n.x - 8 - tw;
+      if (tx < pad) tx = pad;
+      ctx.fillText(txt, tx, n.y - 7);
+
+      drawNodes(n.left);
+      drawNodes(n.right);
+    }
+
+    drawEdges(root);
+    drawNodes(root);
+  }
+
+  function rebuild() {
+    base = base.slice().sort((a,b) => b.p - a.p);
+    model = buildModel(base);
+    setPositions(model.root);
+    k.max = String(model.maxStep);
+    k.value = String(model.maxStep);
+    render();
+  }
+
+  function render() {
+    const step = parseInt(k.value, 10);
+    kVal.textContent = `${step} / ${model.maxStep}`;
+    tag.textContent = `korak ${step}`;
+    stepText.textContent = model.steps[step] || '';
+
+    tb.innerHTML = '';
+    base.forEach(x => {
+      const c = step === model.maxStep ? model.codes[x.s] : '...';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${x.s}</td><td>${x.p.toFixed(3)}</td><td><code>${c}</code></td>`;
+      tb.appendChild(tr);
+    });
+
+    drawTree(model.root, step);
+  }
+
+  k.addEventListener('input', render);
+  document.getElementById('ex1').addEventListener('click', () => { base = exampleA.slice(); rebuild(); });
+  document.getElementById('ex2').addEventListener('click', () => { base = exampleB.slice(); rebuild(); });
+
+  rebuild();
+})();
+</script>
+
+
+</body></html>

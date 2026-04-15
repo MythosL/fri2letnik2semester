@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<!-- saved from url=(0124)https://ucilnica.fri.uni-lj.si/pluginfile.php/244341/mod_resource/content/1/prikaz_2-2_kraft-dokaz-konstrukcija.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 2-2: Konstrukcija dokaza Kraftove neenakosti</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:var(--sans); background:var(--bg); color:var(--text); }
+    header{ padding:28px 18px 10px; max-width:1100px; margin:0 auto; }
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    canvas{width:100%; height:360px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .ctl input[type="text"]{width:100%; border:1px solid rgba(0,0,0,.14); border-radius:8px; padding:7px 9px; font-family:var(--mono); font-size:12px}
+    .val{font-family:var(--mono); font-size:12px}
+    .warn{color:#b91c1c; font-weight:700}
+    table{width:100%; border-collapse:collapse; margin-top:12px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:7px 8px; text-align:left}
+    th{background:rgba(59,130,246,.08)}
+    tr.red td{color:#b91c1c; font-weight:700}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 2-2: Konstrukcija dokaza Kraftove neenakosti</h1>
+  <p class="lead">Vsako kodno besedo vidimo kot vozlišče v binarnem drevesu. Na fiksni globini <code>m</code> koda dolžine <code>L<sub>i</sub></code> zasede <code>2<sup>m-L<sub>i</sub></sup></code> listov.</p>
+</header>
+<div class="wrap" data-protonpass-form="">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Gradnja predponske kode po korakih</div>
+        <div class="sub">Prikaz je kanoničen (po dolžini in leksikografsko). Rdeče poti so izbrane kodne besede, sivo pa zasedeni listi na fiksni globini m.</div>
+      </div>
+      <span class="tag" id="tag">uporabljeno 0/6</span>
+    </div>
+    <div class="bd">
+      <canvas id="tree" width="1000" height="520"></canvas>
+      <div class="row">
+        <div class="ctl">
+          <label>KORAK <span class="val" id="kVal">0 / 6</span></label>
+          <input id="k" type="range" min="0" max="6" step="1" value="0">
+          <div class="val" id="desc">Začetek: brez izbranih kodnih besed.</div>
+        </div>
+        <div class="ctl">
+          <label>Dolžine kodnih besed</label>
+          <div class="val">L = [1, 3, 3, 3, 4, 4]</div>
+          <div class="val" id="sum">Kraftova vsota: 1.00000 ≤ 1 (velja)</div>
+          <div class="val" id="proof">Na globini m=4: zasedeno 0/16 listov. Delna vsota: 0.00000 ≤ 1.</div>
+        </div>
+        <div class="ctl">
+          <label>Začetna abeceda (ločila: vejica ali presledek)</label>
+          <input id="alphabet" type="text" value="A,B,C,D,E,F">
+          <div class="val" id="alphabetInfo">Simbolov: 6, mest za kode: 6.</div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Simbol</th><th>L_i</th><th>Koda</th><th>Status</th></tr>
+        </thead>
+        <tbody id="codeTable"><tr><td>A</td><td>1</td><td><code>...</code></td><td>čaka</td></tr><tr><td>B</td><td>3</td><td><code>...</code></td><td>čaka</td></tr><tr><td>C</td><td>3</td><td><code>...</code></td><td>čaka</td></tr><tr><td>D</td><td>3</td><td><code>...</code></td><td>čaka</td></tr><tr><td>E</td><td>4</td><td><code>...</code></td><td>čaka</td></tr><tr><td>F</td><td>4</td><td><code>...</code></td><td>čaka</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const lengths = [1,3,3,3,4,4];
+  const codes = ['0','100','101','110','1110','1111'];
+  const slider = document.getElementById('k');
+  const kVal = document.getElementById('kVal');
+  const desc = document.getElementById('desc');
+  const sum = document.getElementById('sum');
+  const proof = document.getElementById('proof');
+  const alphabet = document.getElementById('alphabet');
+  const alphabetInfo = document.getElementById('alphabetInfo');
+  const codeTable = document.getElementById('codeTable');
+  const tag = document.getElementById('tag');
+  const canvas = document.getElementById('tree');
+  const ctx = canvas.getContext('2d');
+  const mDepth = 4;
+
+  const total = lengths.reduce((a,l) => a + Math.pow(2,-l), 0);
+  sum.innerHTML = total <= 1
+    ? `Kraftova vsota: ${total.toFixed(5)} &le; 1 (velja)`
+    : `Kraftova vsota: ${total.toFixed(5)} &gt; 1 (ne velja)`;
+
+  function nodePos(depth, idx, maxDepth, x0, y0, w, h) {
+    const levels = maxDepth + 1;
+    const y = y0 + depth * (h / (levels - 1));
+    const cells = Math.pow(2, depth);
+    const x = x0 + ((idx + 0.5) / cells) * w;
+    return {x,y};
+  }
+
+  function idxToPrefix(depth, idx) {
+    if (depth === 0) return '';
+    return idx.toString(2).padStart(depth, '0');
+  }
+
+  function parseAlphabet(input) {
+    const cleaned = input.trim();
+    if (!cleaned) return [];
+    return cleaned.split(/[\s,;]+/).filter(Boolean);
+  }
+
+  function draw(step) {
+    const maxDepth = mDepth;
+    const W = canvas.width, H = canvas.height;
+    const x0 = 24, y0 = 24, w = W - 48, h = H - 80;
+    ctx.clearRect(0,0,W,H);
+    const blocked = new Set();
+    const usedPrefixes = new Set(['']);
+    const labels = [];
+    const symbols = parseAlphabet(alphabet.value);
+
+    for (let d = 0; d < maxDepth; d++) {
+      const nodes = Math.pow(2,d);
+      for (let i = 0; i < nodes; i++) {
+        const p = nodePos(d, i, maxDepth, x0, y0, w, h);
+        const l = nodePos(d+1, 2*i, maxDepth, x0, y0, w, h);
+        const r = nodePos(d+1, 2*i+1, maxDepth, x0, y0, w, h);
+        ctx.strokeStyle = 'rgba(37,99,235,.20)';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(l.x,l.y); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(r.x,r.y); ctx.stroke();
+      }
+    }
+
+    let usedLeaves = 0;
+    for (let c = 0; c < step; c++) {
+      const code = codes[c];
+      const sym = symbols[c] || `S${c+1}`;
+      let idx = 0;
+      for (let d = 0; d < code.length; d++) {
+        const bit = code[d] === '1' ? 1 : 0;
+        usedPrefixes.add(code.slice(0, d + 1));
+        const from = nodePos(d, idx, maxDepth, x0, y0, w, h);
+        idx = idx * 2 + bit;
+        const to = nodePos(d+1, idx, maxDepth, x0, y0, w, h);
+        ctx.strokeStyle = '#dc2626';
+        ctx.lineWidth = 3.2;
+        ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(to.x, to.y); ctx.stroke();
+      }
+      const sub = maxDepth - code.length;
+      for (let t = 0; t < Math.pow(2, sub); t++) {
+        const leafIdx = idx * Math.pow(2, sub) + t;
+        blocked.add(`${maxDepth}:${leafIdx}`);
+      }
+      usedLeaves += Math.pow(2, sub);
+      labels.push({ code, sym, idx, depth: code.length });
+    }
+
+    for (let d = 0; d <= maxDepth; d++) {
+      const nodes = Math.pow(2,d);
+      for (let i = 0; i < nodes; i++) {
+        const p = nodePos(d, i, maxDepth, x0, y0, w, h);
+        const key = `${d}:${i}`;
+        const pref = idxToPrefix(d, i);
+        if (d === maxDepth && blocked.has(key)) ctx.fillStyle = 'rgba(15,23,42,.88)';
+        else if (usedPrefixes.has(pref)) ctx.fillStyle = 'rgba(30,41,59,.78)';
+        else ctx.fillStyle = 'rgba(147,197,253,.42)';
+        ctx.strokeStyle = 'rgba(30,64,175,.38)';
+        ctx.beginPath(); ctx.arc(p.x,p.y,5,0,Math.PI*2); ctx.fill(); ctx.stroke();
+      }
+    }
+
+    labels.forEach(({ code, sym, idx, depth }) => {
+      const leaf = nodePos(depth, idx, maxDepth, x0, y0, w, h);
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath(); ctx.arc(leaf.x,leaf.y,7,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#111827';
+      ctx.font = '12px ui-monospace, Menlo, monospace';
+      ctx.fillText(`${sym}: ${code}`, leaf.x + 8, leaf.y - 8);
+    });
+
+    kVal.textContent = `${step} / ${codes.length}`;
+    if (step === 0) desc.textContent = 'Začetek: brez izbranih kodnih besed.';
+    else {
+      const L = codes[step-1].length;
+      desc.textContent = `Dodana koda ${codes[step-1]} (L=${L}), zato na globini m=${mDepth} zasede 2^(m-L) = ${Math.pow(2,mDepth-L)} listov.`;
+    }
+    const totalLeaves = Math.pow(2, mDepth);
+    const partial = lengths.slice(0, step).reduce((a, l) => a + Math.pow(2, -l), 0);
+    proof.innerHTML = `Na globini m=${mDepth}: zasedeno ${usedLeaves}/${totalLeaves} listov. Delna vsota: ${partial.toFixed(5)} &le; 1.`;
+    tag.textContent = `uporabljeno ${step}/${codes.length}`;
+
+    const extras = Math.max(0, symbols.length - codes.length);
+    alphabetInfo.innerHTML = extras > 0
+      ? `<span class="warn">Preveč simbolov: ${extras} brez kodnih besed (označeno rdeče v tabeli).</span>`
+      : `Simbolov: ${symbols.length || 0}, mest za kode: ${codes.length}.`;
+
+    codeTable.innerHTML = '';
+    for (let i = 0; i < codes.length; i++) {
+      const sym = symbols[i] || `S${i+1}`;
+      const assigned = i < step;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${sym}</td><td>${lengths[i]}</td><td><code>${assigned ? codes[i] : '...'}</code></td><td>${assigned ? 'dodeljeno' : 'čaka'}</td>`;
+      codeTable.appendChild(tr);
+    }
+    for (let i = codes.length; i < symbols.length; i++) {
+      const tr = document.createElement('tr');
+      tr.className = 'red';
+      tr.innerHTML = `<td>${symbols[i]}</td><td>-</td><td><code>-</code></td><td>brez kodne besede</td>`;
+      codeTable.appendChild(tr);
+    }
+  }
+
+  slider.addEventListener('input', () => draw(parseInt(slider.value, 10)));
+  alphabet.addEventListener('input', () => draw(parseInt(slider.value, 10)));
+  draw(0);
+})();
+</script>
+
+
+</body></html>

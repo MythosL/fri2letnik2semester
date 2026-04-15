@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<!-- saved from url=(0117)https://ucilnica.fri.uni-lj.si/pluginfile.php/244514/mod_resource/content/1/prikaz_3-1b_huffman-urejanje.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 3-1b: Huffmanova koda (urejanje tabele)</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family:var(--sans); background:var(--bg); color:var(--text); }
+    header{ padding:28px 18px 10px; max-width:1100px; margin:0 auto; }
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    canvas{width:100%; height:360px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .val{font-family:var(--mono); font-size:12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left}
+    th{background:rgba(0,0,0,.05)}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer}
+    input[type="text"]{width:100%; border:1px solid rgba(0,0,0,.14); border-radius:8px; padding:5px 7px; font-family:var(--mono); font-size:12px; background:#fff}
+    .warn{color:#b91c1c; font-weight:700}
+    .step{font-family:var(--mono); font-size:12px; margin-top:8px}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 3-1b: Huffmanova koda (urejanje tabele)</h1>
+  <p class="lead">Uredi simbole in verjetnosti, nato Huffmanov algoritem po korakih združuje dva najmanj verjetna elementa.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Interaktivna konstrukcija Huffmanove kode</div>
+        <div class="sub">Tabela je urejevalna. Verjetnosti se pri izračunu normalizirajo na vsoto 1.</div>
+      </div>
+      <span class="tag" id="tag">korak 0</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Urejanje vira</label>
+          <button id="addRow">Dodaj vrstico</button>
+          <button id="removeRow">Odstrani zadnjo</button>
+          <button id="normalize">Normaliziraj p_i</button>
+          <div class="val" id="sumInfo">Vsota vnesenih p_i =<tcxspan tcxhref="1000000" title="Call  1.000000 via 3CX"> 1.000000</tcxspan></div>
+        </div>
+        <div class="ctl">
+          <label>KORAK <span class="val" id="kVal">0 / 5</span></label>
+          <input id="k" type="range" min="0" max="5" step="1" value="0">
+          <div class="step" id="stepText">Začetno stanje: posamezni simboli.</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Simbol</th><th>p_i (spremenljivo)</th><th>Huffmanova koda</th></tr>
+        </thead>
+        <tbody id="tb"><tr>
+        <td><input type="text" data-i="0" data-k="s" value="A"></td>
+        <td><input type="text" data-i="0" data-k="p" value="0.30"></td>
+        <td><code>...</code></td>
+      </tr><tr>
+        <td><input type="text" data-i="1" data-k="s" value="B"></td>
+        <td><input type="text" data-i="1" data-k="p" value="0.25"></td>
+        <td><code>...</code></td>
+      </tr><tr>
+        <td><input type="text" data-i="2" data-k="s" value="C"></td>
+        <td><input type="text" data-i="2" data-k="p" value="0.18"></td>
+        <td><code>...</code></td>
+      </tr><tr>
+        <td><input type="text" data-i="3" data-k="s" value="D"></td>
+        <td><input type="text" data-i="3" data-k="p" value="0.12"></td>
+        <td><code>...</code></td>
+      </tr><tr>
+        <td><input type="text" data-i="4" data-k="s" value="E"></td>
+        <td><input type="text" data-i="4" data-k="p" value="0.09"></td>
+        <td><code>...</code></td>
+      </tr><tr>
+        <td><input type="text" data-i="5" data-k="s" value="F"></td>
+        <td><input type="text" data-i="5" data-k="p" value="0.06"></td>
+        <td><code>...</code></td>
+      </tr></tbody>
+      </table>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vizualna konstrukcija Huffmanovega drevesa</label>
+          <canvas id="tree" width="1000" height="520"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  let rows = [
+    {s:'A', p:'0.30'}, {s:'B', p:'0.25'}, {s:'C', p:'0.18'},
+    {s:'D', p:'0.12'}, {s:'E', p:'0.09'}, {s:'F', p:'0.06'}
+  ];
+
+  const tb = document.getElementById('tb');
+  const k = document.getElementById('k');
+  const kVal = document.getElementById('kVal');
+  const stepText = document.getElementById('stepText');
+  const tag = document.getElementById('tag');
+  const sumInfo = document.getElementById('sumInfo');
+  const tree = document.getElementById('tree');
+  const ctx = tree.getContext('2d');
+
+  let model = null;
+  let base = [];
+
+  function buildModel(items) {
+    let id = 0;
+    let mergeStep = 0;
+    const steps = ['Začetno stanje: posamezni simboli.'];
+    let forest = items.map(x => ({ id:id++, s:x.s, p:x.p, left:null, right:null, mergeStep:0, isLeaf:true }));
+
+    if (forest.length === 1) {
+      return { root: forest[0], steps, maxStep: 0, codes: { [forest[0].s]: '0' } };
+    }
+
+    while (forest.length > 1) {
+      forest.sort((a, b) => a.p - b.p || a.id - b.id);
+      const a = forest.shift();
+      const b = forest.shift();
+      mergeStep += 1;
+      const parent = { id:id++, s:null, p:a.p + b.p, left:a, right:b, mergeStep, isLeaf:false };
+      steps.push(`Združi ${a.isLeaf ? a.s : 'N'+a.id}:${a.p.toFixed(3)} in ${b.isLeaf ? b.s : 'N'+b.id}:${b.p.toFixed(3)} -> ${parent.p.toFixed(3)}`);
+      forest.push(parent);
+    }
+
+    const root = forest[0];
+    const codes = {};
+    function dfs(n, pref) {
+      if (!n.left && !n.right) { codes[n.s] = pref || '0'; return; }
+      dfs(n.left, pref + '0');
+      dfs(n.right, pref + '1');
+    }
+    dfs(root, '');
+
+    return { root, steps, maxStep: mergeStep, codes };
+  }
+
+  function collectLeaves(n, out) {
+    if (!n.left && !n.right) { out.push(n); return; }
+    if (n.left) collectLeaves(n.left, out);
+    if (n.right) collectLeaves(n.right, out);
+  }
+
+  function setPositions(root) {
+    const leaves = [];
+    collectLeaves(root, leaves);
+    const W = tree.width, H = tree.height;
+    const m = {l:30, r:30, t:22, b:36};
+    const x0 = m.l, y0 = m.t, w = W - m.l - m.r, h = H - m.t - m.b;
+
+    const maxDepth = (() => {
+      function depth(n) { return (!n.left && !n.right) ? 0 : 1 + Math.max(depth(n.left), depth(n.right)); }
+      return Math.max(1, depth(root));
+    })();
+
+    leaves.forEach((leaf, i) => {
+      leaf.x = x0 + (leaves.length === 1 ? w / 2 : i * (w / (leaves.length - 1)));
+    });
+
+    function place(n, d) {
+      n.y = y0 + d * (h / maxDepth);
+      if (!n.left && !n.right) return;
+      if (n.left) place(n.left, d + 1);
+      if (n.right) place(n.right, d + 1);
+      n.x = (n.left.x + n.right.x) / 2;
+    }
+    place(root, 0);
+  }
+
+  function drawTree(root, step) {
+    const W = tree.width, H = tree.height;
+    const pad = 8;
+    ctx.clearRect(0, 0, W, H);
+
+    function isActive(n) {
+      return n.isLeaf || n.mergeStep <= step;
+    }
+
+    function drawEdges(n) {
+      if (!n || !n.left || !n.right) return;
+      [ [n.left, '0'], [n.right, '1'] ].forEach(([ch, bit]) => {
+        const active = isActive(n) && isActive(ch);
+        ctx.strokeStyle = active ? 'rgba(30,64,175,.58)' : 'rgba(30,64,175,.18)';
+        ctx.lineWidth = active ? 1.8 : 1.1;
+        ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(ch.x, ch.y); ctx.stroke();
+
+        ctx.fillStyle = active ? '#1f2937' : '#94a3b8';
+        ctx.font = '14px ui-monospace, Menlo, monospace';
+        ctx.fillText(bit, (n.x + ch.x) / 2 + (bit === '0' ? -6 : 2), (n.y + ch.y) / 2 - 4);
+      });
+      drawEdges(n.left);
+      drawEdges(n.right);
+    }
+
+    function drawNodes(n) {
+      if (!n) return;
+      const active = isActive(n);
+      ctx.fillStyle = active ? 'rgba(147,197,253,.65)' : 'rgba(147,197,253,.25)';
+      ctx.strokeStyle = active ? 'rgba(30,64,175,.55)' : 'rgba(30,64,175,.25)';
+      ctx.beginPath(); ctx.arc(n.x, n.y, n.isLeaf ? 6 : 5.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = active ? '#111827' : '#94a3b8';
+      ctx.font = '13px ui-monospace, Menlo, monospace';
+      const txt = n.isLeaf ? `${n.s} p=${n.p.toFixed(3)}${step === model.maxStep ? ` c=${model.codes[n.s]}` : ''}` : `p=${n.p.toFixed(3)}`;
+      const tw = ctx.measureText(txt).width;
+      let tx = n.x + 8;
+      if (tx + tw > W - pad) tx = n.x - 8 - tw;
+      if (tx < pad) tx = pad;
+      ctx.fillText(txt, tx, n.y - 7);
+
+      drawNodes(n.left);
+      drawNodes(n.right);
+    }
+
+    drawEdges(root);
+    drawNodes(root);
+  }
+
+  function parseAndNormalize() {
+    const valid = rows
+      .map((r, idx) => ({ idx, s: (r.s || '').trim() || `S${idx+1}`, p: Number(r.p) }))
+      .filter(r => Number.isFinite(r.p) && r.p > 0)
+      .sort((a, b) => b.p - a.p);
+
+    const sum = valid.reduce((a, r) => a + r.p, 0);
+    base = sum > 0 ? valid.map(r => ({ idx:r.idx, s:r.s, p:r.p / sum })) : [];
+
+    sumInfo.innerHTML = Math.abs(sum - 1) > 1e-9
+      ? `<span class="warn">Vsota vnesenih p_i = ${sum.toFixed(6)} (interno normalizirano na 1).</span>`
+      : `Vsota vnesenih p_i = ${sum.toFixed(6)}`;
+  }
+
+  function rebuild() {
+    parseAndNormalize();
+
+    if (base.length === 0) {
+      model = null;
+      tb.innerHTML = '';
+      ctx.clearRect(0, 0, tree.width, tree.height);
+      tag.textContent = 'korak 0';
+      k.max = '0';
+      k.value = '0';
+      kVal.textContent = '0 / 0';
+      stepText.textContent = 'Ni veljavnih simbolov.';
+      return;
+    }
+
+    model = buildModel(base.map(x => ({ s:x.s, p:x.p })));
+    setPositions(model.root);
+    k.max = String(model.maxStep);
+    if (Number(k.value) > model.maxStep) k.value = String(model.maxStep);
+    render();
+  }
+
+  function render() {
+    if (!model) return;
+    const step = parseInt(k.value, 10);
+    kVal.textContent = `${step} / ${model.maxStep}`;
+    tag.textContent = `korak ${step}`;
+    stepText.textContent = model.steps[step] || '';
+
+    const codeBySym = model.codes;
+
+    tb.innerHTML = '';
+    rows.forEach((r, i) => {
+      const sym = (r.s || '').trim() || `S${i+1}`;
+      const p = Number(r.p);
+      const normalized = base.find(x => x.s === sym);
+      const c = (step === model.maxStep && codeBySym[sym]) ? codeBySym[sym] : (normalized ? '...' : '-');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" data-i="${i}" data-k="s" value="${String(r.s ?? '').replace(/"/g, '&quot;')}"/></td>
+        <td><input type="text" data-i="${i}" data-k="p" value="${String(r.p ?? '')}"/></td>
+        <td><code>${c}</code></td>
+      `;
+      tb.appendChild(tr);
+    });
+
+    tb.querySelectorAll('input').forEach(inp => {
+      inp.addEventListener('input', (e) => {
+        const i = Number(e.target.dataset.i);
+        const kx = e.target.dataset.k;
+        if (!Number.isInteger(i) || !rows[i]) return;
+        rows[i][kx] = e.target.value;
+      });
+    });
+
+    drawTree(model.root, step);
+  }
+
+  k.addEventListener('input', render);
+
+  document.getElementById('addRow').addEventListener('click', () => {
+    rows.push({ s:`S${rows.length+1}`, p:'0.01' });
+    rebuild();
+  });
+
+  document.getElementById('removeRow').addEventListener('click', () => {
+    if (rows.length > 1) rows.pop();
+    rebuild();
+  });
+
+  document.getElementById('normalize').addEventListener('click', () => {
+    const sum = rows.reduce((acc, r) => {
+      const p = Number(r.p);
+      return acc + (Number.isFinite(p) ? p : 0);
+    }, 0);
+    if (sum === 0) return;
+    rows = rows.map(r => {
+      const p = Number(r.p);
+      if (!Number.isFinite(p)) return { ...r, p: '0' };
+      return { ...r, p: (p / sum).toFixed(6) };
+    });
+    rebuild();
+  });
+
+  rebuild();
+})();
+</script>
+
+
+</body></html>

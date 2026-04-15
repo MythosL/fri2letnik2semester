@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<!-- saved from url=(0113)https://ucilnica.fri.uni-lj.si/pluginfile.php/244697/mod_resource/content/1/prikaz_3-1_rle-kodiranje.html?embed=1 -->
+<html lang="sl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Predavanje 3-1: RLE kodiranje</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563;
+      --shadow:0 10px 25px rgba(0,0,0,.10);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:var(--sans); background:var(--bg); color:var(--text)}
+    header{padding:28px 18px 10px; max-width:1100px; margin:0 auto}
+    h1{font-size:22px; margin:0 0 6px 0; font-weight:750; letter-spacing:.2px}
+    p.lead{margin:0; color:var(--muted); line-height:1.45}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid rgba(0,0,0,.10); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .hd{padding:14px 16px; border-bottom:1px solid rgba(0,0,0,.10); display:flex; justify-content:space-between; gap:10px}
+    .title{font-weight:750; font-size:15px}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35}
+    .tag{font-family:var(--mono); font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(0,0,0,.14); color:var(--muted)}
+    .bd{padding:14px 16px}
+    .row{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .ctl{flex:1 1 280px; min-width:280px; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px; padding:10px 12px}
+    .ctl label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px}
+    .ctl input[type="range"]{width:100%}
+    .ctl input[type="text"]{width:100%; border:1px solid rgba(0,0,0,.14); border-radius:8px; padding:6px 8px; font-family:var(--mono); font-size:12px; background:#fff}
+    .val,.step,code{font-family:var(--mono); font-size:12px}
+    table{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+    th,td{border:1px solid rgba(0,0,0,.12); padding:8px; text-align:left; vertical-align:top}
+    th{background:rgba(0,0,0,.05)}
+    button{border:1px solid rgba(0,0,0,.16); background:#fff; border-radius:10px; padding:7px 12px; cursor:pointer}
+    canvas{width:100%; height:320px; display:block; background:rgba(0,0,0,.03); border:1px solid rgba(0,0,0,.10); border-radius:14px}
+    .pill{display:inline-block; margin:2px 6px 2px 0; padding:4px 7px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background:#fff; font-family:var(--mono); font-size:12px}
+  </style>
+<style>tcxspan{text-decoration: underline;cursor: pointer;}</style></head>
+<body>
+<header>
+  <h1>Predavanje 3-1: RLE kodiranje</h1>
+  <p class="lead">Pri RLE kodiranju vhodni niz preberemo od leve proti desni in ga razdelimo na najvece zaporedne teke enakih simbolov. Vsak tek zapisemo kot par <code>(dolzina, simbol)</code>.</p>
+</header>
+<div class="wrap">
+  <section class="card">
+    <div class="hd">
+      <div>
+        <div class="title">Razbitje na teke in gradnja izhoda</div>
+        <div class="sub">Izberi primer ali vnesi svoj niz. Stran po korakih prikaze trenutni tek, nastali par in dosedanji RLE izhod.</div>
+      </div>
+      <span class="tag" id="tag">S = AAAABBBCCDAA</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="ctl">
+          <label>Prednastavljen primer</label>
+          <button id="ex1">AAAABBBCCDAA</button>
+          <button id="ex2">0000001111000000</button>
+          <button id="ex3">ABABABCD</button>
+        </div>
+        <div class="ctl" data-protonpass-form="">
+          <label>Lastni vhodni niz</label>
+          <input id="customSource" type="text" value="AAABBCCCC">
+          <div class="step">Vnesi niz in pritisni Enter ali gumb.</div>
+          <div class="step"><button id="applyCustom">Uporabi svoj primer</button></div>
+        </div>
+        <div class="ctl">
+          <label>KORAK <span class="val" id="kVal">5/5</span></label>
+          <input id="k" type="range" min="0" max="5" step="1" value="0">
+          <div class="step" id="stepText">Korak 5: tek AA zapisemo kot (2, A).</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl">
+          <label>Aktivni tek</label>
+          <div class="step" id="runText">Tek: AA</div>
+          <div class="step" id="pairText">Par: (2, A)</div>
+        </div>
+        <div class="ctl">
+          <label>Izhod</label>
+          <div class="step" id="encodedText">Izhod: (4, A)(3, B)(2, C)(1, D)(2, A)</div>
+          <div class="step" id="coveredText">Obdelani del: AAAABBBCCDAA</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Korak</th><th>Tek</th><th>Par</th><th>Napredek izhoda</th></tr>
+        </thead>
+        <tbody id="tb"><tr style="background: transparent;"><td>1</td><td><code>AAAA</code></td><td><code>(4, A)</code></td><td><code>(4, A)</code></td></tr><tr style="background: transparent;"><td>2</td><td><code>BBB</code></td><td><code>(3, B)</code></td><td><code>(4, A)(3, B)</code></td></tr><tr style="background: transparent;"><td>3</td><td><code>CC</code></td><td><code>(2, C)</code></td><td><code>(4, A)(3, B)(2, C)</code></td></tr><tr style="background: transparent;"><td>4</td><td><code>D</code></td><td><code>(1, D)</code></td><td><code>(4, A)(3, B)(2, C)(1, D)</code></td></tr><tr style="background: rgba(59, 130, 246, 0.08);"><td>5</td><td><code>AA</code></td><td><code>(2, A)</code></td><td><code>(4, A)(3, B)(2, C)(1, D)(2, A)</code></td></tr></tbody>
+      </table>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vizualizacija obdelanega dela in aktivnega teka</label>
+          <canvas id="canvas" width="1000" height="320"></canvas>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="ctl" style="flex:1 1 100%">
+          <label>Vsi pari</label>
+          <div id="pairs"><span class="pill">(4, A)</span><span class="pill">(3, B)</span><span class="pill">(2, C)</span><span class="pill">(1, D)</span><span class="pill" style="background: rgb(219, 234, 254);">(2, A)</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+(() => {
+  const examples = [
+    { key:'S = AAAABBBCCDAA', source:'AAAABBBCCDAA', description:'Primer z dolgimi teki.' },
+    { key:'S = 0000001111000000', source:'0000001111000000', description:'Binarni niz z dolgimi homogenimi bloki.' },
+    { key:'S = ABABABCD', source:'ABABABCD', description:'Primer, kjer RLE ni posebej ucinkovit.' }
+  ];
+
+  const colors = ['#dbeafe','#dcfce7','#fef3c7','#fee2e2','#ede9fe','#cffafe','#fde68a','#fecaca'];
+  const k = document.getElementById('k');
+  const kVal = document.getElementById('kVal');
+  const stepText = document.getElementById('stepText');
+  const runText = document.getElementById('runText');
+  const pairText = document.getElementById('pairText');
+  const encodedText = document.getElementById('encodedText');
+  const coveredText = document.getElementById('coveredText');
+  const tag = document.getElementById('tag');
+  const tb = document.getElementById('tb');
+  const pairs = document.getElementById('pairs');
+  const customSource = document.getElementById('customSource');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  let ex = examples[0];
+  let steps = [];
+
+  function buildRuns(source) {
+    const out = [];
+    let start = 0;
+    while (start < source.length) {
+      let end = start + 1;
+      while (end < source.length && source[end] === source[start]) end += 1;
+      const text = source.slice(start, end);
+      out.push({
+        step: out.length + 1,
+        start,
+        end,
+        run: text,
+        pair: `(${text.length}, ${text[0]})`,
+        encoded: ''
+      });
+      start = end;
+    }
+    let acc = '';
+    out.forEach(step => {
+      acc += step.pair;
+      step.encoded = acc;
+      step.covered = source.slice(0, step.end);
+    });
+    return out;
+  }
+
+  function renderTable(active) {
+    tb.innerHTML = '';
+    steps.forEach((st, idx) => {
+      const tr = document.createElement('tr');
+      tr.style.background = idx + 1 === active ? 'rgba(59,130,246,.08)' : 'transparent';
+      tr.innerHTML = `<td>${st.step}</td><td><code>${idx + 1 <= active ? st.run : ''}</code></td><td><code>${idx + 1 <= active ? st.pair : ''}</code></td><td><code>${idx + 1 <= active ? st.encoded : ''}</code></td>`;
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderPairs(active) {
+    pairs.innerHTML = '';
+    steps.forEach((st, idx) => {
+      const span = document.createElement('span');
+      span.className = 'pill';
+      span.textContent = idx < active ? st.pair : '(...)';
+      if (idx + 1 === active) span.style.background = '#dbeafe';
+      pairs.appendChild(span);
+    });
+  }
+
+  function draw(active) {
+    const W = canvas.width;
+    ctx.clearRect(0, 0, W, canvas.height);
+    ctx.font = '12px ui-monospace, Menlo, monospace';
+
+    const step = active > 0 ? steps[active - 1] : null;
+    const source = ex.source;
+    const margin = 28;
+    const cellW = Math.min(32, Math.max(20, (W - margin * 2) / Math.max(1, source.length)));
+    const boxH = 34;
+    const y1 = 58;
+    const y2 = 156;
+
+    ctx.fillStyle = '#111827';
+    ctx.fillText('Celoten vhodni niz', margin, y1 - 14);
+    ctx.fillText('Obdelani del po aktivnem koraku', margin, y2 - 14);
+
+    function drawString(str, y, lower) {
+      for (let i = 0; i < str.length; i++) {
+        const x = margin + i * cellW;
+        let fill = 'rgba(148,163,184,.16)';
+        if (step) {
+          if (!lower && i < step.start) fill = 'rgba(34,197,94,.18)';
+          if (!lower && i >= step.start && i < step.end) fill = colors[(active - 1) % colors.length];
+          if (lower && i < step.end) fill = 'rgba(34,197,94,.18)';
+        }
+        ctx.fillStyle = fill;
+        ctx.fillRect(x, y, cellW - 2, boxH);
+        ctx.strokeStyle = 'rgba(0,0,0,.16)';
+        ctx.strokeRect(x, y, cellW - 2, boxH);
+        ctx.fillStyle = '#111827';
+        ctx.fillText(str[i], x + 8, y + 21);
+      }
+    }
+
+    drawString(source, y1, false);
+    drawString(source, y2, true);
+
+    if (step) {
+      ctx.fillStyle = '#111827';
+      ctx.fillText(`Aktivni tek = ${step.run}`, margin, 255);
+      ctx.fillText(`Par = ${step.pair}`, margin, 277);
+      ctx.fillText(`Izhod do tukaj = ${step.encoded}`, margin, 299);
+    }
+  }
+
+  function render() {
+    const active = parseInt(k.value, 10);
+    kVal.textContent = `${active}/${steps.length}`;
+    tag.textContent = ex.key;
+    if (active === 0) {
+      stepText.textContent = `${ex.description} Zacetno stanje: se brez izpisanega para.`;
+      runText.textContent = 'Tek: (prazno)';
+      pairText.textContent = 'Par: (prazno)';
+      encodedText.textContent = 'Izhod: (prazen)';
+      coveredText.textContent = 'Obdelani del: (prazno)';
+    } else {
+      const st = steps[active - 1];
+      stepText.textContent = `Korak ${active}: tek ${st.run} zapisemo kot ${st.pair}.`;
+      runText.textContent = `Tek: ${st.run}`;
+      pairText.textContent = `Par: ${st.pair}`;
+      encodedText.textContent = `Izhod: ${st.encoded}`;
+      coveredText.textContent = `Obdelani del: ${st.covered}`;
+    }
+    renderTable(active);
+    renderPairs(active);
+    draw(active);
+  }
+
+  function applySource(source, description) {
+    if (!source) return;
+    ex = { key:`S = ${source}`, source, description };
+    customSource.value = source;
+    steps = buildRuns(source);
+    k.max = String(steps.length);
+    k.value = String(steps.length);
+    render();
+  }
+
+  k.addEventListener('input', render);
+  document.getElementById('ex1').addEventListener('click', () => applySource(examples[0].source, examples[0].description));
+  document.getElementById('ex2').addEventListener('click', () => applySource(examples[1].source, examples[1].description));
+  document.getElementById('ex3').addEventListener('click', () => applySource(examples[2].source, examples[2].description));
+  document.getElementById('applyCustom').addEventListener('click', () => applySource(customSource.value, 'Lastni primer: teki se izracunajo neposredno iz vhodnega niza.'));
+  customSource.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') applySource(customSource.value, 'Lastni primer: teki se izracunajo neposredno iz vhodnega niza.');
+  });
+
+  applySource(examples[0].source, examples[0].description);
+})();
+</script>
+
+
+</body></html>
