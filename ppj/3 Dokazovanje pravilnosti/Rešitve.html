@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rešitve</title>
+<style>.hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}.hljs-comment,.hljs-quote{color:#a0a1a7;font-style:italic}.hljs-doctag,.hljs-keyword,.hljs-formula{color:#a626a4}.hljs-section,.hljs-name,.hljs-selector-tag,.hljs-deletion,.hljs-subst{color:#e45649}.hljs-literal{color:#0184bb}.hljs-string,.hljs-regexp,.hljs-addition,.hljs-attribute,.hljs-meta-string{color:#50a14f}.hljs-built_in,.hljs-class .hljs-title{color:#c18401}.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-type,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-number{color:#986801}.hljs-symbol,.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-title{color:#4078f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-link{text-decoration:underline}
+
+:root{--text:#1f2328;--muted:#57606a;--bg:#fff;--link:#0969da;--code-bg:#f6f8fa;--border:#d0d7de}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5;color:var(--text);background:var(--bg)}
+main{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h3{font-size:1.25em;margin-top:24px}
+h4{font-size:1em;margin-top:24px}
+p,ul,ol,pre,table{margin:0 0 16px 0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.2em .4em;border-radius:6px;font-size:85%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:var(--code-bg);padding:16px;border-radius:8px;overflow:auto;font-size:85%;line-height:1.45}
+pre code{background:transparent;padding:0;border-radius:0;font-size:100%;display:block;overflow-x:auto}
+pre code.hljs{padding:0;background:transparent}
+ul,ol{padding-left:2em}
+li{margin:.25em 0}
+blockquote{border-left:4px solid var(--border);padding:0 1em;color:var(--muted);margin:0 0 16px 0}
+table{border-collapse:collapse}
+th,td{border:1px solid var(--border);padding:6px 13px}
+img{max-width:100%}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.modified{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.85em;font-style:italic}
+.box,.no-overflow,.generalbox{display:block}
+/* Moodle span.filter_mathjaxloader_equation may wrap headings */
+.filter_mathjaxloader_equation,.nolink{display:block}
+</style>
+</head>
+<body>
+<main>
+<h1>Rešitve</h1>
+<div class="box py-3 generalbox center clearfix"><div class="no-overflow"><p>Pri dokazovanju pravilnosti si lahko pomagamo z naslednjimi splošnimi nasveti.</p>
+
+<ul>
+<li>Po stavku <code>x := N</code> vedno velja <code>{ x = N }</code>. Formalno to dokažemo tako: <code>{ N = N } x := N { x = N }</code>.</li>
+<li>Pravilo za prireditveni stavek je <code>{ P[x ↦ e] } x := e { P }</code>. Pri izpeljevanju najprej vse <code>x</code>-e v predpogoju izrazimo z <code>e</code>, nato pa <code>e</code>-je zamenjamo z <code>x</code>.</li>
+<li>V zančni invarianti se zančni pogoj in lokalne spremenljivke ne pojavljajo, saj mora invarianta veljati tudi po izstopu iz zanke. Ko invarianto »peljemo« čez telo zanke, se nam v njej lahko pojavijo lokalne spremenljivke. Teh se želimo znebiti, ko dosežemo konec zanke.</li>
+<li>Na koncu zanke se lahko izkaže, da je invarianta prešibka in iz nje ne moremo izpeljati končnega pogoja. V tem primeru lahko v invarianto dodamo še kak pogoj in ga ločeno peljemo čez zanko. To ne bo nikoli pokvarilo obstoječe izpeljave: če velja <code>A ⇒ C</code>, potem velja tudi <code>A ∧ B ⇒ C</code>.</li>
+</ul>
+
+<h3>Naloga 1</h3>
+
+<p>Dokažite parcialno in popolno pravilnost programa glede na dano specifikacijo.</p>
+
+<pre><code>{ x = m ∧ y = n }
+x := x + y;
+y := x - y;
+x := x - y;
+{ x = n ∧ y = m }
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<pre><code>{ x = m ∧ y = n }
+{ x + y = m + n ∧ y = n }
+x := x + y;
+{ x = m + n ∧ y = n }
+{ x = m + n ∧ x - y = m }
+y := x - y;
+{ x = m + n ∧ y = m }
+{ x - y = n ∧ y = m }
+x := x - y;
+{ x = n ∧ y = m }
+</code></pre>
+
+<h3>Naloga 2</h3>
+
+<p>Dokažite parcialno in popolno pravilnost programa glede na dano specifikacijo.</p>
+
+<pre><code>{ }
+if y &lt; x then
+  z := x;
+  x := y;
+  y := z
+else
+  skip
+end
+{ x ≤ y }
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<p>Rešujemo od spodaj navzgor (vendar na začetek <code>then</code> dodamo pogoj in na začetek <code>else</code>
+dodamo negacijo pogoja).</p>
+
+<pre><code>{ }
+if y &lt; x then
+  { y &lt; x }
+  z := x;
+  { y &lt; x, z = x }
+  { y &lt; z }
+  x := y;
+  { x &lt; z }
+  y := z
+  { x &lt; y }
+  { x ≤ y }
+else
+  { ¬(y &lt; x) }
+  { x ≤ y }
+  skip
+  { x ≤ y }
+end
+{ x ≤ y }
+</code></pre>
+
+<h3>Naloga 3</h3>
+
+<p>Sestavite program <code>c</code>, ki zadošča specifikaciji</p>
+
+<pre><code>[ n ≥ 0 ]
+c
+[ s = 1 + 2 + ... + n ]
+</code></pre>
+
+<p>in dokažite njegovo pravilnost.</p>
+
+<h4>Prva rešitev</h4>
+
+<p>Ker smo dobri matematiki, znamo sešteti aritmetično vrsto:</p>
+
+<pre><code>1 + 2 + ... + n = n * (n + 1)/2
+</code></pre>
+
+<p>Torej lahko zapišemo program takole:</p>
+
+<pre><code>s := n * (n + 1) / 2
+</code></pre>
+
+<h4>Druga rešitev</h4>
+
+<p>Program zapišemo z zanko <code>while</code>:</p>
+
+<pre><code>s := 0 ;
+i := 1 ;
+while i &lt;= n do
+  s := s + i ;
+  i := i + 1
+done
+</code></pre>
+
+<p>Dokažimo parcialno pravilnost:</p>
+
+<pre><code>{ n ≥ 0 }
+s := 0 ;
+{ s = 0 }
+i := 1 ;
+{ s = 0, i = 1 }
+{ s = 1 + 2 + ... + (i - 1), i ≤ n + 1}
+while i &lt;= n do
+  { i ≤ n, s = 1 + 2 + ... + (i - 1), i ≤ n + 1 }
+  { i ≤ n, s = 1 + 2 + ... + (i - 1) }
+  { i ≤ n, s + i = 1 + 2 + ... + (i - 1) + i }
+  s := s + i ;
+  { i ≤ n, s = 1 + 2 + ... + (i - 1) + i }
+  { i + 1 ≤ n + 1, s = 1 + 2 + ... + (i + 1 - 1) }
+  i := i + 1
+  { i ≤ n + 1, s = 1 + 2 + ... + (i - 1) }
+  { s = 1 + 2 + ... + (i - 1), i ≤ n + 1 }
+done
+{ i &gt; n, s = 1 + 2 + ... + (i - 1), i ≤ n + 1, }
+{ n &lt; i ≤ n + 1, s = 1 + 2 + ... + (i - 1) }
+{ i = n + 1, s = 1 + 2 + ... + (i - 1) }
+{ s = 1 + 2 + ... + n }
+</code></pre>
+
+<p>Zanka se ustavi, ker se zmanjšuje nenegativna količina <code>n - i</code>.
+Tu je treba uporabiti <code>n ≥ 0</code>.</p>
+
+<p>Pred <code>while</code> velja:</p>
+
+<pre><code>{ n - i = d, n - i ≥ - 1 }
+</code></pre>
+
+<p>Količina se zmanjša, ko se izvede telo zanke, in ohrani se spodnja meja:</p>
+
+<pre><code>{ i ≤ n, n - i = d, n - i ≥ - 1 }
+s := s + i ;
+{ i ≤ n, n - i = d, n - i ≥ - 1 }
+{ i + 1 ≤ n + 1, n - (i + 1 - 1) = d, n - (i + 1 - 1) ≥ - 1 }
+i := i + 1
+{ i ≤ n + 1, n - (i - 1) = d, n - (i - 1) ≥ - 1 }
+{ i ≤ n + 1, n - i = d - 1, n - i ≥ - 2 }
+{ n - i ≥ -1, n - i = d - 1, n - i ≥ - 2 }
+{ n - i ≥ -1, n - i = d - 1 }
+</code></pre>
+
+<p>Ker je <code>d - 1 &lt; d</code>, se količina res zmanjšuje.</p>
+
+<h3>Naloga 4</h3>
+
+<p>Dokažite parcialno in popolno pravilnost programa glede na dano specifikacijo.</p>
+
+<pre><code>{ x ≥ 0 }
+y := 0;
+z := x;
+while 1 &lt; z - y do
+  s := (y + z)/2;
+  if s * s &lt; x then
+    y := s
+  else
+    z := s
+  end
+done
+{ y² ≤ x ≤ (y+1)² }
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<p>Dokažimo parcialno pravilnost:</p>
+
+<pre><code>{ x ≥ 0 }
+y := 0;
+{ x ≥ 0, y = 0 }
+z := x;
+{ x ≥ 0, y = 0, z = x }
+{ y² ≤ x ≤ z² }  # invarianta
+while 1 &lt; z - y do
+  { y² ≤ x ≤ z², 1 &lt; z - y }
+  s := (y + z)/2;
+  { y² ≤ x ≤ z², 1 &lt; z - y, s = (y + z)/2 }
+  if s * s &lt; x then
+    { y² ≤ x ≤ z², 1 &lt; z - y, s = (y + z)/2, s² &lt; x }  # ⇒
+    { s² ≤ x ≤ z² }
+    y := s
+    { y² ≤ x ≤ z² }
+  else
+    { y² ≤ x ≤ z², 1 &lt; z - y, s = (y + z)/2, s² ≥ x }  # ⇒
+    { y² ≤ x ≤ s² }
+    z := s
+    { y² ≤ x ≤ z² }
+  end
+  { y² ≤ x ≤ z² }
+done
+{ y² ≤ x ≤ z², 1 ≥ z - y }
+{ y² ≤ x ≤ z², z ≤ y + 1 }
+{ y² ≤ x ≤ (y+1)² }
+</code></pre>
+
+<p>Zanka se ustavi, ker se zmanjšuje nenegativna količina <code>z - y</code>. Pred <code>while</code> velja:</p>
+
+<pre><code>{ z - y = d, z - y ≥ 0 }
+</code></pre>
+
+<p>Količina se zmanjša, ko se izvede telo zanke, in ohrani se spodnja meja:</p>
+
+<pre><code>[ x ≥ 0 ]
+y := 0;
+[ x ≥ 0, y = 0 ]
+z := x;
+[ x ≥ 0, y = 0, z = x ]
+[ y² ≤ x ≤ z² ]  # invarianta
+while 1 &lt; z - y do
+  [ y² ≤ x ≤ z², 1 &lt; z - y, z - y = d, z - y ≥ 0 ]
+  s := (y + z)/2; # celoštevilsko deljene
+  [ y² ≤ x ≤ z², 1 &lt; z - y, s = (y + z)/2, z - y = d, z - y ≥ 0 ]
+  if s * s &lt; x then
+    [ y² ≤ x ≤ z², 1 &lt; z - y, s = (y + z)/2, s² &lt; x, z - y = d, z - y ≥ 0 ]  # ⇒
+    # 1 &lt; z-y, s = (y+z)/2 ⇒ z ≥ y+2, s ≥ (y+y+2)/2 ⇒ s ≥ y+1 ⇒ s &gt; y ⇒ z-y &gt; z-s ⇒ d &gt; z-s
+    # 1 &lt; z-y, s = (y+z)/2 ⇒ 2s ≤ y+z, y+1 &lt; z ⇒ 2s ≤ 2z ⇒ s ≤ z ⇒ z-s ≥ 0
+    [ s² ≤ x ≤ z², z - s &lt; d, z - s ≥ 0 ]
+    y := s
+    [ y² ≤ x ≤ z², z - y &lt; d, z - y ≥ 0 ]
+  else
+    [ y² ≤ x ≤ z², 1 &lt; z - y, s = (y + z)/2, s² ≥ x, z - y = d, z - y ≥ 0 ]  # ⇒
+    # 1 &lt; z-y, s = (y+z)/2 ⇒ z-2 ≥ y, s ≤ (z+z-2)/2 ⇒ z-1 ≥ s ⇒ z &gt; s ⇒ z-y &gt; s-y ⇒ d &gt; s-y
+    # 1 &lt; z-y, s = (y+z)/2 ⇒ y+z-1 ≤ 2s, y &lt; z-1 ⇒ 2y ≤ 2s ⇒ y ≤ s ⇒ s-y ≥ 0
+    [ y² ≤ x ≤ s², s - y &lt; d, s - y ≥ 0 ]
+    z := s
+    [ y² ≤ x ≤ z², z - y &lt; d, z - y ≥ 0 ]
+  end
+  [ y² ≤ x ≤ z², z - y &lt; d, z - y ≥ 0 ]
+done
+[ y² ≤ x ≤ z², 1 ≥ z - y ]
+[ y² ≤ x ≤ z², z ≤ y + 1 ]
+[ y² ≤ x ≤ (y+1)² ]
+</code></pre>
+
+<h3>Naloga 5</h3>
+
+<h4>Rešitev</h4>
+
+<pre><code>[ y &gt; 0 ] ⇒
+[ 0 = 0³, 0 ≥ 0 ]
+x := 0 ;
+[ 0 = x³, x ≥ 0 ]
+c := 0 ;
+[ c = x³, x ≥ 0 ]
+while y &gt; c do
+  [ y &gt; c, c = x³, y - x = z, y - x ≥ 0, x ≥ 0 ] ⇒
+  # y &gt; c = x³, x ≥ 0 ⇒ y &gt; x³ ≥ x ⇒ y &gt; x ⇒ y ≥ x+1 ⇒ y - x - 1 ≥ 0
+  [ y - x - 1 = z - 1 &lt; z, y - x - 1 ≥ 0, x + 1 ≥ 0 ] ⇒
+  [ y - (x+1) &lt; z, y - (x+1) ≥ 0, x + 1 ≥ 0 ]
+  x := x + 1 ;
+  [ y - x &lt; z, y - x ≥ 0, x ≥ 0 ] ⇒
+  [ x * x * x = x³, y - x &lt; z, y - x ≥ 0, x ≥ 0 ]
+  c := x * x * x
+  [ c = x³, y - x &lt; z, y - x ≥ 0, x ≥ 0 ]
+end
+[ y ≤ c, c = x³, x ≥ 0 ] ⇒
+[ y ≤ c, c = x³ ] 
+if y &lt; c then
+  [ y &lt; c, y ≤ c, c = x³ ] ⇒
+  [ 0 = ∛0 ]
+  x := 0 ;
+  [ x = ∛0 ]
+  y := 0
+  [ x = ∛y ]
+else
+  [ y ≥ c, y ≤ c, c = x³ ] ⇒
+  [ y = c, c = x³ ] ⇒
+  [ x = ∛y ]
+  skip
+  [ x = ∛y ]
+end
+[ x = ∛y ]
+</code></pre>
+</div></div>
+<div class="modified">Zadnja sprememba: ponedeljek, 6. april 2026, 21.04</div>
+</main>
+</body>
+</html>

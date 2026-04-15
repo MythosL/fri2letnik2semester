@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rekurzija</title>
+<style>.hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}.hljs-comment,.hljs-quote{color:#a0a1a7;font-style:italic}.hljs-doctag,.hljs-keyword,.hljs-formula{color:#a626a4}.hljs-section,.hljs-name,.hljs-selector-tag,.hljs-deletion,.hljs-subst{color:#e45649}.hljs-literal{color:#0184bb}.hljs-string,.hljs-regexp,.hljs-addition,.hljs-attribute,.hljs-meta-string{color:#50a14f}.hljs-built_in,.hljs-class .hljs-title{color:#c18401}.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-type,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-number{color:#986801}.hljs-symbol,.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-title{color:#4078f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-link{text-decoration:underline}
+
+:root{--text:#1f2328;--muted:#57606a;--bg:#fff;--link:#0969da;--code-bg:#f6f8fa;--border:#d0d7de}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5;color:var(--text);background:var(--bg)}
+main{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h3{font-size:1.25em;margin-top:24px}
+h4{font-size:1em;margin-top:24px}
+p,ul,ol,pre,table{margin:0 0 16px 0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.2em .4em;border-radius:6px;font-size:85%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:var(--code-bg);padding:16px;border-radius:8px;overflow:auto;font-size:85%;line-height:1.45}
+pre code{background:transparent;padding:0;border-radius:0;font-size:100%;display:block;overflow-x:auto}
+pre code.hljs{padding:0;background:transparent}
+ul,ol{padding-left:2em}
+li{margin:.25em 0}
+blockquote{border-left:4px solid var(--border);padding:0 1em;color:var(--muted);margin:0 0 16px 0}
+table{border-collapse:collapse}
+th,td{border:1px solid var(--border);padding:6px 13px}
+img{max-width:100%}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.modified{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.85em;font-style:italic}
+.box,.no-overflow,.generalbox{display:block}
+/* Moodle span.filter_mathjaxloader_equation may wrap headings */
+.filter_mathjaxloader_equation,.nolink{display:block}
+</style>
+</head>
+<body>
+<main>
+<h1>Rekurzija</h1>
+<div class="box py-3 generalbox center clearfix"><div class="no-overflow"><h3>Naloga: štejemo liste</h3>
+
+<p>Dan je podatkovni tip dvojiški dreves:</p>
+
+<pre><code>type 'a tree = Leaf of a | Node of 'a tree * 'a tree
+</code></pre>
+
+<p>Sestavite funkcijo</p>
+
+<pre><code>count : ('a -&gt; bool) -&gt; 'a tree -&gt; int
+</code></pre>
+
+<p>ki sprejme predikat <code>p</code> in dreveo <code>t</code> ter vrne število listov v drevesu <code>t</code>, ki ustrezajo
+predikatu <code>p</code>.</p>
+
+<pre><code>- count (fun x -&gt; x &gt; 2) (Node (Node (Leaf 2, Leaf 4), Node (Leaf 1, Node (Leaf 3, Leaf 0)))) ;;
+- : int = 2
+</code></pre>
+
+<h3>Naloga: Pascalov trikotnik</h3>
+
+<p>Sestavite funkcijo</p>
+
+<pre><code>pascal : int -&gt; int list list
+</code></pre>
+
+<p>ki sprejme pozitivno celo število <code>n</code> in vrne prvih <code>n</code> vrstic Pascalovega trikotnika:</p>
+
+<pre><code>       1
+      1 1
+     1 2 1
+    1 3 3 1
+   1 4 6 4 1
+  ...........
+</code></pre>
+
+<p>Na primer, <code>pascal 3</code> vrne</p>
+
+<pre><code>[[1], [1,1], [1,2,1]]
+</code></pre>
+</div></div>
+<div class="modified">Zadnja sprememba: ponedeljek, 6. april 2026, 21.05</div>
+</main>
+</body>
+</html>

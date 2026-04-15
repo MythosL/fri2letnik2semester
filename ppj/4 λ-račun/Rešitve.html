@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rešitve</title>
+<style>.hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}.hljs-comment,.hljs-quote{color:#a0a1a7;font-style:italic}.hljs-doctag,.hljs-keyword,.hljs-formula{color:#a626a4}.hljs-section,.hljs-name,.hljs-selector-tag,.hljs-deletion,.hljs-subst{color:#e45649}.hljs-literal{color:#0184bb}.hljs-string,.hljs-regexp,.hljs-addition,.hljs-attribute,.hljs-meta-string{color:#50a14f}.hljs-built_in,.hljs-class .hljs-title{color:#c18401}.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-type,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-number{color:#986801}.hljs-symbol,.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-title{color:#4078f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-link{text-decoration:underline}
+
+:root{--text:#1f2328;--muted:#57606a;--bg:#fff;--link:#0969da;--code-bg:#f6f8fa;--border:#d0d7de}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5;color:var(--text);background:var(--bg)}
+main{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h3{font-size:1.25em;margin-top:24px}
+h4{font-size:1em;margin-top:24px}
+p,ul,ol,pre,table{margin:0 0 16px 0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.2em .4em;border-radius:6px;font-size:85%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:var(--code-bg);padding:16px;border-radius:8px;overflow:auto;font-size:85%;line-height:1.45}
+pre code{background:transparent;padding:0;border-radius:0;font-size:100%;display:block;overflow-x:auto}
+pre code.hljs{padding:0;background:transparent}
+ul,ol{padding-left:2em}
+li{margin:.25em 0}
+blockquote{border-left:4px solid var(--border);padding:0 1em;color:var(--muted);margin:0 0 16px 0}
+table{border-collapse:collapse}
+th,td{border:1px solid var(--border);padding:6px 13px}
+img{max-width:100%}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.modified{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.85em;font-style:italic}
+.box,.no-overflow,.generalbox{display:block}
+/* Moodle span.filter_mathjaxloader_equation may wrap headings */
+.filter_mathjaxloader_equation,.nolink{display:block}
+</style>
+</head>
+<body>
+<main>
+<h1>Rešitve</h1>
+<div class="box py-3 generalbox center clearfix"><div class="no-overflow"><h1>Lambda račun</h1>
+
+<p>Na teh vajah bomo uporabljali λ-račun brez tipov kot programski jezik. V pomoč vam bo
+<a href="http://www.andrej.com/zapiski/ISRM-PPJ-2019/lambda/">λ-račun v brskalniku</a>, ki je
+implementacija jezika <a href="http://plzoo.andrej.com/language/lambda.html">lambda</a> iz
+<a href="http://plzoo.andrej.com">Programming languages Zoo</a> v brskalniku. (V repozitoriju
+<a href="https://github.com/andrejbauer/repl-in-browser"><code>repl-in-browser</code></a> najdete tudi kodo za
+λ-račun v brskalniku.)</p>
+
+<h2>Naloga: λ-račun v brskalniku</h2>
+
+<p>Odprite <a href="http://www.andrej.com/zapiski/ISRM-PPJ-2019/lambda/">λ-račun v brskalniku</a> in se
+ga naučite uporabljati. Preizkusite kak izraz <a href="http://www.andrej.com/zapiski/ISRM-PPJ-2019/ISRM-PPJ-2019-03-13/04-lambda-racun.md">s predavanj</a>.</p>
+
+<p>Namesto <code>λ</code> je treba pisati <code>^</code> ali <code>\</code>. Če pišete ukaze v zgornji urejevalnik, jih morate
+med seboj ločiti s <code>;</code>.</p>
+
+<h2>Naloga: boolove vrednosti in logični vezniki</h2>
+
+<p>Ponovimo, kako v λ-računu implementiramo boolove vrednosti. Potrebujemo izraze <code>true</code>,
+<code>false</code> in <code>if</code>, da za vse <code>x</code> in <code>y</code> velja</p>
+
+<pre><code>if true x y = x
+if false x y = y
+</code></pre>
+
+<p>Na predavanjih smo jih definirali takole:</p>
+
+<pre><code>true  := λ x y . x ;
+false := λ x y . y ;
+if := λ p x y . p x y ;
+</code></pre>
+
+<p>Ideja je naslednja: <code>true</code> in <code>false</code> sta podatka, ki nam povesta, kako se odločimo med
+dvema možnostma. Torej lahko nanju gledamo kot na funkciji, ki sprejmeta obe možnosti <code>x</code>
+in <code>y</code>, nato pa vrneta tisto, ki sta jo izbrala. Pogojni stavek <code>if</code> je preprost, saj
+enostavno aplicira pogoj <code>p</code> na obeh možnostih, pogoj <code>p</code> pa izbere pravo.</p>
+
+<p>S pomočjo pogojnega stavka lahko definiramo osnovne logične veznike <code>and</code>, <code>or</code>, <code>imply</code>
+in <code>not</code>. Skupaj naredimo <code>and</code>, ostale boste naredili sami. Začnemo z resničnostno tabelo
+za <code>and</code>:</p>
+
+<pre><code>and false false ≡ false
+and  true false ≡ false
+and false  true ≡ false
+and  true  true ≡ true
+</code></pre>
+
+<p>Te enačbe lahko zapišemo bolj učinkovito takole:</p>
+
+<pre><code>and true  y ≡ y
+and false y ≡ false
+</code></pre>
+
+<p>kar lahko implementiramo s pogojnim stavkom:</p>
+
+<pre><code>and' := λ x y . if x y false
+</code></pre>
+
+<p>Če upoštevamo definicijo <code>if</code>, lahko to še poenostavimo:</p>
+
+<pre><code>and := λ x y . x y false
+</code></pre>
+
+<p>Ta definicija neposredno uporablja dejstvo, da je logična vrednost <code>x</code> funkcija, ki izbere
+eno od dveh možnosti. V izrazu <code>x y false</code> tako <code>x</code> izbere bodisi <code>y</code> bodisi <code>false</code>. Če
+je <code>x ≡ true</code>, potem izbere <code>y</code>. Če pa je <code>x ≡ false</code>, potem izbere <code>false</code>.</p>
+
+<h3>Naloga</h3>
+
+<p>Definirajte še disjunkcijo <code>or</code>, implikacijo <code>imply</code>, ekvivalenco <code>iff</code> in
+negacijo <code>not</code>. Rešitve poskusite zapisati brez uporabe <code>if</code>.</p>
+
+<h3>Rešitev</h3>
+
+<pre><code> -- Vezniki z uporabo if
+ not'   := ^ p . if p false true ;
+ and'   := ^ p q . if p q flase ;
+ or'    := ^ p q . if p true q ;
+ imply' := ^ p q . if p q true ;
+ iff'   := ^ p q . and' (imply' p q) (imply' q p) ;
+
+ -- Vezniki brez uporabe if
+ not   := ^ p . p false true ;
+ and   := ^ p q . p q false ;
+ or    := ^ p q . p true q ;
+ imply := ^ p q . p q true ;
+ iff   := ^ p q . (p q true) (q p true) false ;
+</code></pre>
+
+<p>Za <code>iff</code> je možnih več rešitev, na primer <code>^ p q . if p q (not q)</code>.</p>
+
+<h2>Scott-Churchova števila</h2>
+
+<p>Na predavanjih smo spoznali <strong>Churchova števila</strong>: število <code>n</code> predstavimo kot funkcijo, ki
+sprejme funkcijo <code>f</code> in vrne <code>n</code>-kratni kompozitum <code>f ∘ f ∘ ⋯ ∘ f</code>:</p>
+
+<pre><code>0' := λ f x . x ;
+1' := λ f x . f x ;
+2' := λ f x . f (f x) ;
+3' := λ f x . f (f (f x)) ;
+4' := λ f x . f (f (f (f x))) ;
+5' := λ f x . f (f (f (f (f x)))) ;
+</code></pre>
+
+<p>Če želimo neko funkcijo <code>f</code> uporabiti <code>n</code>-krat na argumentu <code>x</code>, enostavno zapišemo <code>n f x</code>.
+Danes Churchovih števil ne bomo uporabljali.</p>
+
+<p>Spoznajmo še <strong>Scott-Churchova</strong> števila, ki imajo sicer bolj zapleteno definicijo, a je z
+njimi lažje programirati. Definirana so takole:</p>
+
+<pre><code>0 := λ f x . x ;
+1 := λ f x . f 0 x ;
+2 := λ f x . f 1 (f 0 x) ;
+3 := λ f x . f 2 (f 1 (f 0 x)) ;
+4 := λ f x . f 3 (f 2 (f 1 (f 0 x))) ;
+5 := λ f x . f 4 (f 3 (f 2 (f 1 (f 0 x)))) ;
+</code></pre>
+
+<p>Število <code>n</code> smo spet predstavili kot <code>n</code>-kratno uporabo funkcije <code>f</code>, le da ji dodatno
+podamo še <em>števec</em>, ki ji pove, katera po vrsti je.</p>
+
+<p>Naslednik števila <code>n</code> dobimo iz <code>n</code> takole:</p>
+
+<pre><code>n+1 := λ f x . f n (n f x)
+</code></pre>
+
+<h3>Primitivna rekurzija</h3>
+
+<p>Denimo, da bi radi implementirali rekurzivno funkcijo <code>g</code>, ki pri argumentu <code>0</code> vrne vrednost <code>x</code>,</p>
+
+<pre><code> g 0 = x
+</code></pre>
+
+<p>pri argumentu <code>n+1</code> pa naredi en rekurzivni na predhodniku <code>n</code>:</p>
+
+<pre><code> g (n+1) = f n (g n)
+</code></pre>
+
+<p>Pomožna funkcija <code>f</code> izračuna končni odgovor s pomočjo <code>n</code> in rezultata rekurzivnega klica
+<code>g n</code>. Taki rekurziji pravimo <em>primitivna</em> ali <em>strukturna rekurzija</em> (poznamo tudi
+<em>splošno rekurzijo</em>, v kateri lahko <code>g</code> naredi povsem poljubne rekurzivne klice).</p>
+
+<p>Mnoge funkcije lahko izračunamo s pomočjo primitivne rekurzije. Na primer, faktorielo</p>
+
+<pre><code>n! = 1 · 2 · ⋯ · n
+</code></pre>
+
+<p>definiramo takole:</p>
+
+<pre><code>fact 0 = 1
+fact (n+1) = (n+1) · fact n
+</code></pre>
+
+<p>Kaj je tu <code>f</code>? Se pravi, kaj moramo vstaviti za <code>f</code>, da bo veljalo</p>
+
+<pre><code>fact (n+1) = f n (fact n)
+</code></pre>
+
+<p>Če primerjamo z zgornjo vrstico za <code>fact (n+1)</code>, vidimo, da je</p>
+
+<pre><code>f := λ k r . (k+1) · r
+</code></pre>
+
+<p>Kako bi to predelali v λ-račun? Z uporabo baze in funkcije <code>f</code> nam Church-Scottova števila
+dajo točno to, kar potrebujemo:</p>
+
+<pre><code>fact := λ n . n f 1
+</code></pre>
+
+<p>Če vstavimo <code>f</code>, dobimo:</p>
+
+<pre><code>fact := λ n . n (λ k r . (k+1) · r) 1
+</code></pre>
+
+<p>Preverimo na primeru, kako to deluje:</p>
+
+<pre><code>fact 2 = 2 (λ k r . (k+1) · r) 1
+       = (λ k r . (k+1) · r) 1 (1 (λ k r . (k+1) · r) 1)
+       = (1+1) · (1 (λ k r . (k+1) · r) 1)
+       = 2 · ((λ k r . (k+1) · r) 0 (0 (λ k r . (k+1) · r) 1))
+       = 2 · ((0+1) · (0 (λ k r . (k+1) · r) 1))
+       = 2 · (1 · 1)
+       = 2
+</code></pre>
+
+<p>Scott-Churchova števila v splošnem omogočajo računanje funkcij, ki so definirane s
+primitivno rekurzijo. Če je <code>g</code> definirana kot</p>
+
+<pre><code>g 0 = x
+g (n+1) = f n (g n)
+</code></pre>
+
+<p>jo s Scott-Churchovimi števili definiramo kot</p>
+
+<pre><code>g := λ n . n f x
+</code></pre>
+
+<p>kjer <code>f</code> sprejme dva argumenta, indeks <code>n</code> in rezultat rekurzivnega klica <code>r</code>, in mora
+izračunati rezultat za <code>n+1</code>:</p>
+
+<p>Primitivno rekurzivne funkcije bomo torej v splošnem implementirali kot</p>
+
+<pre><code>λ n . n (λ m r . …) x
+</code></pre>
+
+<p>kjer je <code>x</code> baza rekurzije, funkcija <code>λ m r . …</code> pa pomožna funkcija, ki pove, kako iz
+rezultata rekurzivnega klica <code>r</code> pri argumentu <code>m</code> izračunamo rezultat pri <code>m+1</code>.</p>
+
+<h3>Predhodnik</h3>
+
+<p>Posebej preprost primer primitivne rekurzije je funkcija predhodnik <code>pred</code>. Dogovorimo se,
+da za predhodnik števila <code>0</code> vzamemo kar <code>0</code> (v λ-računu ne moremo javiti napake).
+Primitivno rekurzivna definicija se glasi:</p>
+
+<pre><code>pred 0 = 0
+pred (n+1) = n
+</code></pre>
+
+<p>Morda bi kdo rekel, da ta definicija sploh ni rekurzivna. A lahko si mislimo, da je
+rekurzivna, le da rezultat rekurzivnega klica zavržemo:</p>
+
+<pre><code>pred 0 = 0
+pred (n+1) = (λ m r . m) n (pred n)
+</code></pre>
+
+<p>Torej lahko <code>pred</code> zapišemo kot</p>
+
+<pre><code>pred = λ n . n (λ m r . m) 0
+</code></pre>
+
+<p>Preizkusimo, kako to deluje v <code>lambda</code>. Najprej definiramo nekaj Scott-Churchovih števil
+(kodo sproti preizkušajte v brskalniku):</p>
+
+<pre><code>0 := ^ f x . x ;
+1 := ^ f x . f 0 x ;
+2 := ^ f x . f 1 (f 0 x) ;
+3 := ^ f x . f 2 (f 1 (f 0 x)) ;
+4 := ^ f x . f 3 (f 2 (f 1 (f 0 x))) ;
+5 := ^ f x . f 4 (f 3 (f 2 (f 1 (f 0 x)))) ;
+</code></pre>
+
+<p>Nato definiramo <code>pred</code>,</p>
+
+<pre><code>pred := λ n . n (λ m r . m) 0
+</code></pre>
+
+<p>in preizkusimo:</p>
+
+<pre><code>lambda&gt; pred 4
+λ f x . f 2 (f 1 (f 0 x))
+</code></pre>
+
+<p>To ni preveč čitljivo, čeprav se vidi, da smo dobili <code>3</code>. Definirajmo si pomožno funkcijo
+<code>show</code>, ki število <code>n</code> predela v <code>n</code>-kratno uporabo konstante <code>S</code> na konstanti <code>Z</code></p>
+
+<pre><code>:constant S
+:constant Z
+show := ^ n . n (^ m r . S r) Z ;
+</code></pre>
+
+<p>in poskusimo še enkrat:</p>
+
+<pre><code>lambda&gt; show (pred 4)
+S ((λ _ r . S r) ((λ _ r . S r) 0 Z) 1)
+</code></pre>
+
+<p>To je še slabše, a če vklopimo neučakano računanje, da bo <code>lambda</code> vse izračunal do konca, dobimo želeni učinek:</p>
+
+<pre><code>lambda&gt; :eager
+I will evaluate eagerly.
+lambda&gt; show (pred 4)
+S (S (S Z))
+</code></pre>
+
+<p>Ko boste preizkušali vaše rešitve, uporabljajte <code>show</code>.</p>
+
+<h3>Naloga: naslednik</h3>
+
+<p>Kaj pa funkcija naslednik <code>succ</code>? Poizkusimo:</p>
+
+<pre><code>succ 0 = 1
+succ (n+1) = (n+2)
+</code></pre>
+
+<p>Težava je v tem, da nimamo definicije seštevanja. Funkcijo naslednik moramo implementiramo
+neposredno, izhajajoč iz definicije Scott-Churchovih števil:</p>
+
+<pre><code>succ n  =  λ f x . f n (f (n-1) (⋯ f 1 (f 0 x) ⋯)
+</code></pre>
+
+<p>Torej je</p>
+
+<pre><code>succ n  =  λ f x . f n (n f x)
+</code></pre>
+
+<p><strong>Naloga:</strong> Definirajte <code>succ</code> v jeziku <code>lambda</code> in ga preizkusite.</p>
+
+<h4>Rešitev:</h4>
+
+<pre><code>succ := ^ n . ^ f x . f n (n f x) ;
+</code></pre>
+
+<h3>Naloga: seštevanje</h3>
+
+<p>Peanovi aksiomi za seštevanje se glasijo:</p>
+
+<pre><code>0 + k = k
+succ n + k = succ (n + k)
+</code></pre>
+
+<p>To je primitivna rekurzija v prvem argumentu, kar je razvidno, če namesto <code>a + b</code> pišemo <code>plus a b</code>:</p>
+
+<pre><code>plus 0 k = k
+plus (n+1) k = succ (plus n k)
+</code></pre>
+
+<p>Predelajmo jo tako, da je razvidna pomožna funkcija <code>f</code>:</p>
+
+<pre><code>plus 0 k = k
+plus (n+1) k = (λ m r . succ r) n (plus n k)
+</code></pre>
+
+<p>Jezik <code>lambda</code> nam omogoča, da namesto <code>plus a b</code> pišemo <code>+ a b</code>, kar bomo tudi naredili:</p>
+
+<pre><code>+ 0 k = k
++ (n+1) k = (λ m r . succ r) n (+ n k)
+</code></pre>
+
+<p><strong>Naloga:</strong> V <code>lambda</code> definirajte funkcijo <code>+</code> in jo preizkusite.</p>
+
+<h4>Rešitev</h4>
+
+<pre><code>+ := ^ n k . n (^ m r . succ r) k ;
+</code></pre>
+
+<h3>Naloga: množenje</h3>
+
+<p>Peanovi aksiomi za množenje se glasijo</p>
+
+<pre><code>0 · k = 0
+(succ n) · k = k + n · k
+</code></pre>
+
+<p><strong>Naloga:</strong> V <code>lambda</code> definirajte množenje <code>*</code> in ga preizkusite. Seveda je treba namesto
+<code>a * b</code> pisati <code>* a b</code>. Kako veliko število lahko izračunate, ne da bi vaš brskalnik
+pokleknil pod težo izredno neučinkovite implementacije aritmetike? (Če boste izzivali vaš
+brskalnik, da bo crknil, si rešitve najprej shranite v ločeno datoteko.)</p>
+
+<h4>Rešitev</h4>
+
+<pre><code>* := ^ n k . n (^ m r . + k r) 0 ;
+</code></pre>
+
+<h3>Naloga: odštevanje</h3>
+
+<p>Odštevanje lahko rekurzivno definiramo s pomočjo predhodnika. Dogovorimo se, da je <code>n - m</code>
+enak <code>0</code>, če je <code>m</code> večji od <code>n</code>. Tedaj dobimo:</p>
+
+<pre><code>n - 0 = n
+n - (k+1) = pred (n - k)
+</code></pre>
+
+<p>Tokrat imamo primitivno rekurzijo na drugem argumentu, saj se v rekurzivnem klicu zmanjša <code>k</code>.</p>
+
+<p><strong>Naloga:</strong> V <code>lambda</code> definirajte odštevanje in ga preizkusite.</p>
+
+<h4>Rešitev</h4>
+
+<pre><code>- := ^ n k . k (^ m r . pred r) n ;
+</code></pre>
+
+<h3>Primerjava z <code>0</code></h3>
+
+<p>Tudi predikate lahko definiramo s primitivno rekurzijo. Na primer, da želimo funkcijo
+<code>iszero</code>, ki vrne <code>true</code>, če je njen argument <code>0</code>, sicer <code>false</code>:</p>
+
+<pre><code>iszero 0 = true
+iszero (n+1) = false
+</code></pre>
+
+<p>Tudi to je primitivna rekurzija, čeprav rekurzivnega klica ne vidimo! Lahko si mislimo, da
+je bil rekurzivni klic zavržen:</p>
+
+<pre><code>iszero 0 = true
+iszero (n+1) = (λ m r . false) n (iszero n)
+</code></pre>
+
+<p>Od tod dobimo definicijo v jeziku <code>lambda</code>:</p>
+
+<pre><code>iszero := ^ n . n (^ m r . false) true ;
+</code></pre>
+
+<h3>Relacija <code>≤</code></h3>
+
+<p>Sedaj smo že zgradili nekaj osnovnih funkcij, s pomočjo katerih lahko definiramo nove, ne
+da bi vedno znova uporabljali primitivno rekurzijo. Denimo, relacijo <code>a ≤ b</code> lahko
+sestavimo s pomočjo odštevanja in <code>iszero</code>, ker velja</p>
+
+<pre><code>a ≤ b  ⇔  a-b = 0
+</code></pre>
+
+<p>Pri tem smo s pridom upoštevali dejstvo, da smo definirali <code>a - b = 0</code>, če je <code>a &lt; b</code>.</p>
+
+<p><strong>Naloga:</strong> v <code>lambda</code> definirajte funkcijo <code>&lt;=</code>, tako da je <code>&lt;= a b</code> enako <code>true</code>, če je
+<code>a</code> manjši ali enak <code>b</code>, sicer pa <code>false</code>. Uporabite že prej definirani funkciji <code>-</code> in <code>iszero</code>.</p>
+
+<h4>Rešitev</h4>
+
+<pre><code>&lt;= := ^ n m . iszero (- n m) ;
+</code></pre>
+
+<h3>Relaciji <code>&lt;</code> in <code>=</code></h3>
+
+<p>Definirajte še funkcijo <code>&lt;</code>, ki računa relacijo "strogo manjše". Namig:</p>
+
+<pre><code>a &lt; b  ⇔  a+1 ≤ b
+</code></pre>
+
+<p>Definirajte tudi funkcijo <code>==</code>, ki ugotovi, ali sta števili enaki.</p>
+
+<h4>Rešitev:</h4>
+
+<pre><code>&lt; := ^ n m . &lt;= (succ n) m ;
+== := ^ n m . and (&lt;= n m) (&lt;= m n) ;
+</code></pre>
+
+<h3>Naloga: iskanje števila, ki zadošča pogoju</h3>
+
+<p>Denimo, da imamo predikat <code>p</code>, ki za vsako število vrne <code>true</code> ali <code>false</code> in da želimo
+med števili <code>1</code>, <code>2</code>, …, <code>n-1</code> poiskati največje, ki zadošča <code>p</code>. Če takega števila ni,
+vrnemo <code>0</code>. To lahko izrazimo z rekurzivno funkcijo <code>find</code>:</p>
+
+<ul>
+<li><code>find p 0</code> je enako <code>0</code>, ker ni števila med <code>1</code> in <code>-1</code></li>
+<li><code>find p (n+1)</code> je enak <code>n</code>, če velja <code>p n</code> enako <code>true</code></li>
+<li><code>find p (n+1)</code> je enak <code>find p n</code>, če ne velja <code>p n</code></li>
+</ul>
+
+<p><strong>Naloga:</strong> Definirajte funkcijo <code>find</code>, ki sprejme predikat <code>p</code> in število <code>n</code>. Funkcija
+vrne največje izmed števil <code>1</code>, <code>2</code>, …, <code>n-1</code>, ki zadošča pogoju <code>p</code>. Če takega števila
+ni, naj vrne <code>0</code>. Funkcijo preizkusite na naslednjih primerih:</p>
+
+<ul>
+<li><p>med števili od <code>1</code> do <code>5</code> poišči največje število, ki je manjše od <code>3</code>:</p>
+
+<pre><code>lambda&gt; show (find (^ k . &lt; k 3) 5)
+S (S Z)
+</code></pre></li>
+<li><p>med števili od <code>1</code> do <code>5</code> poišči (največje) število, katerega kvadrat je enak devet:</p>
+
+<pre><code>lambda&gt; show (find (^ k . == (* k k) (+ 4 5)) 5)
+S (S (S Z))
+</code></pre></li>
+</ul>
+
+<h4>Rešitev:</h4>
+
+<pre><code>find := ^ p n . n (^ m r . if (p m) m r) 0 ;
+</code></pre>
+
+<h3>Naloga: deljenje</h3>
+
+<p>Definirajte funkcijo <code>/</code>, ki deli naravna števila. Če se deljenje ne izide, naj
+funkcija vrne <code>0</code>. Pri tej nalogi se je lahko zmotiti, da deljenje z <code>1</code> ne deluje
+pravilno, zato vsekakor preizkusite <code>/ 5 1</code>, ki mora vrniti <code>5</code>.</p>
+
+<h4>Rešitev:</h4>
+
+<pre><code>/ := ^ n m . find (^ k . == (* m k) n) (succ n) ;
+</code></pre>
+</div></div>
+<div class="modified">Zadnja sprememba: ponedeljek, 6. april 2026, 21.05</div>
+</main>
+</body>
+</html>

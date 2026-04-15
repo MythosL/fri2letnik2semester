@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaje 2 (ukazni programski jezik)</title>
+<style>.hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}.hljs-comment,.hljs-quote{color:#a0a1a7;font-style:italic}.hljs-doctag,.hljs-keyword,.hljs-formula{color:#a626a4}.hljs-section,.hljs-name,.hljs-selector-tag,.hljs-deletion,.hljs-subst{color:#e45649}.hljs-literal{color:#0184bb}.hljs-string,.hljs-regexp,.hljs-addition,.hljs-attribute,.hljs-meta-string{color:#50a14f}.hljs-built_in,.hljs-class .hljs-title{color:#c18401}.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-type,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-number{color:#986801}.hljs-symbol,.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-title{color:#4078f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-link{text-decoration:underline}
+
+:root{--text:#1f2328;--muted:#57606a;--bg:#fff;--link:#0969da;--code-bg:#f6f8fa;--border:#d0d7de}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5;color:var(--text);background:var(--bg)}
+main{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h3{font-size:1.25em;margin-top:24px}
+h4{font-size:1em;margin-top:24px}
+p,ul,ol,pre,table{margin:0 0 16px 0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.2em .4em;border-radius:6px;font-size:85%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:var(--code-bg);padding:16px;border-radius:8px;overflow:auto;font-size:85%;line-height:1.45}
+pre code{background:transparent;padding:0;border-radius:0;font-size:100%;display:block;overflow-x:auto}
+pre code.hljs{padding:0;background:transparent}
+ul,ol{padding-left:2em}
+li{margin:.25em 0}
+blockquote{border-left:4px solid var(--border);padding:0 1em;color:var(--muted);margin:0 0 16px 0}
+table{border-collapse:collapse}
+th,td{border:1px solid var(--border);padding:6px 13px}
+img{max-width:100%}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.modified{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.85em;font-style:italic}
+.box,.no-overflow,.generalbox{display:block}
+/* Moodle span.filter_mathjaxloader_equation may wrap headings */
+.filter_mathjaxloader_equation,.nolink{display:block}
+</style>
+</head>
+<body>
+<main>
+<h1>Vaje 2 (ukazni programski jezik)</h1>
+<div class="box py-3 generalbox center clearfix"><div class="no-overflow"><span class="filter_mathjaxloader_equation"><span class="nolink"><h1>Vaje 2</h1>
+
+<h2>Ukazni programski jezik</h2>
+
+<p>Ali so naslednji pogrami ekvivalentni?</p>
+
+<ol>
+<li><p><code>a = a ^ b; b = a ^ b; a = a ^ b;</code></p></li>
+<li><p><code>temp = a; a = b; b = temp;</code></p></li>
+<li><p><code>temp = b; b = a; a = temp;</code></p></li>
+<li><p><code>a = a + b; b = a - b; a = a - b;</code></p></li>
+<li><p><code>x[i] = x[i] ^ x[j]; x[j] = x[i] ^ x[j]; x[i] = x[i] ^ x[j];</code></p></li>
+<li><p><code>temp = x[i]; x[i] = x[j]; x[j] = temp;</code></p></li>
+<li><p><code>temp = x[j]; x[j] = x[i]; x[i] = temp;</code></p></li>
+<li><p><code>x[i] = x[i] + x[j]; x[j] = x[i] - x[j]; x[i] = x[i] - x[j];</code></p></li>
+<li><p><code>if (i != j) { x[i] = x[i] ^ x[j]; x[j] = x[j] ^ x[i]; x[i] = x[i] ^ x[j]; }</code></p></li>
+</ol>
+
+<p>Za vsako celo 32-bitno število <code>X</code>, kjer je to mogoče, poišči okolje v katerem sta naslednja programa "ekvivalentna"?</p>
+
+<ol>
+<li><pre><code class="c hljs arduino"><span class="hljs-keyword">while</span> (i &gt; <span class="hljs-number">1</span>) {
+    <span class="hljs-keyword">if</span> (i*i + <span class="hljs-number">26</span> == <span class="hljs-number">15</span>*i) {
+        <span class="hljs-keyword">break</span>;
+    } 
+    i = i + <span class="hljs-number">1</span>;
+}
+</code></pre></li>
+<li><pre><code class="c hljs arduino">i = X;
+</code></pre></li>
+</ol>
+
+<h3>Pretvorba zanke <code>for</code> v zanko <code>while</code></h3>
+
+<p>Lahko bi dodali zanko <code>for</code>, a je pravzaprav ne potrebujemo. Kako bi zanko</p>
+
+<pre><code class="hljs less"><span class="hljs-selector-tag">for</span> (A; P; C) {
+    <span class="hljs-selector-tag">B</span>;
+}
+</code></pre>
+
+<p>predelali v ekvivalentno kodo, ki uporablja samo <code>while</code>?</p>
+
+<h3>Pretvorba zanke <code>do</code> v zanko <code>while</code></h3>
+
+<p>V <code>while</code> predelajte še zanko <code>do</code>:</p>
+
+<pre><code class="hljs gauss"><span class="hljs-keyword">do</span> {
+  A;
+} <span class="hljs-keyword">while</span> (P);
+</code></pre>
+
+<h2>Odstranjevanje mrtve kode</h2>
+
+<p>Mrtva koda (angl. <em>dead code</em>) je del kode, za katerega zagotovo vemo, da se ne bo
+izvedel. Tako kodo lahko brez škode odstranimo. Nekaj primerov odstranjevanja mrtve kode:</p>
+
+<ul>
+<li>Če vemo, da pogoj <code>P</code> v <code>if (P) { A } else { B }</code> zagotovo velja, potem se <code>B</code> ne izvede,
+zato lahko pogojni stavek poenostavimo v <code>P ; A</code>. Če nadalje vemo še, da <code>P</code> ne bo sprožil
+izjeme (zaradi deljenja z <code>0</code>), potem lahko poenostavimo kar v <code>A</code>.</li>
+<li>Če se v <code>A ; B</code> ukaz <code>A</code> nikoli ne konča, se <code>B</code> ne bo izvedel in ga lahko odstranimo.</li>
+<li>Če ob vstopu v <code>while (P) { A }</code> pogoj <code>P</code> <em>ne</em> velja, se zanka sploh ne izvede in jo
+lahko odstranimo.</li>
+</ul>
+
+<h3>Primer 1</h3>
+
+<p>Odstranite mrtvo kodo v programu</p>
+
+<pre><code class="hljs gauss"><span class="hljs-keyword">print</span>(<span class="hljs-string">"Kdor to bere je "</span>);
+a = <span class="hljs-number">3</span>;
+<span class="hljs-keyword">if</span> (a * a &lt; <span class="hljs-number">10</span>) {
+    <span class="hljs-keyword">print</span>(<span class="hljs-string">"mula"</span>);
+} <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">print</span>(<span class="hljs-string">"osel"</span>);
+}
+</code></pre>
+
+<p>Preveri ali GNU C prevajalnik ali zna odstaraniti mrtvo kodo. Lahko uporabiš <a href="https://godbolt.org/">https://godbolt.org/</a> (<a href="https://godbolt.org/z/hEhrovcqb">https://godbolt.org/z/hEhrovcqb</a>). Lahko pa tudi uporabiš kar neposredno program <code>gcc</code>:</p>
+
+<pre><code class="hljs ruby">$ gcc primer1.c -S -O<span class="hljs-number">0</span> -o primer1-brez-oprimizacij.s
+$ gcc primer1.c -S -O3 -o primer1.s
+$ diff --color -y primer1-brez-oprimizacij.s primer1.s
+</code></pre>
+
+<pre><code class="c hljs arduino"><span class="hljs-comment">// datoteka primer1.c</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">primer1</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"Kdor to bere je "</span>);
+    <span class="hljs-keyword">int</span> a = <span class="hljs-number">3</span>;
+    <span class="hljs-keyword">if</span> (a * a &lt; <span class="hljs-number">10</span>) {
+        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"mula"</span>);
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"osel"</span>);
+    }
+}
+</code></pre>
+
+<h3>Primer 2</h3>
+
+<p>Odstranite mrtvo kodo v programu, kjer ima <code>n</code> neznano celoštevilsko vrednost:</p>
+
+<pre><code class="hljs gauss">k = n + (n - <span class="hljs-number">1</span>);
+<span class="hljs-keyword">if</span> (k % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) {
+    <span class="hljs-keyword">print</span>(<span class="hljs-string">"foo"</span>);
+} <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">print</span>(<span class="hljs-string">"bar"</span>);
+}
+m = k * (-k);
+<span class="hljs-keyword">while</span> (m &gt; <span class="hljs-number">0</span>) {
+    m = m - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">print</span>(m);
+}
+</code></pre>
+
+<p>Še isto v C-ju (<a href="https://godbolt.org/z/ErPhv77o9">https://godbolt.org/z/ErPhv77o9</a>).</p>
+
+<pre><code class="c hljs arduino"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">primer2</span><span class="hljs-params">(<span class="hljs-keyword">int</span> n)</span> </span>{
+    <span class="hljs-keyword">int</span> k = n + (n - <span class="hljs-number">1</span>);
+    <span class="hljs-keyword">if</span> (k % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) {
+        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"foo"</span>);
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"bar"</span>);
+    }
+    <span class="hljs-keyword">int</span> m = k * (-k);
+    <span class="hljs-keyword">while</span> (m &gt; <span class="hljs-number">0</span>) {
+        m = m - <span class="hljs-number">1</span>;
+        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"%d"</span>, m);
+    }
+}
+</code></pre>
+
+<h3>Primer 3</h3>
+
+<p>Odstranite mrtvo kodo v programu:</p>
+
+<pre><code class="hljs matlab"><span class="hljs-built_in">i</span> = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">while</span> (<span class="hljs-built_in">i</span> &lt; <span class="hljs-number">100</span>) {
+    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">i</span> <span class="hljs-comment">% 2 == 0) {</span>
+        p = <span class="hljs-built_in">i</span> * (<span class="hljs-built_in">i</span> - <span class="hljs-number">1</span>) * (<span class="hljs-built_in">i</span> - <span class="hljs-number">2</span>);
+    } <span class="hljs-keyword">else</span> {
+        p = <span class="hljs-built_in">i</span> * (<span class="hljs-built_in">i</span> + <span class="hljs-number">1</span>) * (<span class="hljs-built_in">i</span> + <span class="hljs-number">2</span>);
+    }
+
+    <span class="hljs-keyword">if</span> (p <span class="hljs-comment">% 3 == 0) {</span>
+        <span class="hljs-keyword">break</span>;
+    } <span class="hljs-keyword">else</span> { }
+    <span class="hljs-built_in">i</span> = <span class="hljs-built_in">i</span> + <span class="hljs-number">1</span>;
+}
+
+<span class="hljs-keyword">if</span> (<span class="hljs-built_in">i</span> &gt;= <span class="hljs-number">100</span>) {
+    print(<span class="hljs-string">"ni zanimivih števil"</span>);
+} <span class="hljs-keyword">else</span> {
+    print(<span class="hljs-string">"našel sem zanimivo število "</span> + <span class="hljs-built_in">i</span>);
+}
+</code></pre>
+
+<p>Še isto v C-ju (<a href="https://godbolt.org/z/8Ycorq1Kj">https://godbolt.org/z/8Ycorq1Kj</a>).</p>
+
+<pre><code class="c hljs arduino"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">primer3</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (i &lt; <span class="hljs-number">100</span>) {
+        <span class="hljs-keyword">int</span> p;
+        <span class="hljs-keyword">if</span> (i % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) {
+            p = i * (i - <span class="hljs-number">1</span>) * (i - <span class="hljs-number">2</span>);
+        } <span class="hljs-keyword">else</span> {
+            p = i * (i + <span class="hljs-number">1</span>) * (i + <span class="hljs-number">2</span>);
+        }
+
+        <span class="hljs-keyword">if</span> (p % <span class="hljs-number">3</span> == <span class="hljs-number">0</span>) {
+            <span class="hljs-keyword">break</span>;
+        } <span class="hljs-keyword">else</span> { }
+        i = i + <span class="hljs-number">1</span>;
+    }
+
+    <span class="hljs-keyword">if</span> (i &gt;= <span class="hljs-number">100</span>) {
+        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"ni zanimivih števil"</span>);
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-built_in">printf</span>(<span class="hljs-string">"našel sem zanimivo število %d"</span>, i);
+    }
+}
+</code></pre>
+
+<h3>Primer 4</h3>
+
+<p>Odstranite mrtvo kodo v programu:</p>
+
+<pre><code class="hljs matlab">s = <span class="hljs-number">0</span>;
+<span class="hljs-built_in">i</span> = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">while</span> (<span class="hljs-built_in">i</span> &lt; <span class="hljs-number">100</span>) {
+    s = s + <span class="hljs-built_in">i</span>;
+}
+print(s);
+</code></pre>
+
+<p>Še isto v C-ju (<a href="https://godbolt.org/z/PEMTcGTaa">https://godbolt.org/z/PEMTcGTaa</a>).</p>
+
+<pre><code class="c hljs arduino"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">primer4</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">int</span> s = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> (i &lt; <span class="hljs-number">100</span>) {
+        s = s + i;
+    }
+    <span class="hljs-built_in">printf</span>(<span class="hljs-string">"%d"</span>, s);
+}
+</code></pre>
+
+<h3>Program, ki odstranja mrtvo kodo</h3>
+
+<p>V tej nalogi dodamo še uporabo tabel in funkcij. Dobri prevajalniki se trudijo odstraniti
+čim več mrtve kode.</p>
+
+<blockquote>
+  <p><em>Ali lahko implementiramo program, ki vedno odstrani <strong>vso</strong> mrtvo kodo?</em></p>
+</blockquote>
+
+<p>Uporabi znanje iz teorije izračunljivosti in naslednjo opazko: če se v programu</p>
+
+<pre><code class="hljs nginx"><span class="hljs-attribute">A</span> ;
+<span class="hljs-attribute">B</span>
+</code></pre>
+
+<p>ukaz <code>A</code> nikoli ne konča (se zacikla), potem je <code>B</code> mrtva koda.</p>
+
+<h2>Odstranjevanje ukaza <code>break</code></h2>
+
+<p>V tej nalogi bomo ugotovili, da se lahko ukaza <code>break</code> znebimo. Najprej naredimo nekaj primerov.</p>
+
+<h3>Primer 1</h3>
+
+<p>Naslednjo kodo predelajte v enakovredno kodo, ki ne uporablja ukaza <code>break</code>, pri čemer ima
+<code>n</code> neznano celoštevilsko vrednost:</p>
+
+<pre><code class="hljs gauss"><span class="hljs-keyword">while</span> (n &gt; <span class="hljs-number">0</span>) {
+    digit = n % <span class="hljs-number">10</span>;
+    <span class="hljs-keyword">if</span> (digit == <span class="hljs-number">7</span>) {
+        <span class="hljs-keyword">print</span>(n + <span class="hljs-string">" vsebuje števko 7"</span>);
+        <span class="hljs-keyword">break</span>;
+    } <span class="hljs-keyword">else</span> { }
+    n = n / <span class="hljs-number">10</span>;
+}
+</code></pre>
+
+<h3>Primer 2</h3>
+
+<p>Naslednjo kodo predelajte v enakovredno kodo, ki ne uporablja ukaza <code>break</code>.</p>
+
+<pre><code class="hljs gauss"><span class="hljs-comment">// najdi najmanjše popolno število</span>
+n = <span class="hljs-number">1</span>;
+<span class="hljs-keyword">while</span> (true) {
+    d = <span class="hljs-number">1</span>;
+    vsota = <span class="hljs-number">0</span>; <span class="hljs-comment">// vsota deliteljev števila n</span>
+    <span class="hljs-keyword">while</span> (d &lt; n) {
+        <span class="hljs-keyword">if</span> (n % d == <span class="hljs-number">0</span>) {
+            vsota = vsota + d;
+        } <span class="hljs-keyword">else</span> { }
+        <span class="hljs-keyword">if</span> (vsota &gt; n) {
+            <span class="hljs-keyword">break</span>;
+        } <span class="hljs-keyword">else</span> { }
+        d = d + <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">if</span> (vsota == n) {
+        <span class="hljs-keyword">break</span>;
+    } <span class="hljs-keyword">else</span> { }
+    <span class="hljs-keyword">print</span>(n + <span class="hljs-string">" ni popolno število"</span>);
+    n = n + <span class="hljs-number">1</span>;
+}
+<span class="hljs-keyword">print</span>(<span class="hljs-string">"našel popolno število: "</span> + n);
+</code></pre>
+
+<h3>Splošni postopek</h3>
+
+<p>Opišite splošni postopek za odstranjevanje ukaza <code>break</code>. Na papirju definirajte funkcijo
+<code>UNBREAK</code>, ki sprejme program in vrne enakovredni program brez ukaza <code>break</code>. Funkcija je
+rekurzivna.</p>
+
+<h3>Izboljšava splošnega postopka</h3>
+
+<p>Izboljšajte <code>UNBREAK</code> tako, da ne bo po nepotrebnem spreminjal kode.</p>
+</span></span></div></div>
+<div class="modified">Zadnja sprememba: ponedeljek, 9. marec 2026, 15.21</div>
+</main>
+</body>
+</html>

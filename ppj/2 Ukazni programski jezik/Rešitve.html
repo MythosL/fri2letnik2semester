@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rešitve</title>
+<style>.hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}.hljs-comment,.hljs-quote{color:#a0a1a7;font-style:italic}.hljs-doctag,.hljs-keyword,.hljs-formula{color:#a626a4}.hljs-section,.hljs-name,.hljs-selector-tag,.hljs-deletion,.hljs-subst{color:#e45649}.hljs-literal{color:#0184bb}.hljs-string,.hljs-regexp,.hljs-addition,.hljs-attribute,.hljs-meta-string{color:#50a14f}.hljs-built_in,.hljs-class .hljs-title{color:#c18401}.hljs-attr,.hljs-variable,.hljs-template-variable,.hljs-type,.hljs-selector-class,.hljs-selector-attr,.hljs-selector-pseudo,.hljs-number{color:#986801}.hljs-symbol,.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-title{color:#4078f2}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-link{text-decoration:underline}
+
+:root{--text:#1f2328;--muted:#57606a;--bg:#fff;--link:#0969da;--code-bg:#f6f8fa;--border:#d0d7de}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;line-height:1.5;color:var(--text);background:var(--bg)}
+main{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:2em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h2{font-size:1.5em;border-bottom:1px solid var(--border);padding-bottom:.3em;margin-top:24px}
+h3{font-size:1.25em;margin-top:24px}
+h4{font-size:1em;margin-top:24px}
+p,ul,ol,pre,table{margin:0 0 16px 0}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.2em .4em;border-radius:6px;font-size:85%;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+pre{background:var(--code-bg);padding:16px;border-radius:8px;overflow:auto;font-size:85%;line-height:1.45}
+pre code{background:transparent;padding:0;border-radius:0;font-size:100%;display:block;overflow-x:auto}
+pre code.hljs{padding:0;background:transparent}
+ul,ol{padding-left:2em}
+li{margin:.25em 0}
+blockquote{border-left:4px solid var(--border);padding:0 1em;color:var(--muted);margin:0 0 16px 0}
+table{border-collapse:collapse}
+th,td{border:1px solid var(--border);padding:6px 13px}
+img{max-width:100%}
+hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+.modified{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.85em;font-style:italic}
+.box,.no-overflow,.generalbox{display:block}
+/* Moodle span.filter_mathjaxloader_equation may wrap headings */
+.filter_mathjaxloader_equation,.nolink{display:block}
+</style>
+</head>
+<body>
+<main>
+<h1>Rešitve</h1>
+<div class="box py-3 generalbox center clearfix"><div class="no-overflow"><p>V teh vajah obravnavamo kodo, ki sestoji <em>samo</em> iz majhnega delčka jave:</p>
+
+<ul>
+<li>osnovnih aritmetičnih in boolovih izrazov</li>
+<li>ukaza <code>print(e)</code>, ki je okrajšava za <code>System.out.print</code></li>
+<li>prireditvenega stavka <code>x = e</code></li>
+<li>zaporedja ukazov <code>A ; B</code></li>
+<li>pogojnega stavka <code>if (P) { A } else { B }</code></li>
+<li>in zanke <code>while (P) { A }</code> ter ukaza <code>break</code></li>
+</ul>
+
+<h3>Ekvivalenca programov</h3>
+
+<p>Ali so naslednji pogrami ekvivalentni?</p>
+
+<ol>
+<li><p><code>a = a ^ b; b = a ^ b; a = a ^ b;</code></p></li>
+<li><p><code>temp = a; a = b; b = temp;</code></p></li>
+<li><p><code>temp = b; b = a; a = temp;</code></p></li>
+<li><p><code>a = a + b; b = a - b; a = a - b;</code></p></li>
+<li><p><code>x[i] = x[i] ^ x[j]; x[j] = x[i] ^ x[j]; x[i] = x[i] ^ x[j];</code></p></li>
+<li><p><code>temp = x[i]; x[i] = x[j]; x[j] = temp;</code></p></li>
+<li><p><code>temp = x[j]; x[j] = x[i]; x[i] = temp;</code></p></li>
+<li><p><code>x[i] = x[i] + x[j]; x[j] = x[i] - x[j]; x[i] = x[i] - x[j];</code></p></li>
+<li><p><code>if (i != j) { x[i] = x[i] ^ x[j]; x[j] = x[j] ^ x[i]; x[i] = x[i] ^ x[j]; }</code></p></li>
+</ol>
+
+<h4>Rešitev</h4>
+
+<p>Opazimo:</p>
+
+<ul>
+<li><code>[a ↦ 1, b ↦ 2, temp ↦ 3] a = a ^ b; b = a ^ b; a = a ^ b; [a ↦ 2, b ↦ 1, temp ↦ 3]</code></li>
+<li><code>[a ↦ 1, b ↦ 2, temp ↦ 3] temp = a; a = b; b = temp; [a ↦ 2, b ↦ 1, temp ↦ 1]</code></li>
+<li><code>[a ↦ 1, b ↦ 2, temp ↦ 3] temp = b; b = a; a = temp; [a ↦ 2, b ↦ 1, temp ↦ 2]</code></li>
+<li><code>[a ↦ 1, b ↦ 2, temp ↦ 3] a = a + b; b = a - b; a = a - b; [a ↦ 2, b ↦ 1, temp ↦ 3]</code></li>
+</ul>
+
+<p>Posledično, sta izmed prvih štiri programov mogoče ekvivalentna le 1. in 4. program.
+Ker 1. in 4. program spreminjata le spremenljivki <code>a</code> in <code>b</code>, je za njuno ekvivalentnost potrebno pokazati le, da programa okolje <code>[a ↦ α, b ↦ β]</code> (<code>α</code> in <code>β</code> sta poljubni celi števili) spremenita na enak način:</p>
+
+<ul>
+<li><code>[a ↦ α, b ↦ β] a = a ^ b; [a ↦ α ⊕ β, b ↦ β] b = a ^ b; [a ↦ α ⊕ β, b ↦ (α ⊕ β) ⊕ β = α] a = a ^ b; [a ↦ (α ⊕ β) ⊕ α = β, b ↦ α]</code> (tu smo upoštevali, da za XOR po bitih (bitwise XOR), velja <code>α ⊕ α = 0</code>, <code>α ⊕ 0 = α</code>, <code>α ⊕ β = β ⊕ α</code>, in <code>(α ⊕ β) ⊕ γ = α ⊕ (β ⊕ γ)</code>).</li>
+<li><code>[a ↦ α, b ↦ β] a = a + b; [a ↦ α + β, b ↦ β] b = a - b; [a ↦ α + β, b ↦ (α + β) - β = α] a = a - b; [a ↦ (α + β) - α = β, b ↦ α]</code>.</li>
+</ul>
+
+<p>Programi 5.-9. niso ekvivalentni programom 1.-4. Na podoben način, kot za programe 1.-4. lahko pokažemo, da med programi 5.-9. sta ekvivalentna le 5. in 8. program, kjer upoštevamo:</p>
+
+<ul>
+<li><code>[i ↦ σ, j ↦ σ, x[i] ↦ α, x[j] ↦ β] 5. [i ↦ σ, j ↦ σ, x[i] ↦ 0, x[j] ↦ 0]</code></li>
+<li><code>[i ↦ σ, j ↦ σ, x[i] ↦ α, x[j] ↦ β] 8. [i ↦ σ, j ↦ σ, x[i] ↦ 0, x[j] ↦ 0]</code></li>
+<li><p><code>[i ↦ σ, j ↦ σ, x[i] ↦ α, x[j] ↦ β] 9. [i ↦ σ, j ↦ σ, x[i] ↦ β, x[j] ↦ α]</code></p></li>
+<li><p><code>[i ↦ σ, j ↦ δ ≠ σ, x[i] ↦ α, x[j] ↦ β] 5. [i ↦ σ, j ↦ σ, x[i] ↦ β, x[j] ↦ α]</code></p></li>
+<li><code>[i ↦ σ, j ↦ δ ≠ σ, x[i] ↦ α, x[j] ↦ β] 8. [i ↦ σ, j ↦ σ, x[i] ↦ β, x[j] ↦ α]</code></li>
+<li><code>[i ↦ σ, j ↦ δ ≠ σ, x[i] ↦ α, x[j] ↦ β] 9. [i ↦ σ, j ↦ σ, x[i] ↦ β, x[j] ↦ α]</code></li>
+</ul>
+
+<h4>Drugi del</h4>
+
+<p>Za vsako celo 32-bitno število <code>X</code>, kjer je to mogoče, poišči okolje v katerem sta naslednja programa "ekvivalentna"?</p>
+
+<ol>
+<li><pre><code class="c hljs arduino"><span class="hljs-keyword">while</span> (i &gt; <span class="hljs-number">1</span>) {
+    <span class="hljs-keyword">if</span> (i*i + <span class="hljs-number">26</span> == <span class="hljs-number">15</span>*i) {
+        <span class="hljs-keyword">break</span>;
+    } 
+    i = i + <span class="hljs-number">1</span>;
+}
+</code></pre></li>
+<li><pre><code class="c hljs arduino">i = X;
+</code></pre></li>
+</ol>
+
+<h5>Rešitev</h5>
+
+<p>Ker ima enačba <code>i² -15i + 15 mod 2^(32) = 0</code> samo dve rešitvi <code>i = 2</code> in <code>i = 13</code>, lahko prvi program lahko nadomestimo s programom:</p>
+
+<pre><code class="c hljs arduino"><span class="hljs-keyword">if</span> (i &gt; <span class="hljs-number">2</span>) i = <span class="hljs-number">13</span>;
+<span class="hljs-keyword">if</span> (i &gt; <span class="hljs-number">13</span>) i = (<span class="hljs-number">-1</span> &lt;&lt; <span class="hljs-number">31</span>); <span class="hljs-comment">// -2^31</span>
+</code></pre>
+
+<p>Za vrednosti <code>X ∈ {0, 1, 2, 13, -2^31}</code> je eno izmed okolij v katerem sta programa 1. in 2. "ekvivalentna" <code>[i ↦ X]</code>.
+Za druge vrednosti <code>X</code>, tako okolje ne obstaja.</p>
+
+<h3>Pretvorba zanke <code>for</code> v zanko <code>while</code></h3>
+
+<p>Lahko bi dodali zanko <code>for</code>, a je pravzaprav ne potrebujemo. Kako bi zanko</p>
+
+<pre><code class="hljs less"><span class="hljs-selector-tag">for</span> (A; P; C) {
+    <span class="hljs-selector-tag">B</span>;
+}
+</code></pre>
+
+<p>predelali v ekvivalentno kodo, ki uporablja samo <code>while</code>?</p>
+
+<h4>Rešitev</h4>
+
+<pre><code class="hljs gauss">{
+    A;
+    <span class="hljs-keyword">while</span> (P) {
+        B;
+        C;
+    }
+}
+</code></pre>
+
+<h3>Pretvorba zanke <code>do</code> v zanko <code>while</code></h3>
+
+<p>V <code>while</code> predelajte še zanko <code>do</code>:</p>
+
+<pre><code class="hljs gauss"><span class="hljs-keyword">do</span> {
+  A;
+} <span class="hljs-keyword">while</span> (P);
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<pre><code class="hljs gauss">{ 
+    A;
+    <span class="hljs-keyword">while</span> (P) {
+        A;
+    }
+}
+</code></pre>
+
+<h2>Odstranjevanje mrtve kode</h2>
+
+<p>Mrtva koda (angl. <em>dead code</em>) je del kode, za katerega zagotovo vemo, da se ne bo
+izvedel. Tako kodo lahko brez škode odstranimo. Nekaj primerov odstranjevanja mrtve kode:</p>
+
+<ul>
+<li>Če vemo, da pogoj <code>P</code> v <code>if (P) { A } else { B }</code> zagotovo velja, potem se <code>B</code> ne izvede,
+zato lahko pogojni stavek poenostavimo v <code>P ; A</code>. Če nadalje vemo še, da <code>P</code> ne bo sprožil
+izjeme (zaradi deljenja z <code>0</code>), potem lahko poenostavimo kar v <code>A</code>.</li>
+<li>Če se v <code>A ; B</code> ukaz <code>A</code> nikoli ne konča (ali pa je <code>break</code>), se <code>B</code> ne bo izvedel in ga lahko odstranimo.</li>
+<li>Če ob vstopu v <code>while (P) { A }</code> pogoj <code>P</code> <em>ne</em> velja, se zanka sploh ne izvede in jo
+lahko odstranimo.</li>
+</ul>
+
+<h3>Primer 1</h3>
+
+<p>Odstranite mrtvo kodo v programu</p>
+
+<pre><code class="hljs gauss"><span class="hljs-keyword">print</span>(<span class="hljs-string">"Kdor to bere je "</span>);
+a = <span class="hljs-number">3</span>;
+<span class="hljs-keyword">if</span> (a * a &lt; <span class="hljs-number">10</span>) {
+    <span class="hljs-keyword">print</span>(<span class="hljs-string">"mula"</span>);
+} <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">print</span>(<span class="hljs-string">"osel"</span>);
+}
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<pre><code class="hljs swift"><span class="hljs-built_in">print</span>(<span class="hljs-string">"Kdor to bere je "</span>);
+a = <span class="hljs-number">3</span>;
+<span class="hljs-built_in">print</span>(<span class="hljs-string">"mula"</span>);
+</code></pre>
+
+<h3>Primer 2</h3>
+
+<p>Odstranite mrtvo kodo v programu, kjer ima <code>n</code> neznano celoštevilsko vrednost:</p>
+
+<pre><code class="hljs gauss">k = n + (n - <span class="hljs-number">1</span>);
+<span class="hljs-keyword">if</span> (k % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) {
+    <span class="hljs-keyword">print</span>(<span class="hljs-string">"foo"</span>);
+} <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">print</span>(<span class="hljs-string">"bar"</span>);
+}
+m = k * (-k);
+<span class="hljs-keyword">while</span> (m &gt; <span class="hljs-number">0</span>) {
+    m = m - <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">print</span>(m);
+}
+</code></pre>
+
+<h4>Rešitev 1</h4>
+
+<pre><code class="c hljs arduino">k = n + (n - <span class="hljs-number">1</span>); <span class="hljs-comment">// se zagotovo izvede</span>
+<span class="hljs-comment">// opazimo, da je n + (n - 1) vedno liho število, torej se bo izvedel else</span>
+<span class="hljs-built_in">print</span>(<span class="hljs-string">"bar"</span>);
+m = k * (-k); <span class="hljs-comment">// se zagotovo izvede</span>
+<span class="hljs-comment">// ker je k liho število, je n * (-n) negativno število,</span>
+<span class="hljs-comment">// zanka while se ne izvede in jo lahko odstranimo</span>
+</code></pre>
+
+<h4>Rešitev 2</h4>
+
+<p>Če je n predznačeno celo 32-bitno število:</p>
+
+<pre><code class="c hljs arduino">k = n + (n - <span class="hljs-number">1</span>); <span class="hljs-comment">// se zagotovo izvede</span>
+<span class="hljs-comment">// opazimo, da je n + (n - 1) vedno liho število, kjub morebitnim prelivom (± 2^32), torej se bo izvedel else</span>
+<span class="hljs-built_in">print</span>(<span class="hljs-string">"bar"</span>);
+m = k * (-k); <span class="hljs-comment">// se zagotovo izvede</span>
+<span class="hljs-comment">// m' = -k^2 mod 2^32 = -(2*n-1)^2 mod 2^32 = -4*n^2+4*n-1 mod 2^32</span>
+<span class="hljs-comment">// m = m' - 2^32, če je m' ≥ 2^31 oz. m = m', če m' &lt; 2^31.</span>
+<span class="hljs-comment">// Potemtakem je m lahko pozitiven. En tak primer je n = 2^29, saj je m' v tem primeru enak (-4*(2^29)^2 + 4*2^29 - 1) mod 2^32 = 2^32 - 1 &lt; 2^31, in je posledično m = 2^32 - 1.</span>
+<span class="hljs-comment">// Zanka se v nekaterih primerih lahko izvede.  </span>
+<span class="hljs-keyword">while</span> (m &gt; <span class="hljs-number">0</span>) {
+    m = m - <span class="hljs-number">1</span>;
+    <span class="hljs-built_in">print</span>(m);
+}
+</code></pre>
+
+<h3>Primer 3</h3>
+
+<p>Odstranite mrtvo kodo v programu:</p>
+
+<pre><code class="hljs matlab"><span class="hljs-built_in">i</span> = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">while</span> (<span class="hljs-built_in">i</span> &lt; <span class="hljs-number">100</span>) {
+    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">i</span> <span class="hljs-comment">% 2 == 0) {</span>
+        p = <span class="hljs-built_in">i</span> * (<span class="hljs-built_in">i</span> - <span class="hljs-number">1</span>) * (<span class="hljs-built_in">i</span> - <span class="hljs-number">2</span>);
+    } <span class="hljs-keyword">else</span> {
+        p = <span class="hljs-built_in">i</span> * (<span class="hljs-built_in">i</span> + <span class="hljs-number">1</span>) * (<span class="hljs-built_in">i</span> + <span class="hljs-number">2</span>);
+    }
+
+    <span class="hljs-keyword">if</span> (p <span class="hljs-comment">% 3 == 0) {</span>
+        <span class="hljs-keyword">break</span>;
+    } <span class="hljs-keyword">else</span> { }
+    <span class="hljs-built_in">i</span> = <span class="hljs-built_in">i</span> + <span class="hljs-number">1</span>;
+}
+
+<span class="hljs-keyword">if</span> (<span class="hljs-built_in">i</span> &gt;= <span class="hljs-number">100</span>) {
+    print(<span class="hljs-string">"ni zanimivih števil"</span>);
+} <span class="hljs-keyword">else</span> {
+    print(<span class="hljs-string">"našel sem zanimivo število "</span> + <span class="hljs-built_in">i</span>);
+}
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<pre><code class="c hljs arduino">i = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">while</span> (i &lt; <span class="hljs-number">100</span>) {
+    <span class="hljs-keyword">if</span> (i % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) {
+        p = i * (i - <span class="hljs-number">1</span>) * (i - <span class="hljs-number">2</span>);
+    } <span class="hljs-keyword">else</span> {
+        p = i * (i + <span class="hljs-number">1</span>) * (i + <span class="hljs-number">2</span>);
+    }
+    <span class="hljs-comment">// p je zmnožek treh zaporednih števil, zato je deljiv s 3</span>
+    <span class="hljs-comment">// zagotovo se izvede break</span>
+    <span class="hljs-keyword">break</span>;
+}
+<span class="hljs-comment">// i je enak 0</span>
+<span class="hljs-built_in">print</span>(<span class="hljs-string">"našel sem zanimivo šetvilo "</span> + i);
+</code></pre>
+
+<p>Ta program bi lahko še <em>optimizirali</em>, ker se zanka <code>while</code> izvede samo enkrat. A to ne bi
+bilo več le odstranjevanje mrtve kode:</p>
+
+<pre><code class="c hljs arduino">i = <span class="hljs-number">0</span>;
+p = i * (i - <span class="hljs-number">1</span>) * (i - <span class="hljs-number">2</span>);
+<span class="hljs-built_in">print</span>(<span class="hljs-string">"našel sem zanimivo število "</span> + i);
+</code></pre>
+
+<h3>Primer 4</h3>
+
+<p>Odstranite mrtvo kodo v programu:</p>
+
+<pre><code class="hljs matlab">s = <span class="hljs-number">0</span>;
+<span class="hljs-built_in">i</span> = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">while</span> (<span class="hljs-built_in">i</span> &lt; <span class="hljs-number">100</span>) {
+    s = s + <span class="hljs-built_in">i</span>;
+}
+print(s);
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<pre><code class="c hljs arduino">s = <span class="hljs-number">0</span>;
+i = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">while</span> (i &lt; <span class="hljs-number">100</span>) {
+    s = s + i;
+}
+<span class="hljs-comment">// zanka se nikoli ne konča, print se ne zgodi</span>
+</code></pre>
+
+<h3>Program, ki odstranja mrtvo kodo</h3>
+
+<p>V tej nalogi dodamo še uporabo tabel in funkcij. Dobri prevajalniki se trudijo odstraniti
+čim več mrtve kode.</p>
+
+<blockquote>
+  <p><em>Ali lahko implementiramo program, ki vedno odstrani <strong>vso</strong> mrtvo kodo?</em></p>
+</blockquote>
+
+<p>Uporabi znanje iz teorije izračunljivosti in naslednjo opazko: če se v programu</p>
+
+<pre><code class="hljs nginx"><span class="hljs-attribute">A</span> ;
+<span class="hljs-attribute">B</span>
+</code></pre>
+
+<p>ukaz <code>A</code> nikoli ne konča (se zacikla), potem je <code>B</code> mrtva koda.</p>
+
+<h4>Rešitev</h4>
+
+<p>Če bi imeli program <code>DEAD</code>, ki vedno odstrani vso mrtvo kodo, bi lahko implementirali program, ki
+ugotovi, ali se Turingov stroj ustavi. Za dani Turingov stroj <code>T</code> bi sestavili program:</p>
+
+<pre><code class="hljs lisp">simuliraj(<span class="hljs-name">T</span>)<span class="hljs-comment">;</span>
+print(<span class="hljs-string">"Ali se ustavi?"</span>)
+</code></pre>
+
+<p>nato pa bi s programom <code>DEAD</code> ugotovili, ali je stavek <code>print</code> mrtva koda. Če je, se stroj
+<code>T</code> ne ustavi, sicer se ustavi. Na ta način bi lahko algoritmično rešili problem
+zaustavitve (angl. <em>halting problem</em>), ki pa ni algoritmično rešljiv.</p>
+
+<h2>Odstranjevanje ukaza <code>break</code></h2>
+
+<p>V tej nalogi bomo ugotovili, da se lahko ukaza <code>break</code> znebimo. Najprej naredimo nekaj primerov.</p>
+
+<h3>Primer 1</h3>
+
+<p>Naslednjo kodo predelajte v enakovredno kodo, ki ne uporablja ukaza <code>break</code>, pri čemer ima
+<code>n</code> neznano celoštevilsko vrednost:</p>
+
+<pre><code class="hljs gauss"><span class="hljs-keyword">while</span> (n &gt; <span class="hljs-number">0</span>) {
+    digit = n % <span class="hljs-number">10</span>;
+    <span class="hljs-keyword">if</span> (digit == <span class="hljs-number">7</span>) {
+        <span class="hljs-keyword">print</span>(n + <span class="hljs-string">" vsebuje števko 7"</span>);
+        <span class="hljs-keyword">break</span>;
+    } <span class="hljs-keyword">else</span> { }
+    n = n / <span class="hljs-number">10</span>;
+}
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<pre><code class="hljs arduino"><span class="hljs-built_in">stop</span> = <span class="hljs-literal">false</span>;
+<span class="hljs-keyword">while</span> (!<span class="hljs-built_in">stop</span> &amp;&amp; n &gt; <span class="hljs-number">0</span>) {
+    digit = n % <span class="hljs-number">10</span>;
+    <span class="hljs-keyword">if</span> (digit == <span class="hljs-number">7</span>) {
+        <span class="hljs-built_in">print</span>(n + <span class="hljs-string">" vsebuje števko 7"</span>);
+        <span class="hljs-built_in">stop</span> = <span class="hljs-literal">true</span>;
+    } <span class="hljs-keyword">else</span> { }
+    <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">stop</span>) {
+        n = n / <span class="hljs-number">10</span>;
+    } <span class="hljs-keyword">else</span> { }
+}
+</code></pre>
+
+<h3>Primer 2</h3>
+
+<p>Naslednjo kodo predelajte v enakovredno kodo, ki ne uporablja ukaza <code>break</code>.</p>
+
+<pre><code class="hljs gauss"><span class="hljs-comment">// najdi najmanjše popolno število</span>
+n = <span class="hljs-number">1</span>;
+<span class="hljs-keyword">while</span> (true) {
+    d = <span class="hljs-number">1</span>;
+    vsota = <span class="hljs-number">0</span>; <span class="hljs-comment">// vsota deliteljev števila n</span>
+    <span class="hljs-keyword">while</span> (d &lt; n) {
+        <span class="hljs-keyword">if</span> (n % d == <span class="hljs-number">0</span>) {
+            vsota = vsota + d;
+        } <span class="hljs-keyword">else</span> { }
+        <span class="hljs-keyword">if</span> (vsota &gt; n) {
+            <span class="hljs-keyword">break</span>;
+        } <span class="hljs-keyword">else</span> { }
+        d = d + <span class="hljs-number">1</span>;
+    }
+    <span class="hljs-keyword">if</span> (vsota == n) {
+        <span class="hljs-keyword">break</span>;
+    } <span class="hljs-keyword">else</span> { }
+    <span class="hljs-keyword">print</span>(n + <span class="hljs-string">" ni popolno število"</span>);
+    n = n + <span class="hljs-number">1</span>;
+}
+<span class="hljs-keyword">print</span>(<span class="hljs-string">"našel popolno število: "</span> + n);
+</code></pre>
+
+<h4>Rešitev</h4>
+
+<pre><code class="hljs arduino"><span class="hljs-comment">// najdi najmanjše popolno število</span>
+n = <span class="hljs-number">1</span>;
+<span class="hljs-built_in">stop</span> = <span class="hljs-literal">false</span>;
+<span class="hljs-keyword">while</span> (!<span class="hljs-built_in">stop</span>) {
+    d = <span class="hljs-number">1</span>;
+    vsota = <span class="hljs-number">0</span>;
+    <span class="hljs-built_in">stop</span> = <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">while</span> (!<span class="hljs-built_in">stop</span> &amp;&amp; d &lt; n) {
+        <span class="hljs-keyword">if</span> (i % d == <span class="hljs-number">0</span>) {
+            vsota = vsota + d;
+        } <span class="hljs-keyword">else</span> { }
+        <span class="hljs-keyword">if</span> (vsota &gt; n) {
+            <span class="hljs-built_in">stop</span> = <span class="hljs-literal">true</span>;
+        } <span class="hljs-keyword">else</span> { }
+        <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">stop</span>) {
+            d = d + <span class="hljs-number">1</span>;
+        } <span class="hljs-keyword">else</span> { }
+    }
+    <span class="hljs-built_in">stop</span> = <span class="hljs-literal">false</span>;
+    <span class="hljs-keyword">if</span> (vsota == n) {
+        <span class="hljs-built_in">stop</span> = <span class="hljs-literal">true</span>;
+    } <span class="hljs-keyword">else</span> { }
+    <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">stop</span>) {
+        <span class="hljs-built_in">print</span>(n + <span class="hljs-string">" ni popolno število"</span>);
+        n = n + <span class="hljs-number">1</span>;
+    } <span class="hljs-keyword">else</span> { }
+}
+<span class="hljs-built_in">print</span>(<span class="hljs-string">"našel popolno število: "</span> + n);
+</code></pre>
+
+<h3>Splošni postopek</h3>
+
+<p>Opišite splošni postopek za odstranjevanje ukaza <code>break</code>. Na papirju definirajte funkcijo
+<code>UNBREAK</code>, ki sprejme program in vrne enakovredni program brez ukaza <code>break</code>. Funkcija je
+rekurzivna.</p>
+
+<h4>Rešitev</h4>
+
+<p>Uvedemo novo boolovo spremenljivko <code>stop</code> z začetno vrednostjo <code>false</code>. Če se <code>stop</code> že
+pojavlja v kodi, izberemo drugo ime, ki se še ne pojavi.</p>
+
+<pre><code class="hljs arduino">UNBREAK(x = e) :=
+   x = e
+
+UNBREAK(<span class="hljs-built_in">print</span>(e)) :=
+   <span class="hljs-built_in">print</span>(e)
+
+UNBREAK(<span class="hljs-keyword">break</span>) :=
+   <span class="hljs-built_in">stop</span> = <span class="hljs-literal">true</span>
+
+UNBREAK(A ; B) :=
+   UNBREAK(A); <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">stop</span>) { UNBREAK(B) } <span class="hljs-keyword">else</span> { }
+
+UNBREAK(<span class="hljs-keyword">if</span> (P) { A } <span class="hljs-keyword">else</span> { B }) :=
+   <span class="hljs-keyword">if</span> (P) { UNBREAK(A) } <span class="hljs-keyword">else</span> { UNBREAK(B) }
+
+UNBREAK(<span class="hljs-keyword">while</span> (P) { A }) :=
+   <span class="hljs-built_in">stop</span> = <span class="hljs-literal">false</span>;
+   <span class="hljs-keyword">while</span> (!<span class="hljs-built_in">stop</span> &amp;&amp; P) {
+     UNBREAK(A)
+   }
+   <span class="hljs-built_in">stop</span> = <span class="hljs-literal">false</span>;
+</code></pre>
+
+<h3>Izboljšava splošnega postopka</h3>
+
+<p>Izboljšajte <code>UNBREAK</code> tako, da ne bo po nepotrebnem spreminjal kode.</p>
+
+<h4>Rešitev</h4>
+
+<p>Podobno kot prejšnja rešitev, le da kode ne spremenimo, če ne vsebuje <code>break</code>:</p>
+
+<pre><code class="hljs swift"><span class="hljs-type">UNBREAK</span>(<span class="hljs-built_in">c</span>) := <span class="hljs-built_in">c</span>    če se <span class="hljs-keyword">break</span> ne pojavi v <span class="hljs-built_in">c</span> (ta primer zaobjema <span class="hljs-built_in">print</span> <span class="hljs-keyword">in</span> x = e)
+</code></pre>
+
+<p>sicer:</p>
+
+<pre><code class="hljs arduino">UNBREAK(<span class="hljs-keyword">break</span>) :=
+   <span class="hljs-built_in">stop</span> = <span class="hljs-literal">true</span>
+
+UNBREAK(A ; B) :=
+   UNBREAK(A); <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">stop</span>) { UNBREAK(B) } <span class="hljs-keyword">else</span> { }
+
+UNBREAK(<span class="hljs-keyword">if</span> (P) { A } <span class="hljs-keyword">else</span> { B }) :=
+   <span class="hljs-keyword">if</span> (P) { UNBREAK(A); } <span class="hljs-keyword">else</span> { UNBREAK(B); }
+
+UNBREAK(<span class="hljs-keyword">while</span> (P) { A }) :=
+   <span class="hljs-built_in">stop</span> = <span class="hljs-literal">false</span>;
+   <span class="hljs-keyword">while</span> (!<span class="hljs-built_in">stop</span> &amp;&amp; P) {
+     UNBREAK(A);
+   }
+   <span class="hljs-built_in">stop</span> = <span class="hljs-literal">false</span>;
+</code></pre>
+</div></div>
+<div class="modified">Zadnja sprememba: ponedeljek, 9. marec 2026, 15.29</div>
+</main>
+</body>
+</html>
