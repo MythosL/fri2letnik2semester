@@ -18,6 +18,10 @@ Vir: predavanja, vaje in domače naloge FRI.
 | [[APS2-Amortizirana_casovna_zahtevnost]] | Agregatna, bančniška, potencialna metoda | p3, v3, dn3 |
 | [[APS2-Deli_in_vladaj]] | Master theorem, Merge sort, Karatsuba | p2, v2, DN2 |
 | [[APS2-Dinamicno_programiranje]] | Memoizacija, LCS, Knapsack, Matrix chain | p5, v5, p6 |
+| [[APS2-Sprehod_po_grafih]] | BFS, DFS, topološko urejanje, SCC | predavanje_sprehodi_po_grafih, vaje07 |
+| [[APS2-Pozresni_algoritmi]] | Huffman, Kruskal, Prim, Dijkstra | p4, v4 |
+| [[APS2-Racunska_zahtevnost]] | P, NP, NP-polnost, redukcije, SAT | P1, V1 |
+| [[APS2-Maksimalni_pretoki]] | Ford-Fulkerson, Edmonds-Karp, min-cut, ujemanje | maksimalni_pretoki, dosegljivost |
 
 ---
 
@@ -28,6 +32,8 @@ Vir: predavanja, vaje in domače naloge FRI.
 | [[Potencialna_funkcija]] | Formalna osnova potencialne metode amortizacije |
 | [[Divide_and_conquer]] | Paradigma deli in vladaj – splošno |
 | [[Dinamicno_programiranje_osnove]] | Osnove DP: top-down vs bottom-up, načrtovanje |
+| [[NP_polnost]] | Formalni pregled NP-polnosti in polinomskih redukcij |
+| [[Maksimalni_pretok]] | Teorija pretokov: max-flow min-cut, preostalo omrežje |
 
 ---
 
@@ -39,11 +45,17 @@ wiki/
 ├── topics/
 │   ├── APS2-Amortizirana_casovna_zahtevnost.md
 │   ├── APS2-Deli_in_vladaj.md
-│   └── APS2-Dinamicno_programiranje.md
+│   ├── APS2-Dinamicno_programiranje.md
+│   ├── APS2-Sprehod_po_grafih.md
+│   ├── APS2-Pozresni_algoritmi.md
+│   ├── APS2-Racunska_zahtevnost.md
+│   └── APS2-Maksimalni_pretoki.md
 └── concepts/
     ├── Potencialna_funkcija.md
     ├── Divide_and_conquer.md
-    └── Dinamicno_programiranje_osnove.md
+    ├── Dinamicno_programiranje_osnove.md
+    ├── NP_polnost.md
+    └── Maksimalni_pretok.md
 ```
 
 ---
@@ -61,9 +73,13 @@ wiki/
 | Push (dyn. array) | $O(1)$ amor. | — |
 | Multipop (sklad) | $O(1)$ amor. | — |
 | Binarni števec | $O(1)$ amor. | — |
-
----
-
-## Naslednji koraki
-
-> Dodaj ostale APS2 teme: Sprehod po grafih, Požrešni algoritmi, Maksimalni pretoki, Računska zahtevnost.
+| BFS | $O(V+E)$ | $O(V)$ |
+| DFS | $O(V+E)$ | $O(V)$ |
+| Topološko urejanje | $O(V+E)$ | $O(V)$ |
+| Kosaraju (SCC) | $O(V+E)$ | $O(V)$ |
+| Dijkstra | $O(E \log V)$ | $O(V)$ |
+| Prim (MST) | $O(E \log V)$ | $O(V)$ |
+| Kruskal (MST) | $O(E \log E)$ | $O(V)$ |
+| Huffman | $O(n \log n)$ | $O(n)$ |
+| Ford-Fulkerson | $O(E \cdot \|f^*\|)$ | $O(V+E)$ |
+| Edmonds-Karp | $O(VE^2)$ | $O(V+E)$ |
