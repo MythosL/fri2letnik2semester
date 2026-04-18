@@ -25,6 +25,18 @@ Vir: predavanja, vaje in domače naloge FRI.
 
 ---
 
+## Študijski vodiči (Guides)
+
+Pedagoško strukturirani vodiči z intuicijo, pripodobami, preslikavami in nalogami:
+
+| # | Vodič | Za snov |
+|---|---|---|
+| 01 | [[guide-01-Racunska_zahtevnost]] | Računska zahtevnost, NP-polnost |
+| 02 | [[guide-02-Deli_in_vladaj]] | Deli in vladaj, master theorem |
+| 03 | [[guide-03-Amortizirana_casovna_zahtevnost]] | Amortizirana analiza |
+
+---
+
 ## Koncepti (Concepts)
 
 | Koncept | Opis |
@@ -50,12 +62,16 @@ wiki/
 │   ├── APS2-Pozresni_algoritmi.md
 │   ├── APS2-Racunska_zahtevnost.md
 │   └── APS2-Maksimalni_pretoki.md
-└── concepts/
-    ├── Potencialna_funkcija.md
-    ├── Divide_and_conquer.md
-    ├── Dinamicno_programiranje_osnove.md
-    ├── NP_polnost.md
-    └── Maksimalni_pretok.md
+├── concepts/
+│   ├── Potencialna_funkcija.md
+│   ├── Divide_and_conquer.md
+│   ├── Dinamicno_programiranje_osnove.md
+│   ├── NP_polnost.md
+│   └── Maksimalni_pretok.md
+└── guides/
+    ├── guide-01-Racunska_zahtevnost.md
+    ├── guide-02-Deli_in_vladaj.md
+    └── guide-03-Amortizirana_casovna_zahtevnost.md
 ```
 
 ---
