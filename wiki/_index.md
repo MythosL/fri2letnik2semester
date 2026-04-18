@@ -20,7 +20,7 @@ Vir: predavanja, vaje in domače naloge FRI.
 | [[APS2-Dinamicno_programiranje]] | Memoizacija, LCS, Knapsack, Matrix chain | p5, v5, p6 |
 | [[APS2-Sprehod_po_grafih]] | BFS, DFS, topološko urejanje, SCC | predavanje_sprehodi_po_grafih, vaje07 |
 | [[APS2-Pozresni_algoritmi]] | Huffman, Kruskal, Prim, Dijkstra | p4, v4 |
-| [[APS2-Racunska_zahtevnost]] | P, NP, NP-polnost, redukcije, SAT | P1, V1 |
+| [[APS2-Racunska_zahtevnost]] | Asimptotična notacija (O, Θ, Ω, o, ω), Stirling, L'Hôpital | P1, V1, DN1 |
 | [[APS2-Maksimalni_pretoki]] | Ford-Fulkerson, Edmonds-Karp, min-cut, ujemanje | maksimalni_pretoki, dosegljivost |
 
 ---
@@ -31,9 +31,9 @@ Pedagoško strukturirani vodiči z intuicijo, pripodobami, preslikavami in nalog
 
 | # | Vodič | Za snov |
 |---|---|---|
-| 01 | [[guide-01-Racunska_zahtevnost]] | Računska zahtevnost, NP-polnost |
-| 02 | [[guide-02-Deli_in_vladaj]] | Deli in vladaj, master theorem |
-| 03 | [[guide-03-Amortizirana_casovna_zahtevnost]] | Amortizirana analiza |
+| 01 | [[guide-01-Racunska_zahtevnost]] | Asimptotična notacija, Stirling, limite |
+| 02 | [[guide-02-Deli_in_vladaj]] | Deli in vladaj, krovni izrek, Karatsuba |
+| 03 | [[guide-03-Amortizirana_casovna_zahtevnost]] | Amortizirana analiza (agreg./računov./potencial) |
 
 ---
 
@@ -41,10 +41,10 @@ Pedagoško strukturirani vodiči z intuicijo, pripodobami, preslikavami in nalog
 
 | Koncept | Opis |
 |---|---|
+| [[Asimptoticna_notacija]] | Formalni pregled O, Θ, Ω, o, ω z dokaznimi tehnikami |
 | [[Potencialna_funkcija]] | Formalna osnova potencialne metode amortizacije |
 | [[Divide_and_conquer]] | Paradigma deli in vladaj – splošno |
 | [[Dinamicno_programiranje_osnove]] | Osnove DP: top-down vs bottom-up, načrtovanje |
-| [[NP_polnost]] | Formalni pregled NP-polnosti in polinomskih redukcij |
 | [[Maksimalni_pretok]] | Teorija pretokov: max-flow min-cut, preostalo omrežje |
 
 ---
@@ -63,10 +63,10 @@ wiki/
 │   ├── APS2-Racunska_zahtevnost.md
 │   └── APS2-Maksimalni_pretoki.md
 ├── concepts/
+│   ├── Asimptoticna_notacija.md
 │   ├── Potencialna_funkcija.md
 │   ├── Divide_and_conquer.md
 │   ├── Dinamicno_programiranje_osnove.md
-│   ├── NP_polnost.md
 │   └── Maksimalni_pretok.md
 └── guides/
     ├── guide-01-Racunska_zahtevnost.md
