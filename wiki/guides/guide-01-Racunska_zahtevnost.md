@@ -1,6 +1,6 @@
 ---
 title: "Študijski vodič 01 – Računska zahtevnost (asimptotična analiza)"
-tags: [aps2, vodic, ucenje, zahtevnost, asimptotika, notacija]
+tags: [aps2, vodic, ucenje, zahtevnost, asimptotika, notacija, flashcards]
 type: study-guide
 order: 1
 last_updated: 2026-04-18
@@ -25,6 +25,12 @@ Dva algoritma uredita 1000 števil:
 Pri $n = 10$? Prvi zmaga (600 vs 3332). Pri $n = 10^6$? Drugi je **250 000× hitrejši**.
 
 **Asimptotika** opiše **dolgoročno zmago** — ignorira konstante in členke nižjega reda, ker postanejo nepomembni.
+
+---
+
+## Vizualizacija: funkcijska hierarhija
+
+![[funkcijska-hierarhija.excalidraw]]
 
 ---
 
@@ -214,3 +220,41 @@ Pri $U = 1$ je insertion sort najhitrejši ($\Theta(n)$, ker ne dela zamenjav).
 - [[APS2-Racunska_zahtevnost]] — referenca
 - [[Asimptoticna_notacija]] — formalni pregled
 - Naslednji vodič: [[guide-02-Deli_in_vladaj]]
+
+---
+
+## 12. Kartice za aktivni priklic (#flashcards)
+
+> Za vtičnik **Spaced Repetition** (Stephen Mwangi). Sintaksa: inline `Q::A`, reverse `Q:::A`.
+
+### Definicije
+
+$O(g)$ formalna definicija?::$\exists c>0, n_0>0: \forall n \geq n_0,\ 0 \leq f(n) \leq c\,g(n)$
+
+$\Theta(g)$ kot limita?::$\lim f(n)/g(n) = c$, kjer $c \in (0, \infty)$
+
+$o(g)$ kot limita?::$\lim f(n)/g(n) = 0$
+
+$\omega(g)$ kot limita?::$\lim f(n)/g(n) = \infty$
+
+Razlika $O$ in $o$?::$O$ dovoli $\lim = c$; $o$ zahteva $\lim = 0$ (strogo manjši)
+
+### Ključni rezultati
+
+Stirlingova formula za $n!$?::$n! \approx \sqrt{2\pi n}(n/e)^n$
+
+$\lg n!$ v asimptotski obliki?::$\Theta(n \log n)$
+
+$n^{\lg n}$ primerjava z $n^k$ in $k^n$?::$n^k = o(n^{\lg n}) = o(k^n)$ (leži med polinomi in eksponenti)
+
+$2^{\ln n}$ poenostavljeno?::$n^{\ln 2}$ (uporabi identiteto $a = b^{\log_b a}$)
+
+### Tehnike
+
+L'Hôpital velja za katere oblike?::$\infty/\infty$ in $0/0$
+
+Kako klasificiraš v 3 korakih?::1) poenostavi vodilni člen, 2) prevedi na znano (Stirling, identitete), 3) preveri z limito
+
+Razvrsti po rasti:
+?
+$1 \prec \lg\lg n \prec \lg n \prec \sqrt{n} \prec n \prec n\lg n \prec n^2 \prec n^{\lg n} \prec 2^n \prec n! \prec n^n$
