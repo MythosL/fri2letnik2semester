@@ -30,13 +30,32 @@ Pri $n = 10$? Prvi zmaga (600 vs 3332). Pri $n = 10^6$? Drugi je **250 000× hit
 
 ## Vizualizacija: funkcijska hierarhija
 
-![[funkcijska-hierarhija.excalidraw]]
+```mermaid
+graph LR
+    A["1"] --> B["lg lg n"]
+    B --> C["lg n"]
+    C --> D["√n"]
+    D --> E["n"]
+    E --> F["n · lg n"]
+    F --> G["n²"]
+    G --> H["n³"]
+    H --> I["n^(lg n)"]
+    I --> J["2ⁿ"]
+    J --> K["n!"]
+    K --> L["nⁿ"]
 
-> **Namig za risanje** (odpri datoteko v Excalidraw načinu):
-> - Vodoravna os z markerji: $1, \lg\lg n, \lg n, \sqrt{n}, n, n\lg n, n^2, n^3, n^{\lg n}, 2^n, n!, n^n$
-> - Polinome ($n, n^2, n^3$) obkroži z eno barvo
-> - $n^{\lg n}$ z ločeno barvo (ni ne polinom ne eksponent)
-> - $2^n, n!, n^n$ z drugo barvo
+    classDef sublin fill:#d7ebff,stroke:#2b6cb0
+    classDef poly fill:#d4f4dd,stroke:#2f855a
+    classDef mid fill:#fff4d6,stroke:#b7791f
+    classDef expo fill:#ffd6d6,stroke:#c53030
+
+    class A,B,C,D sublin
+    class E,F,G,H poly
+    class I mid
+    class J,K,L expo
+```
+
+**Legenda barv**: modra = sublinearne, zelena = polinomske, rumena = vmesna ($n^{\lg n}$ — ni ne polinom ne eksponent), rdeča = eksponentne/faktorialne.
 
 ---
 
