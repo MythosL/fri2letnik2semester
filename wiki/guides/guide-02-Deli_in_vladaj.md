@@ -29,22 +29,73 @@ last_updated: 2026-04-18
 
 ## Vizualizaciji
 
-### Rekurzijsko drevo in krovni izrek
-![[rekurzijsko-drevo-krovni-izrek.excalidraw]]
+### Rekurzijsko drevo
 
-> **Namig za risanje**:
-> - Trikotnik z razvejanostjo $a$ na vsakem nivoju, $T(n) \to a \cdot T(n/b)$
-> - Ob nivojih zapiši delo: nivo 0 = $f(n)$, nivo 1 = $a \cdot f(n/b)$, listi = $\Theta(n^{\log_b a})$
-> - Ob strani tri puščice: "Primer 1: $a > b^d$", "Primer 2: $a = b^d$", "Primer 3: $a < b^d$"
+```mermaid
+graph TD
+    Root["T(n)<br/>delo: f(n)"]
+    N1a["T(n/b)"]
+    N1b["T(n/b)"]
+    N1c["... a klicev"]
+    N2a["T(n/b²)"]
+    N2b["T(n/b²)"]
+    N2c["..."]
+    Leaf["n^(log_b a) listov<br/>delo: Θ(n^(log_b a))"]
 
-### Karatsubov trik (4 → 3 množenja)
-![[karatsuba-trik.excalidraw]]
+    Root -->|"a vej"| N1a
+    Root --> N1b
+    Root --> N1c
+    N1a -->|"a vej"| N2a
+    N1a --> N2b
+    N1b --> N2c
+    N2a -.->|"globina log_b n"| Leaf
+    N2b -.-> Leaf
+    N2c -.-> Leaf
 
-> **Namig za risanje**:
-> - Levo: štiri-produktni pristop (šola): $a_1 b_1, a_1 b_0, a_0 b_1, a_0 b_0$
-> - Desno: trije produkti: $c_2 = a_1 b_1$, $c_0 = a_0 b_0$, $c_1 = (a_1+a_0)(b_1+b_0) - c_2 - c_0$
-> - Puščica "en produkt prihranjen"
-> - Spodaj rekurence: $4T(n/2)+\Theta(n) = \Theta(n^2)$ vs $3T(n/2)+\Theta(n) = \Theta(n^{\log_2 3})$
+    classDef root fill:#fff4d6,stroke:#b7791f,stroke-width:2px
+    classDef leaf fill:#ffd6d6,stroke:#c53030,stroke-width:2px
+    class Root root
+    class Leaf leaf
+```
+
+**Trije primeri krovnega izreka** ($f(n) = \Theta(n^d)$):
+
+```mermaid
+graph LR
+    Compare["Primerjaj a in b^d"]
+    Compare -->|"a > b^d"| C1["Primer 1<br/>Θ(n^(log_b a))<br/>listi dominirajo"]
+    Compare -->|"a = b^d"| C2["Primer 2<br/>Θ(n^d log n)<br/>vsi nivoji enaki"]
+    Compare -->|"a < b^d"| C3["Primer 3<br/>Θ(n^d)<br/>koren dominira"]
+```
+
+### Karatsubov trik: 4 → 3 množenja
+
+```mermaid
+flowchart TD
+    Input["Vhod: a, b z n števkami"]
+    Split["Razcep:<br/>a = 10^(n/2)·a₁ + a₀<br/>b = 10^(n/2)·b₁ + b₀"]
+
+    P1["c₂ = a₁ · b₁"]
+    P2["c₀ = a₀ · b₀"]
+    P3["c₁ = (a₁+a₀)(b₁+b₀) − c₂ − c₀"]
+
+    Combine["a · b = 10ⁿ·c₂ + 10^(n/2)·c₁ + c₀"]
+    Result["T(n) = 3T(n/2) + Θ(n)<br/>= Θ(n^(log₂ 3)) ≈ Θ(n^1.585)"]
+
+    Input --> Split
+    Split --> P1
+    Split --> P2
+    Split --> P3
+    P1 --> Combine
+    P2 --> Combine
+    P3 --> Combine
+    Combine --> Result
+
+    classDef trick fill:#fff4d6,stroke:#b7791f,stroke-width:2px
+    class P3 trick
+```
+
+> Trik je v $c_1$: namesto dveh množenj ($a_1 b_0 + a_0 b_1$) ga izračunamo z **enim** množenjem $(a_1+a_0)(b_1+b_0)$ in odštejemo $c_2 + c_0$.
 
 ---
 
