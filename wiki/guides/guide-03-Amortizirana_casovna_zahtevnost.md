@@ -143,56 +143,41 @@ Inkrement: popravi $t$ enic na 0, nato doda 1 eno.
 ### Naloga 1
 Imamo sklad, na katerem delamo 100 `push` in 50 `multipop` operacij. **Brez** amortizirane analize bi bilo najhuje $100 + 50 \cdot 100 = 5100$. Kaj pove amortizirana analiza?
 
-<details>
-<summary>Rešitev</summary>
-
-Skupno delo $\leq 2 \cdot$ število push = $200$. Torej realno dela je največ **200**, ne 5100.
-</details>
+> [!success]- Rešitev
+> Skupno delo $\leq 2 \cdot$ število push = $200$. Torej realno dela je največ **200**, ne 5100.
 
 ### Naloga 2
 Zasnuj potencialno funkcijo za sklad, ki omogoči poceni `multipush` operacijo (dodaj $k$ elementov naenkrat).
 
-<details>
-<summary>Rešitev</summary>
-
-Isti $\Phi(D) = |S|$.  
-multipush($k$): $c = k$, $\Delta\Phi = +k$, $\hat{c} = 2k = O(k)$.  
-Povprečno na element: $O(1)$.
-</details>
+> [!success]- Rešitev
+> Isti $\Phi(D) = |S|$.  
+> multipush($k$): $c = k$, $\Delta\Phi = +k$, $\hat{c} = 2k = O(k)$.  
+> Povprečno na element: $O(1)$.
 
 ### Naloga 3
 Zakaj ne deluje dinamično polje, če povečujemo za **konstanto** $+c$ namesto podvajanja?
 
-<details>
-<summary>Rešitev</summary>
-
-Z $n$ pushi imamo $n/c$ premikov, vsakič prekopiraš povprečno $n/2$ elementov.  
-Skupaj $\Theta(n^2 / c) = \Theta(n^2)$. Amortizirano **$O(n)$ na push** — slabo!  
-Podvajanje da geometrijsko vsoto, ki konvergira v $O(n)$ skupaj → $O(1)$ na push.
-</details>
+> [!success]- Rešitev
+> Z $n$ pushi imamo $n/c$ premikov, vsakič prekopiraš povprečno $n/2$ elementov.  
+> Skupaj $\Theta(n^2 / c) = \Theta(n^2)$. Amortizirano **$O(n)$ na push** — slabo!  
+> Podvajanje da geometrijsko vsoto, ki konvergira v $O(n)$ skupaj → $O(1)$ na push.
 
 ### Naloga 4
 Dokaži z bančno metodo: inkrement binarnega števca je $O(1)$ amortizirano.
 
-<details>
-<summary>Rešitev</summary>
-
-Pristojbina za vsak nov prehod iz 0 → 1: **2 enoti**.  
-- 1 enota plača postavitev bita na 1 zdaj
-- 1 enota se shrani **na biti 1**, za kasnejšo brisanje
-Ko bit pade 1 → 0, banka plača to brisanje.  
-Saldo nikoli negativen. Vsak inkrement plača samo enkratno pristojbino (en nov 1) → $O(1)$.
-</details>
+> [!success]- Rešitev
+> Pristojbina za vsak nov prehod iz 0 → 1: **2 enoti**.  
+> - 1 enota plača postavitev bita na 1 zdaj
+> - 1 enota se shrani **na biti 1**, za kasnejšo brisanje
+> Ko bit pade 1 → 0, banka plača to brisanje.  
+> Saldo nikoli negativen. Vsak inkrement plača samo enkratno pristojbino (en nov 1) → $O(1)$.
 
 ### Naloga 5 (sinteza)
 **Razmisli**: zakaj ne rečemo, da je dinamično polje "povprečni primer $O(1)$"?
 
-<details>
-<summary>Rešitev</summary>
-
-Povprečni primer pomeni **statistično povprečje** preko naključnih vhodov.  
-Amortizirana analiza je **najhuji scenarij za zaporedje** — nobeno naključje, velja **vedno**. Močnejša trditev.
-</details>
+> [!success]- Rešitev
+> Povprečni primer pomeni **statistično povprečje** preko naključnih vhodov.  
+> Amortizirana analiza je **najhuji scenarij za zaporedje** — nobeno naključje, velja **vedno**. Močnejša trditev.
 
 ---
 
