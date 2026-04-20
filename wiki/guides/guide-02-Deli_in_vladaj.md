@@ -1,6 +1,6 @@
 ---
 title: "Študijski vodič 02 – Deli in vladaj"
-tags: [aps2, vodic, ucenje, deli-in-vladaj, rekurzija, krovni-izrek]
+tags: [aps2, vodic, ucenje, deli-in-vladaj, rekurzija, krovni-izrek, flashcards]
 type: study-guide
 order: 2
 last_updated: 2026-04-18
@@ -24,6 +24,16 @@ last_updated: 2026-04-18
 - Potrebuješ samo **pametno združevanje** rezultatov ($f(n)$).
 
 **Rekurenčna enačba**: $T(n) = a \cdot T(n/b) + f(n)$.
+
+---
+
+## Vizualizaciji
+
+### Rekurzijsko drevo in krovni izrek
+![[rekurzijsko-drevo-krovni-izrek.excalidraw]]
+
+### Karatsubov trik (4 → 3 množenja)
+![[karatsuba-trik.excalidraw]]
 
 ---
 
@@ -240,3 +250,41 @@ Rešitev: substitucijska metoda; dokažeš $O(2^n)$ in $\Omega(n^2)$.
 - [[Divide_and_conquer]] — konceptualni pregled
 - Prejšnji vodič: [[guide-01-Racunska_zahtevnost]]
 - Naslednji vodič: [[guide-03-Amortizirana_casovna_zahtevnost]]
+
+---
+
+## 13. Kartice za aktivni priklic (#flashcards)
+
+> Sintaksa vtičnika **Spaced Repetition**: inline `Q::A`, reverse `Q:::A`.
+
+### Krovni izrek
+
+Oblika rekurence pri krovnem izreku?::$T(n) = a \cdot T(n/b) + f(n)$, kjer $f(n) = \Theta(n^d)$
+
+Primer 1 krovnega izreka: pogoj in rezultat?::$a > b^d \Rightarrow T(n) = \Theta(n^{\log_b a})$ (listi dominirajo)
+
+Primer 2 krovnega izreka: pogoj in rezultat?::$a = b^d \Rightarrow T(n) = \Theta(n^d \log n)$
+
+Primer 3 krovnega izreka: pogoj in rezultat?::$a < b^d \Rightarrow T(n) = \Theta(n^d)$ (koren dominira)
+
+Kdaj krovni izrek NE velja?::Kadar $f(n)$ ni oblike $\Theta(n^d)$ (npr. $n \log n$) ali rekurenca ni enotne oblike (Slowsort)
+
+### Algoritmi
+
+Merge sort rekurenca in zahtevnost?::$T(n) = 2T(n/2) + \Theta(n) \Rightarrow \Theta(n \log n)$
+
+Karatsuba rekurenca in zahtevnost?::$T(n) = 3T(n/2) + \Theta(n) \Rightarrow \Theta(n^{\log_2 3}) \approx \Theta(n^{1{,}585})$
+
+Karatsubov trik — kateri trije produkti?
+?
+$c_2 = a_1 b_1$, $c_0 = a_0 b_0$, $c_1 = (a_1+a_0)(b_1+b_0) - c_2 - c_0$
+
+Stooge-Sort rekurenca in zahtevnost?::$T(n) = 3T(2n/3) + \Theta(1) \Rightarrow \Theta(n^{\log_{3/2} 3}) \approx \Theta(n^{2{,}71})$ — slabše od $n^2$!
+
+Slowsort rekurenca?::$T(n) = 2T(n/2) + T(n-1) + \Theta(1)$; $O(2^n)$ in $\Omega(n^2)$
+
+### Tehnike
+
+Dve alternativni tehniki kadar krovni izrek odpove?::drevesna metoda (razvij drevo, seštej nivoje) in substitucijska metoda (ugibaj + indukcija)
+
+Trik pri substitucijski metodi, ko hipoteza ne gre skozi?::Okrepi hipotezo (npr. $T(n) \leq cn^{\log_3 5} - dn$ namesto $T(n) \leq cn^{\log_3 5}$)

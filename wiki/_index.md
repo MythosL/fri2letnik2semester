@@ -99,3 +99,33 @@ wiki/
 | Huffman | $O(n \log n)$ | $O(n)$ |
 | Ford-Fulkerson | $O(E \cdot \|f^*\|)$ | $O(V+E)$ |
 | Edmonds-Karp | $O(VE^2)$ | $O(V+E)$ |
+
+---
+
+## Dinamični pregled (Dataview)
+
+### Vodiči
+
+```dataview
+TABLE order AS "#", last_updated AS "Posodobljeno"
+FROM "wiki/guides"
+WHERE type = "study-guide"
+SORT order ASC
+```
+
+### Teme
+
+```dataview
+TABLE sources AS "Viri", last_updated AS "Posodobljeno"
+FROM "wiki/topics"
+SORT file.name ASC
+```
+
+### Nedavno posodobljeno
+
+```dataview
+LIST
+FROM "wiki"
+SORT last_updated DESC
+LIMIT 5
+```
