@@ -166,22 +166,16 @@ $\sum \lfloor \lg i \rfloor + 1 = \Theta(n \log n)$ (navzgor omejeno s $\lg n!$)
 ### Naloga 1
 Dokaži: $n \log n + n = \Theta(n \log n)$.
 
-<details>
-<summary>Rešitev</summary>
-
-Z limito: $\lim \frac{n \log n + n}{n \log n} = 1 + \lim \frac{1}{\log n} = 1$. Torej $\Theta(n \log n)$.
-
-Z konstantami: $n \log n \leq n \log n + n \leq 2 n \log n$ za $n \geq 2$.
-</details>
+> [!success]- Rešitev
+> Z limito: $\lim \frac{n \log n + n}{n \log n} = 1 + \lim \frac{1}{\log n} = 1$. Torej $\Theta(n \log n)$.
+>
+> Z konstantami: $n \log n \leq n \log n + n \leq 2 n \log n$ za $n \geq 2$.
 
 ### Naloga 2
 Primerjaj rast: $n^{\log n}$ vs $2^n$.
 
-<details>
-<summary>Rešitev</summary>
-
-Vzamemo logaritem: $\lg(n^{\log n}) = (\log n)^2$ vs $\lg(2^n) = n$. Ker $(\log n)^2 = o(n)$ (dvakrat L'Hôpital), velja $n^{\log n} = o(2^n)$.
-</details>
+> [!success]- Rešitev
+> Vzamemo logaritem: $\lg(n^{\log n}) = (\log n)^2$ vs $\lg(2^n) = n$. Ker $(\log n)^2 = o(n)$ (dvakrat L'Hôpital), velja $n^{\log n} = o(2^n)$.
 
 ### Naloga 3
 Kolikokrat se izvede zanka?
@@ -189,34 +183,25 @@ Kolikokrat se izvede zanka?
 for (i=1; i<=n; i*=2) for (j=1; j<=i; j++) print;
 ```
 
-<details>
-<summary>Rešitev</summary>
-
-Zunanja zanka teče $\lfloor \lg n \rfloor + 1$ obhodov z $i = 1, 2, 4, \ldots, 2^{\lfloor \lg n \rfloor}$. Skupaj:
-$$\sum_{k=0}^{\lfloor \lg n \rfloor} 2^k = 2^{\lfloor \lg n \rfloor + 1} - 1 = \Theta(n)$$
-</details>
+> [!success]- Rešitev
+> Zunanja zanka teče $\lfloor \lg n \rfloor + 1$ obhodov z $i = 1, 2, 4, \ldots, 2^{\lfloor \lg n \rfloor}$. Skupaj:
+> $$\sum_{k=0}^{\lfloor \lg n \rfloor} 2^k = 2^{\lfloor \lg n \rfloor + 1} - 1 = \Theta(n)$$
 
 ### Naloga 4
 Ali je $n^{1{,}5} = O(n \log^{100} n)$?
 
-<details>
-<summary>Rešitev</summary>
-
-Ne. $\lim \frac{n^{1{,}5}}{n \log^{100} n} = \lim \frac{n^{0{,}5}}{\log^{100} n} = \infty$ (polinom premaga polilog). Torej $n^{1{,}5} = \omega(n \log^{100} n)$.
-</details>
+> [!success]- Rešitev
+> Ne. $\lim \frac{n^{1{,}5}}{n \log^{100} n} = \lim \frac{n^{0{,}5}}{\log^{100} n} = \infty$ (polinom premaga polilog). Torej $n^{1{,}5} = \omega(n \log^{100} n)$.
 
 ### Naloga 5 (sinteza — DN1)
 V programu za DN1 trije algoritmi urejanja (insertion, merge, bogosort). Za katero začetno urejenost $U$ dobiš **najhujši** čas pri vsakem algoritmu?
 
-<details>
-<summary>Rešitev</summary>
-
-- **Insertion sort**: $U = 2$ (obratno urejeno) — $\Theta(n^2)$ inverzij
-- **Merge sort**: vse enake, $\Theta(n \log n)$ neodvisno od $U$
-- **Bogosort**: pričakovano $\Theta(n \cdot n!)$, dejanski čas je naključen
-
-Pri $U = 1$ je insertion sort najhitrejši ($\Theta(n)$, ker ne dela zamenjav).
-</details>
+> [!success]- Rešitev
+> - **Insertion sort**: $U = 2$ (obratno urejeno) — $\Theta(n^2)$ inverzij
+> - **Merge sort**: vse enake, $\Theta(n \log n)$ neodvisno od $U$
+> - **Bogosort**: pričakovano $\Theta(n \cdot n!)$, dejanski čas je naključen
+>
+> Pri $U = 1$ je insertion sort najhitrejši ($\Theta(n)$, ker ne dela zamenjav).
 
 ---
 

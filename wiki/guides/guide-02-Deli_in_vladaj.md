@@ -223,65 +223,47 @@ $T(n) = 3T(n/2) + \Theta(n)$; $a=3, b=2, d=1$; $a > b^d$ → $\Theta(n^{\log_2 3
 ### Naloga 1
 $T(n) = 9T(n/3) + n$. Zahtevnost?
 
-<details>
-<summary>Rešitev</summary>
-
-$a=9, b=3, d=1$. $b^d = 3 < 9 = a$ → **Primer 1** → $\Theta(n^{\log_3 9}) = \Theta(n^2)$.
-</details>
+> [!success]- Rešitev
+> $a=9, b=3, d=1$. $b^d = 3 < 9 = a$ → **Primer 1** → $\Theta(n^{\log_3 9}) = \Theta(n^2)$.
 
 ### Naloga 2
 $T(n) = 2T(n/2) + n \log n$. Zahtevnost?
 
-<details>
-<summary>Rešitev</summary>
-
-$f(n) = n \log n$ ni oblike $\Theta(n^d)$ — razlika od $n^{\log_2 2} = n$ je **logaritmska, ne polinomska** → krovni izrek **ne velja**.  
-Rezultat (z drevesno metodo): $\Theta(n \log^2 n)$.
-</details>
+> [!success]- Rešitev
+> $f(n) = n \log n$ ni oblike $\Theta(n^d)$ — razlika od $n^{\log_2 2} = n$ je **logaritmska, ne polinomska** → krovni izrek **ne velja**.  
+> Rezultat (z drevesno metodo): $\Theta(n \log^2 n)$.
 
 ### Naloga 3 (Karatsuba)
 Zakaj je Karatsuba asimptotsko boljši od šolskega množenja?
 
-<details>
-<summary>Rešitev</summary>
-
-Šola: $T(n) = 4T(n/2) + \Theta(n)$ → $\Theta(n^2)$.  
-Karatsuba: $T(n) = 3T(n/2) + \Theta(n)$ → $\Theta(n^{\log_2 3}) \approx \Theta(n^{1{,}585})$.  
-Razlika: prihrani 1 od 4 množenj na vsakem nivoju s trikom $c_1 = (a_1+a_0)(b_1+b_0) - c_2 - c_0$.
-</details>
+> [!success]- Rešitev
+> Šola: $T(n) = 4T(n/2) + \Theta(n)$ → $\Theta(n^2)$.  
+> Karatsuba: $T(n) = 3T(n/2) + \Theta(n)$ → $\Theta(n^{\log_2 3}) \approx \Theta(n^{1{,}585})$.  
+> Razlika: prihrani 1 od 4 množenj na vsakem nivoju s trikom $c_1 = (a_1+a_0)(b_1+b_0) - c_2 - c_0$.
 
 ### Naloga 4 (substitucijska metoda)
 Dokaži, da $T(n) = 5T(n/3) + \Theta(n)$ je $O(n^{\log_3 5})$.
 
-<details>
-<summary>Rešitev</summary>
-
-Hipoteza $T(n) \leq cn^{\log_3 5}$ **ne zdrži** pri direktnem dokazu (dobimo dodaten $\Theta(n)$, ki ga ne moremo pokriti).  
-**Okrepi**: $T(n) \leq cn^{\log_3 5} - dn$. Vstavi:
-$$T(n) \leq 5(c(n/3)^{\log_3 5} - dn/3) + \Theta(n) = cn^{\log_3 5} - dn + (\Theta(n) - 2dn/3)$$
-Za dovolj velik $d$ je drugi člen $\leq 0$, torej $T(n) \leq cn^{\log_3 5} - dn \leq cn^{\log_3 5}$.
-</details>
+> [!success]- Rešitev
+> Hipoteza $T(n) \leq cn^{\log_3 5}$ **ne zdrži** pri direktnem dokazu (dobimo dodaten $\Theta(n)$, ki ga ne moremo pokriti).  
+> **Okrepi**: $T(n) \leq cn^{\log_3 5} - dn$. Vstavi:
+> $$T(n) \leq 5(c(n/3)^{\log_3 5} - dn/3) + \Theta(n) = cn^{\log_3 5} - dn + (\Theta(n) - 2dn/3)$$
+> Za dovolj velik $d$ je drugi člen $\leq 0$, torej $T(n) \leq cn^{\log_3 5} - dn \leq cn^{\log_3 5}$.
 
 ### Naloga 5 (Stooge-Sort — intuicija)
 Zakaj je Stooge-Sort slabši od navadnega urejanja?
 
-<details>
-<summary>Rešitev</summary>
-
-Stooge-Sort: $\Theta(n^{\log_{3/2} 3}) \approx \Theta(n^{2{,}71})$.  
-Navadno vstavljanje: $\Theta(n^2) < \Theta(n^{2{,}71})$.  
-Ker Stooge trikrat kliče na $2/3$ velikosti, ima $a=3, b=3/2$, kar je **slabše** od $a=2, b=2$ (merge sort).
-</details>
+> [!success]- Rešitev
+> Stooge-Sort: $\Theta(n^{\log_{3/2} 3}) \approx \Theta(n^{2{,}71})$.  
+> Navadno vstavljanje: $\Theta(n^2) < \Theta(n^{2{,}71})$.  
+> Ker Stooge trikrat kliče na $2/3$ velikosti, ima $a=3, b=3/2$, kar je **slabše** od $a=2, b=2$ (merge sort).
 
 ### Naloga 6 (Slowsort — sinteza)
 Zakaj ne moreš Slowsorta analizirati s krovnim izrekom?
 
-<details>
-<summary>Rešitev</summary>
-
-Rekurenca $T(n) = 2T(n/2) + T(n-1) + \Theta(1)$ ima **mešanico** delitev ($n/2$) in zmanjšanj ($n-1$). Krovni izrek zahteva vsa $T(\cdot)$ v obliki $T(n/b)$ za **isti** $b$.  
-Rešitev: substitucijska metoda; dokažeš $O(2^n)$ in $\Omega(n^2)$.
-</details>
+> [!success]- Rešitev
+> Rekurenca $T(n) = 2T(n/2) + T(n-1) + \Theta(1)$ ima **mešanico** delitev ($n/2$) in zmanjšanj ($n-1$). Krovni izrek zahteva vsa $T(\cdot)$ v obliki $T(n/b)$ za **isti** $b$.  
+> Rešitev: substitucijska metoda; dokažeš $O(2^n)$ in $\Omega(n^2)$.
 
 ---
 
