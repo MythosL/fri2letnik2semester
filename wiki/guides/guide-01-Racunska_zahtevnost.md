@@ -32,6 +32,12 @@ Pri $n = 10$? Prvi zmaga (600 vs 3332). Pri $n = 10^6$? Drugi je **250 000× hit
 
 ![[funkcijska-hierarhija.excalidraw]]
 
+> **Namig za risanje** (odpri datoteko v Excalidraw načinu):
+> - Vodoravna os z markerji: $1, \lg\lg n, \lg n, \sqrt{n}, n, n\lg n, n^2, n^3, n^{\lg n}, 2^n, n!, n^n$
+> - Polinome ($n, n^2, n^3$) obkroži z eno barvo
+> - $n^{\lg n}$ z ločeno barvo (ni ne polinom ne eksponent)
+> - $2^n, n!, n^n$ z drugo barvo
+
 ---
 
 ## 3. Ključne pripodobe

@@ -32,8 +32,19 @@ last_updated: 2026-04-18
 ### Rekurzijsko drevo in krovni izrek
 ![[rekurzijsko-drevo-krovni-izrek.excalidraw]]
 
+> **Namig za risanje**:
+> - Trikotnik z razvejanostjo $a$ na vsakem nivoju, $T(n) \to a \cdot T(n/b)$
+> - Ob nivojih zapiši delo: nivo 0 = $f(n)$, nivo 1 = $a \cdot f(n/b)$, listi = $\Theta(n^{\log_b a})$
+> - Ob strani tri puščice: "Primer 1: $a > b^d$", "Primer 2: $a = b^d$", "Primer 3: $a < b^d$"
+
 ### Karatsubov trik (4 → 3 množenja)
 ![[karatsuba-trik.excalidraw]]
+
+> **Namig za risanje**:
+> - Levo: štiri-produktni pristop (šola): $a_1 b_1, a_1 b_0, a_0 b_1, a_0 b_0$
+> - Desno: trije produkti: $c_2 = a_1 b_1$, $c_0 = a_0 b_0$, $c_1 = (a_1+a_0)(b_1+b_0) - c_2 - c_0$
+> - Puščica "en produkt prihranjen"
+> - Spodaj rekurence: $4T(n/2)+\Theta(n) = \Theta(n^2)$ vs $3T(n/2)+\Theta(n) = \Theta(n^{\log_2 3})$
 
 ---
 
